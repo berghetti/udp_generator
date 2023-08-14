@@ -173,7 +173,7 @@ static int lcore_tx(void *arg) {
 	struct rte_mbuf *pkts[BURST_SIZE];
 	uint16_t *flow_indexes = flow_indexes_array[qid];
 	uint64_t *interarrival_gap = interarrival_array[qid];
-	uint64_t next_tsc = rte_rdtsc() + interarrival_gap[i];
+	uint64_t next_tsc = rte_rdtsc() + interarrival_gap[i++];
 
 	while(!quit_tx) { 
 		// reach the limit
