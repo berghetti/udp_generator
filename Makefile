@@ -7,24 +7,26 @@ APP = udp-generator
 # all source are stored in SRCS-y
 SRCS-y := main.c util.c udp_util.c dpdk_util.c
 
+PKG_LIBDPDK=$(PWD)/dpdk/build/lib64/pkgconfig/
+
+PKGCONF=pkg-config
+
 # Build using pkg-config variables if possible
-ifneq ($(shell pkg-config --exists libdpdk && echo 0),0)
-$(error "no installation of DPDK found")
+ifneq ($(shell PKG_CONFIG_PATH=$(PKG_LIBDPDK) $(PKGCONF) --exists libdpdk && echo 0),0)
+$(error "no installation of DPDK found.")
 endif
 
-all: shared
+all: static
 .PHONY: shared static
 shared: build/$(APP)-shared
 	ln -sf $(APP)-shared build/$(APP)
 static: build/$(APP)-static
 	ln -sf $(APP)-static build/$(APP)
 
-PKGCONF ?= pkg-config
-
-PC_FILE := $(shell $(PKGCONF) --path libdpdk 2>/dev/null)
-CFLAGS += -O3 $(shell $(PKGCONF) --cflags libdpdk)
-LDFLAGS_SHARED = $(shell $(PKGCONF) --libs libdpdk)
-LDFLAGS_STATIC = $(shell $(PKGCONF) --static --libs libdpdk)
+PC_FILE := $(shell PKG_CONFIG_PATH=$(PKG_LIBDPDK) $(PKGCONF) --path libdpdk 2>/dev/null)
+CFLAGS += -O3 $(shell PKG_CONFIG_PATH=$(PKG_LIBDPDK) $(PKGCONF) --cflags libdpdk)
+LDFLAGS_SHARED = $(shell PKG_CONFIG_PATH=$(PKG_LIBDPDK) $(PKGCONF) --libs libdpdk)
+LDFLAGS_STATIC = $(shell PKG_CONFIG_PATH=$(PKG_LIBDPDK) $(PKGCONF) --static --libs libdpdk)
 
 ifeq ($(MAKECMDGOALS),static)
 # check for broken pkg-config
