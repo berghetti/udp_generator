@@ -5,3 +5,6 @@
 
 *.o
 *.dat
+
+dpdk/
+build/
