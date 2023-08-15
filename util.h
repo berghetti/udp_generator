@@ -81,6 +81,18 @@ void allocate_incoming_nodes();
 void create_interarrival_array();
 void create_flow_indexes_array();
 int app_parse_args(int argc, char **argv);
-void fill_payload_pkt(struct rte_mbuf *pkt, uint32_t idx, uint64_t value);
+
+enum payload_item
+{
+  SEND_TIME = 0,
+  RECV_TIME,
+  FLOW_ID,
+  TYPE,
+  SERVICE_TIME,
+
+  PAYLOAD_TOTAL_ITEMS
+};
+
+void fill_payload_pkt(struct rte_mbuf *pkt, enum payload_item item, uint64_t value);
 
 #endif // __UTIL_H__

@@ -149,7 +149,7 @@ static int lcore_rx(void *arg) {
 		now = rte_rdtsc();
 		for(int i = 0; i < nb_rx; i++) {
 			// fill the timestamp into packet payload
-			fill_payload_pkt(pkts[i], 1, now);
+			fill_payload_pkt(pkts[i], RECV_TIME, now);
 		}
 		if(rte_ring_sp_enqueue_burst(rx_ring, (void* const*) pkts, nb_rx, NULL) != nb_rx) {
 			rte_exit(EXIT_FAILURE, "Cannot enqueue the packet to the RX thread: %s.\n", rte_strerror(errno));
@@ -190,7 +190,7 @@ static int lcore_tx(void *arg) {
 			// fill the packet with the flow information
 			fill_udp_packet(flow_id, pkts[nb_pkts]);
 			// fill the payload to gather server information
-			fill_payload_pkt(pkts[nb_pkts], 2, flow_id);
+			fill_payload_pkt(pkts[nb_pkts], FLOW_ID, flow_id);
 		}
 
 		// unable to keep up with the requested rate
@@ -203,7 +203,7 @@ static int lcore_tx(void *arg) {
 
 		// fill the timestamp into the packet payload
 		for(int j = 0; j < nb_pkts; j++) {
-			fill_payload_pkt(pkts[j], 0, next_tsc);
+			fill_payload_pkt(pkts[j], SEND_TIME, next_tsc);
 		}
 
 		// sleep for while

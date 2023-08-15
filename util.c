@@ -128,6 +128,10 @@ static void usage(const char *prgname) {
 	);
 }
 
+#define MIN_PKT_SIZE ( sizeof(struct rte_ether_hdr) + \
+                       sizeof(struct rte_ipv4_hdr) + \
+                       sizeof(struct rte_udp_hdr) )
+
 // Parse the argument given in the command line of the application
 int app_parse_args(int argc, char **argv) {
 	int opt, ret;
@@ -164,7 +168,11 @@ int app_parse_args(int argc, char **argv) {
 		// frame size (bytes)
 		case 's':
 			frame_size = process_int_arg(optarg);
-			udp_payload_size = (frame_size - sizeof(struct rte_ether_hdr) - sizeof(struct rte_ipv4_hdr) - sizeof(struct rte_udp_hdr));
+            int min_frame_size = MIN_PKT_SIZE + PAYLOAD_TOTAL_ITEMS * sizeof(uint64_t);
+            if (frame_size < min_frame_size) 
+              rte_exit(EXIT_FAILURE, "size not should be less than %u.\n", min_frame_size);
+
+			udp_payload_size = (frame_size - MIN_PKT_SIZE);
 			break;
 
 		// queues
@@ -316,8 +324,8 @@ void process_config_file(char *cfg_file) {
 }
 
 // Fill the data into packet payload properly
-inline void fill_payload_pkt(struct rte_mbuf *pkt, uint32_t idx, uint64_t value) {
+inline void fill_payload_pkt(struct rte_mbuf *pkt, enum payload_item item, uint64_t value) {
 	uint8_t *payload = (uint8_t*) rte_pktmbuf_mtod_offset(pkt, uint8_t*, sizeof(struct rte_ether_hdr) + sizeof(struct rte_ipv4_hdr) + sizeof(struct rte_udp_hdr));
 
-	((uint64_t*) payload)[idx] = value;
+	((uint64_t*) payload)[item] = value;
 }
