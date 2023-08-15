@@ -9,6 +9,8 @@ Follow these instructions to build the udp generator using DPDK 22.11 and CloudL
 ```bash
 git clone https://github.com/carvalhof/udp_generator
 cd udp_generator
+./install_prerequisites.sh
+./install_dpdk.sh
 make
 ```
 
