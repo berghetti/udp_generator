@@ -86,7 +86,7 @@ void create_interarrival_array() {
 void create_flow_indexes_array() {
 	uint32_t nbits = (uint32_t) log2(nr_queues);
 	uint64_t rate_per_queue = rate/nr_queues;
-	uint64_t nr_elements_per_queue = rate_per_queue * duration;
+	uint64_t nr_elements_per_queue = rate_per_queue * duration * 2;
 
 	flow_indexes_array = (uint16_t**) malloc(nr_queues * sizeof(uint16_t*));
 	if(flow_indexes_array == NULL) {
