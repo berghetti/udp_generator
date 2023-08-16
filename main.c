@@ -26,8 +26,7 @@ uint32_t udp_payload_size;
 uint64_t TICKS_PER_US;
 uint16_t **flow_indexes_array;
 uint64_t **interarrival_array;
-request_type_t cfg_request_types[2];
-
+request_type_t cfg_request_types[TOTAL_RTYPES];
 request_type_t **request_types;
 
 // Heap and DPDK allocated

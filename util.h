@@ -72,7 +72,7 @@ extern uint32_t frame_size;
 extern uint32_t min_lcores;
 extern uint32_t udp_payload_size;
 
-extern request_type_t cfg_request_types[2];
+extern request_type_t cfg_request_types[TOTAL_RTYPES];
 extern request_type_t **request_types;
 
 extern uint64_t TICKS_PER_US;

@@ -44,11 +44,11 @@ void allocate_incoming_nodes() {
 	}
 }
 
-// return value between 0 and 100
+// return value between 0 and 99
 static uint32_t
 sample_uniform(void)
 {
-  return rte_rand() % 101;
+  return rte_rand() % 100;
 }
 
 void
@@ -73,7 +73,7 @@ create_request_types_array(void)
     {
       uint32_t random = sample_uniform();
       uint32_t t = 0;
-      for(; t < sizeof(cfg_request_types)/sizeof(*cfg_request_types); t++)
+      for(; t < TOTAL_RTYPES; t++)
       {
         if (random < cfg_request_types[i].ratio)
           break;
