@@ -42,7 +42,25 @@ typedef struct timestamp_node_t {
 	uint64_t timestamp_rx;
 	uint64_t timestamp_tx;
 	uint64_t nr_never_sent;
+
+    uint32_t type;
+    uint32_t service_time;
 } node_t;
+
+enum rtype
+{
+  SHORT = 0,
+  LONG,
+
+  TOTAL_RTYPES
+};
+
+typedef struct request_type
+{
+  enum rtype type;
+  uint32_t ratio;
+  uint64_t service_time; // in nanoseconds
+} request_type_t;
 
 extern uint64_t rate;
 extern uint16_t portid;
@@ -53,6 +71,9 @@ extern uint16_t nr_servers;
 extern uint32_t frame_size;
 extern uint32_t min_lcores;
 extern uint32_t udp_payload_size;
+
+extern request_type_t cfg_request_types[2];
+extern request_type_t **request_types;
 
 extern uint64_t TICKS_PER_US;
 extern uint16_t **flow_indexes_array;
@@ -80,6 +101,7 @@ double sample(double lambda);
 void allocate_incoming_nodes();
 void create_interarrival_array();
 void create_flow_indexes_array();
+void create_request_types_array();
 int app_parse_args(int argc, char **argv);
 
 enum payload_item
@@ -87,6 +109,7 @@ enum payload_item
   SEND_TIME = 0,
   RECV_TIME,
   FLOW_ID,
+  THREAD_ID,
   TYPE,
   SERVICE_TIME,
 

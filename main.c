@@ -26,6 +26,9 @@ uint32_t udp_payload_size;
 uint64_t TICKS_PER_US;
 uint16_t **flow_indexes_array;
 uint64_t **interarrival_array;
+request_type_t cfg_request_types[2];
+
+request_type_t **request_types;
 
 // Heap and DPDK allocated
 node_t **incoming_array;
@@ -71,15 +74,17 @@ int process_rx_pkt(struct rte_mbuf *pkt, node_t *incoming, uint64_t *incoming_id
 
 	// obtain both timestamp from the packet
 	uint64_t *payload = (uint64_t *)(((uint8_t*) udp_hdr) + (sizeof(struct rte_udp_hdr)));
-	uint64_t t0 = payload[0];
-	uint64_t t1 = payload[1];
+	uint64_t t0 = payload[SEND_TIME];
+	uint64_t t1 = payload[RECV_TIME];
 
 	// fill the node previously allocated
 	node_t *node = &incoming[(*incoming_idx)++];
-	node->flow_id = payload[2];
-	node->thread_id = payload[3];
+	node->flow_id = payload[FLOW_ID];
+	node->thread_id = payload[THREAD_ID];
 	node->timestamp_tx = t0;
 	node->timestamp_rx = t1;
+    node->type = payload[TYPE];
+    node->service_time = payload[SERVICE_TIME];
 
 	return 1;
 }
@@ -173,6 +178,8 @@ static int lcore_tx(void *arg) {
 	struct rte_mbuf *pkts[BURST_SIZE];
 	uint16_t *flow_indexes = flow_indexes_array[qid];
 	uint64_t *interarrival_gap = interarrival_array[qid];
+    request_type_t *rtype = request_types[qid];
+
 	uint64_t next_tsc = rte_rdtsc() + interarrival_gap[i++];
 
 	while(!quit_tx) { 
@@ -201,9 +208,13 @@ static int lcore_tx(void *arg) {
 			continue;
 		}
 
-		// fill the timestamp into the packet payload
+		// fill the timestamp, request type and service time
+        // into the packet payload
 		for(int j = 0; j < nb_pkts; j++) {
 			fill_payload_pkt(pkts[j], SEND_TIME, next_tsc);
+			
+            fill_payload_pkt(pkts[j], TYPE, rtype[i].type);
+            fill_payload_pkt(pkts[j], SERVICE_TIME, rtype[i].service_time);
 		}
 
 		// sleep for while
@@ -251,6 +262,8 @@ int main(int argc, char **argv) {
 
 	// create interarrival array
 	create_interarrival_array();
+
+    create_request_types_array();
 	
 	// initialize the control blocks
 	init_blocks();

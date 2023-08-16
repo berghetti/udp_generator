@@ -42,7 +42,50 @@ void allocate_incoming_nodes() {
 	for(uint64_t i = 0; i < nr_queues; i++) {
 		incoming_idx_array[i] = 0;
 	}
-} 
+}
+
+// return value between 0 and 100
+static uint32_t
+sample_uniform(void)
+{
+  return rte_rand() % 101;
+}
+
+void
+create_request_types_array(void)
+{
+  uint64_t rate_per_queue = rate/nr_queues;
+  uint64_t nr_elements_per_queue = 2 * rate_per_queue * duration;
+
+  request_types = rte_malloc(NULL, nr_queues * sizeof(request_type_t *), 64);
+  if(request_types == NULL)
+    rte_exit(EXIT_FAILURE, "Cannot alloc the request_types array.\n");
+
+  for (uint64_t i = 0; i < nr_queues; i++)
+  {
+    request_type_t *rtype = rte_malloc(NULL, nr_elements_per_queue * sizeof(*rtype), 0);
+    if (!rtype)
+      rte_exit(EXIT_FAILURE, "Cannot alloc rtype array.\n");
+
+    request_types[i] = rtype;
+
+    for (uint64_t j = 0; j < nr_elements_per_queue; j++)
+    {
+      uint32_t random = sample_uniform();
+      uint32_t t = 0;
+      for(; t < sizeof(cfg_request_types)/sizeof(*cfg_request_types); t++)
+      {
+        if (random < cfg_request_types[i].ratio)
+          break;
+        
+        random -= cfg_request_types[t].ratio;
+      }
+
+      rtype[j].type = t;
+      rtype[j].service_time = cfg_request_types[t].service_time;
+    }
+  }
+}
 
 // Allocate and create an array for all interarrival packets for rate specified.
 void create_interarrival_array() {
@@ -260,8 +303,10 @@ void print_stats_output() {
 		for(; j < incoming_idx; j++) {
 			cur = &incoming[j];
 
-			fprintf(fp, "%lu\t%lu\n",
+			fprintf(fp, "%lu\t%u\t%lu\t%lu\n",
 				cur->flow_id,
+                cur->type,
+                cur->timestamp_rx,
 				((uint64_t)((cur->timestamp_rx - cur->timestamp_tx)/((double)TICKS_PER_US/1000)))
 			);
 		}
@@ -318,6 +363,16 @@ void process_config_file(char *cfg_file) {
 		sscanf(entry, "%hu", &n);
 		nr_servers = n;
 	}
+
+    struct rte_cfgfile_entry entrys[2];
+    int i;
+    int ret = rte_cfgfile_section_entries(file, "requests_service_time", entrys, 2);
+    for( i = 0; i < ret; i++)
+      cfg_request_types[i].service_time = atoi(entrys[i].value);
+    
+    ret = rte_cfgfile_section_entries(file, "requests_ratio", entrys, 2);
+    for( i = 0; i < ret; i++)
+      cfg_request_types[i].ratio = atoi(entrys[i].value);
 
 	// close the file
 	rte_cfgfile_close(file);
