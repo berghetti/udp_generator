@@ -364,9 +364,9 @@ void process_config_file(char *cfg_file) {
 		nr_servers = n;
 	}
 
-    struct rte_cfgfile_entry entrys[2];
-    int i;
-    int ret = rte_cfgfile_section_entries(file, "requests_service_time", entrys, 2);
+    int i, ret;
+    struct rte_cfgfile_entry entrys[TOTAL_RTYPES];
+    ret = rte_cfgfile_section_entries(file, "requests_service_time", entrys, 2);
     for( i = 0; i < ret; i++)
       cfg_request_types[i].service_time = atoi(entrys[i].value);
     
