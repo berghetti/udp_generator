@@ -24,7 +24,7 @@ static: build/$(APP)-static
 	ln -sf $(APP)-static build/$(APP)
 
 PC_FILE := $(shell PKG_CONFIG_PATH=$(PKG_LIBDPDK) $(PKGCONF) --path libdpdk 2>/dev/null)
-CFLAGS += -O3 $(shell PKG_CONFIG_PATH=$(PKG_LIBDPDK) $(PKGCONF) --cflags libdpdk)
+CFLAGS += $(shell PKG_CONFIG_PATH=$(PKG_LIBDPDK) $(PKGCONF) --cflags libdpdk)
 LDFLAGS_SHARED = $(shell PKG_CONFIG_PATH=$(PKG_LIBDPDK) $(PKGCONF) --libs libdpdk)
 LDFLAGS_STATIC = $(shell PKG_CONFIG_PATH=$(PKG_LIBDPDK) $(PKGCONF) --static --libs libdpdk)
 
@@ -36,7 +36,7 @@ $(error "Cannot generate statically-linked binaries with this version of pkg-con
 endif
 endif
 
-CFLAGS += -DALLOW_EXPERIMENTAL_API -Wall
+CFLAGS += -DALLOW_EXPERIMENTAL_API -Wall -O3
 
 build/$(APP)-shared: $(SRCS-y) Makefile $(PC_FILE) | build
 	$(CC) $(CFLAGS) $(filter %.c,$^) -o $@ $(LDFLAGS) $(LDFLAGS_SHARED) -lm
