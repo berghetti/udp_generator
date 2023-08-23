@@ -27,7 +27,7 @@ void init_blocks() {
 	}
 
 	// shuffle port array
-	shuffle(ports, nr_flows);
+	//shuffle(ports, nr_flows);
 
 	for(uint32_t i = 0; i < nr_flows; i++) {
 		src_udp_port = ports[i];

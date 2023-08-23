@@ -81,7 +81,7 @@ create_request_types_array(void)
         random -= cfg_request_types[t].ratio;
       }
 
-      rtype[j].type = t;
+      rtype[j].type = t + 1; // psp server
       rtype[j].service_time = cfg_request_types[t].service_time;
     }
   }
@@ -143,7 +143,8 @@ void create_flow_indexes_array() {
 		}
 		uint16_t *flow_indexes = flow_indexes_array[i];
 		for(int j = 0; j < nr_elements_per_queue; j++) {
-			flow_indexes[j] = ((rte_rand() << nbits) | i) % nr_flows;
+			//flow_indexes[j] = ((rte_rand() << nbits) | i) % nr_flows;
+			flow_indexes[j] = j % nr_flows;
 		}
 	}
 }
