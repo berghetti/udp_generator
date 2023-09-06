@@ -28,6 +28,7 @@ uint16_t **flow_indexes_array;
 uint64_t **interarrival_array;
 request_type_t cfg_request_types[TOTAL_RTYPES];
 request_type_t **request_types;
+uint64_t classification_time;
 
 // Heap and DPDK allocated
 node_t **incoming_array;
@@ -84,6 +85,13 @@ int process_rx_pkt(struct rte_mbuf *pkt, node_t *incoming, uint64_t *incoming_id
 	node->timestamp_rx = t1;
     node->type = payload[TYPE];
     node->service_time = payload[SERVICE_TIME];
+
+    node->rx_time = payload[RX_TIME];
+    node->app_recv_time = payload[APP_RECV_TIME];
+    node->app_send_time = payload[APP_SEND_TIME];
+    node->tx_time = payload[TX_TIME];
+    node->worker_rx = payload[WORKER_RX];
+    node->worker_tx = payload[WORKER_TX];
 
 	return 1;
 }
@@ -214,6 +222,7 @@ static int lcore_tx(void *arg) {
 			
             fill_payload_pkt(pkts[j], TYPE, rtype[i].type);
             fill_payload_pkt(pkts[j], SERVICE_TIME, rtype[i].service_time);
+            fill_payload_pkt(pkts[j], CLASSIFICATION_TIME, classification_time);
 		}
 
 		// sleep for while

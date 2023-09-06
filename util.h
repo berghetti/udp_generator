@@ -45,6 +45,9 @@ typedef struct timestamp_node_t {
 
     uint32_t type;
     uint32_t service_time;
+
+    // server times
+    uint64_t rx_time, app_recv_time, app_send_time, tx_time, worker_rx, worker_tx;
 } node_t;
 
 enum rtype
@@ -78,6 +81,7 @@ extern request_type_t **request_types;
 extern uint64_t TICKS_PER_US;
 extern uint16_t **flow_indexes_array;
 extern uint64_t **interarrival_array;
+extern uint64_t classification_time;
 
 extern uint16_t dst_udp_port;
 extern uint32_t dst_ipv4_addr;
@@ -112,6 +116,16 @@ enum payload_item
   THREAD_ID,
   TYPE,
   SERVICE_TIME,
+  CLASSIFICATION_TIME,
+
+  /* server times */
+  RX_TIME,
+  APP_RECV_TIME,
+  APP_SEND_TIME,
+  TX_TIME,
+  WORKER_RX,
+  WORKER_TX,
+
 
   PAYLOAD_TOTAL_ITEMS
 };
