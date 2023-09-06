@@ -63,7 +63,7 @@ create_request_types_array(void)
 
   for (uint64_t i = 0; i < nr_queues; i++)
   {
-    request_type_t *rtype = rte_malloc(NULL, nr_elements_per_queue * sizeof(*rtype), 0);
+    request_type_t *rtype = rte_malloc(NULL, nr_elements_per_queue * sizeof(*rtype), 64);
     if (!rtype)
       rte_exit(EXIT_FAILURE, "Cannot alloc rtype array.\n");
 
@@ -75,12 +75,14 @@ create_request_types_array(void)
       uint32_t t = 0;
       for(; t < TOTAL_RTYPES; t++)
       {
-        if (random < cfg_request_types[i].ratio)
+        //printf("ratio %u\n", cfg_request_types[i].ratio);
+        if (random < cfg_request_types[t].ratio)
           break;
         
         random -= cfg_request_types[t].ratio;
       }
 
+      //printf("t %u\n", t);
       rtype[j].type = t + 1; // psp server
       rtype[j].service_time = cfg_request_types[t].service_time;
     }
@@ -304,11 +306,18 @@ void print_stats_output() {
 		for(; j < incoming_idx; j++) {
 			cur = &incoming[j];
 
-			fprintf(fp, "%lu\t%u\t%lu\t%lu\n",
+			fprintf(fp, "%lu\t%u\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\n",
 				cur->flow_id,
                 cur->type,
-                cur->timestamp_rx,
-				((uint64_t)((cur->timestamp_rx - cur->timestamp_tx)/((double)TICKS_PER_US/1000)))
+                cur->timestamp_tx,
+				((uint64_t)((cur->timestamp_rx - cur->timestamp_tx)/((double)TICKS_PER_US/1000))),
+
+                cur->rx_time,
+                cur->app_recv_time,
+                cur->app_send_time,
+                cur->tx_time,
+                cur->worker_rx,
+                cur->worker_tx
 			);
 		}
 	}
@@ -368,12 +377,20 @@ void process_config_file(char *cfg_file) {
     int i, ret;
     struct rte_cfgfile_entry entrys[TOTAL_RTYPES];
     ret = rte_cfgfile_section_entries(file, "requests_service_time", entrys, 2);
+    assert(ret == 2);
     for( i = 0; i < ret; i++)
       cfg_request_types[i].service_time = atoi(entrys[i].value);
     
     ret = rte_cfgfile_section_entries(file, "requests_ratio", entrys, 2);
+    assert( ret == 2 );
     for( i = 0; i < ret; i++)
       cfg_request_types[i].ratio = atoi(entrys[i].value);
+
+    entry = (char *)rte_cfgfile_get_entry(file, "classification_time", "time");
+    if (!entry)
+      rte_exit(EXIT_FAILURE, "Error parse cfg file");
+
+    sscanf(entry, "%lu", &classification_time);
 
 	// close the file
 	rte_cfgfile_close(file);
