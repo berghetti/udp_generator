@@ -284,6 +284,17 @@ int cmp_func(const void * a, const void * b) {
 
 	return (da - db) > ( (fabs(da) < fabs(db) ? fabs(db) : fabs(da)) * EPSILON);
 }
+    
+
+static uint64_t
+get_delta_ns(uint64_t start, uint64_t end)
+{
+  assert(start <= end);
+  double ticks_per_ns = TICKS_PER_US / (double)1000.0;
+  return ( end - start ) / ticks_per_ns;
+}
+
+const char *title = "ID\tTYPE\tRTT\tRX/APP\tAPP\tAPP/TX\tWID_RX\tWID_TX\tPREEMPTED";
 
 // Print stats into output file
 void print_stats_output() {
@@ -293,31 +304,36 @@ void print_stats_output() {
 		rte_exit(EXIT_FAILURE, "Cannot open the output file.\n");
 	}
 
+    fprintf(fp, "%s\n", title);
+
 	for(uint32_t i = 0; i < nr_queues; i++) {
 		// get the pointers
 		node_t *incoming = incoming_array[i];
 		uint32_t incoming_idx = incoming_idx_array[i];
 
 		// drop the first 50% packets for warming up
-		uint64_t j = 0.5 * incoming_idx;
+		//uint64_t j = 0.5 * incoming_idx;
+		uint64_t j = 0.25 * incoming_idx;
+        uint64_t end = incoming_idx - (incoming_idx * 0.25);
 
 		// print the RTT latency in (ns)
 		node_t *cur;
-		for(; j < incoming_idx; j++) {
+		//for(; j < incoming_idx; j++) {
+		for(; j < end; j++) {
 			cur = &incoming[j];
 
-			fprintf(fp, "%lu\t%u\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\n",
+			fprintf(fp, "%lu\t%u\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\t\n",
 				cur->flow_id,
                 cur->type,
-                cur->timestamp_tx,
-				((uint64_t)((cur->timestamp_rx - cur->timestamp_tx)/((double)TICKS_PER_US/1000))),
-
-                cur->rx_time,
-                cur->app_recv_time,
-                cur->app_send_time,
-                cur->tx_time,
-                cur->worker_rx,
-                cur->worker_tx
+                //cur->timestamp_tx,
+                get_delta_ns(cur->timestamp_tx, cur->timestamp_rx), // RTT
+                
+                get_delta_ns(cur->rx_time, cur->app_recv_time), // delay afp -> app
+                get_delta_ns(cur->app_recv_time, cur->app_send_time), // delay app
+                get_delta_ns(cur->app_send_time, cur->tx_time), // delay app -> tx
+                cur->worker_rx, // worker id rx
+                cur->worker_tx, // worker id tx
+                cur->interrupt_count // long count preempt
 			);
 		}
 	}

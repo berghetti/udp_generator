@@ -24,6 +24,7 @@ void init_blocks() {
 	uint16_t ports[nr_flows];
 	for(uint32_t i = 0; i < nr_flows; i++) {
 		ports[i] = rte_cpu_to_be_16((i % (nr_flows/nr_servers)) + 1);
+		//ports[i] = rte_cpu_to_be_16(rte_rand() % 65535);
 	}
 
 	// shuffle port array

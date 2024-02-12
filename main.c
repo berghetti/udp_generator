@@ -80,7 +80,6 @@ int process_rx_pkt(struct rte_mbuf *pkt, node_t *incoming, uint64_t *incoming_id
 	// fill the node previously allocated
 	node_t *node = &incoming[(*incoming_idx)++];
 	node->flow_id = payload[FLOW_ID];
-	node->thread_id = payload[THREAD_ID];
 	node->timestamp_tx = t0;
 	node->timestamp_rx = t1;
     node->type = payload[TYPE];
@@ -92,6 +91,7 @@ int process_rx_pkt(struct rte_mbuf *pkt, node_t *incoming, uint64_t *incoming_id
     node->tx_time = payload[TX_TIME];
     node->worker_rx = payload[WORKER_RX];
     node->worker_tx = payload[WORKER_TX];
+    node->interrupt_count = payload[INTERRUPT_COUNT];
 
 	return 1;
 }
