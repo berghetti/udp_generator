@@ -1,5 +1,7 @@
 #include "dpdk_util.h"
 
+extern uint64_t seed;
+
 // Initialize DPDK configuration
 void init_DPDK(uint16_t portid, uint64_t nr_queues) {
 	// check the number of DPDK logical cores
@@ -8,7 +10,7 @@ void init_DPDK(uint16_t portid, uint64_t nr_queues) {
 	}
 
 	// init the seed for random numbers
-	rte_srand(SEED);
+	rte_srand(seed);
 
 	// get the number of cycles per us
 	TICKS_PER_US = rte_get_timer_hz() / 1000000;

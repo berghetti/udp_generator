@@ -96,6 +96,8 @@ extern volatile uint8_t quit_rx_ring;
 extern node_t **incoming_array;
 extern uint64_t *incoming_idx_array;
 
+extern uint64_t seed;
+
 void clean_heap();
 void wait_timeout();
 void print_dpdk_stats();

@@ -46,6 +46,9 @@ volatile uint64_t nr_never_sent = 0;
 lcore_param lcore_params[RTE_MAX_LCORE];
 struct rte_ring *rx_rings[RTE_MAX_LCORE];
 
+// seed
+uint64_t seed = DEFAULT_SEED;
+
 // Connection variables
 uint16_t dst_udp_port;
 uint32_t dst_ipv4_addr;

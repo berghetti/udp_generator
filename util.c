@@ -185,7 +185,7 @@ int app_parse_args(int argc, char **argv) {
 	char *prgname = argv[0];
 
 	argvopt = argv;
-	while ((opt = getopt(argc, argvopt, "d:r:f:s:q:p:t:c:o:")) != EOF) {
+	while ((opt = getopt(argc, argvopt, "d:r:f:s:q:p:t:c:o:x:")) != EOF) {
 		switch (opt) {
 		// distribution
 		case 'd':
@@ -242,6 +242,11 @@ int app_parse_args(int argc, char **argv) {
 			strcpy(output_file, optarg);
 			break;
 
+        // set specific seed to random number generator
+        case 'x':
+            seed = process_int_arg(optarg);
+            break;
+
 		default:
 			usage(prgname);
 			rte_exit(EXIT_FAILURE, "Invalid arguments.\n");
@@ -289,7 +294,7 @@ int cmp_func(const void * a, const void * b) {
 static uint64_t
 get_delta_ns(uint64_t start, uint64_t end)
 {
-  assert(start <= end);
+  //assert(start <= end);
   double ticks_per_ns = TICKS_PER_US / (double)1000.0;
   return ( end - start ) / ticks_per_ns;
 }

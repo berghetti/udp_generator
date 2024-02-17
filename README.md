@@ -19,13 +19,13 @@ make
 > **Make sure that `LD_LIBRARY_PATH` is configured properly.**
 
 ```bash
-sudo ./build/udp-generator -a 41:00.0 -n 4 -c 0xff -- -d $DISTRIBUTION -r $RATE -f $FLOWS -s $SIZE -t $DURATION -q $QUEUES -c $ADDR_FILE -o $OUTPUT_FILE
+sudo ./build/udp-generator -a 41:00.0 -n 4 -c 0xff -- -d $DISTRIBUTION -r $RATE -f $FLOWS -s $SIZE -t $DURATION -q $QUEUES -c $ADDR_FILE -o $OUTPUT_FILE -x $SEED
 ```
 
 > **Example**
 
 ```bash
-sudo ./build/udp-generator -a 41:00.0 -n 4 -c 0xff -- -d exponential -r 100000 -f 1 -s 128 -t 10 -q 1 -c addr.cfg -o output.dat
+sudo ./build/udp-generator -a 41:00.0 -n 4 -c 0xff -- -d exponential -r 100000 -f 1 -s 128 -t 10 -q 1 -c addr.cfg -o output.dat -x 7
 ```
 
 ### Parameters
@@ -38,6 +38,7 @@ sudo ./build/udp-generator -a 41:00.0 -n 4 -c 0xff -- -d exponential -r 100000 -
 - `$QUEUES` : number of RX/TX queues
 - `$ADDR_FILE` : name of address file (_e.g.,_ 'addr.cfg')
 - `$OUTPUT_FILE` : name of output file containg the latency for each packet
+- `$SEED`: seed to random number generator. If not set, an internal value is used
 
 
 ### _address file structure_
