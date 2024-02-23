@@ -48,7 +48,7 @@ void allocate_incoming_nodes() {
 static uint32_t
 sample_uniform(void)
 {
-  return rte_rand() % 100;
+  return rte_rand() % 1000;
 }
 
 void
@@ -60,6 +60,8 @@ create_request_types_array(void)
   request_types = rte_malloc(NULL, nr_queues * sizeof(request_type_t *), 64);
   if(request_types == NULL)
     rte_exit(EXIT_FAILURE, "Cannot alloc the request_types array.\n");
+
+  uint32_t debug_types[2] = {0};
 
   for (uint64_t i = 0; i < nr_queues; i++)
   {
@@ -83,10 +85,13 @@ create_request_types_array(void)
       }
 
       //printf("t %u\n", t);
+      debug_types[t]++;
       rtype[j].type = t + 1; // psp server
       rtype[j].service_time = cfg_request_types[t].service_time;
     }
   }
+
+  printf("shorts: %u longs: %u\n", debug_types[0], debug_types[1]);
 }
 
 // Allocate and create an array for all interarrival packets for rate specified.
@@ -309,7 +314,7 @@ void print_stats_output() {
 		rte_exit(EXIT_FAILURE, "Cannot open the output file.\n");
 	}
 
-    fprintf(fp, "%s\n", title);
+    //fprintf(fp, "%s\n", title);
 
 	for(uint32_t i = 0; i < nr_queues; i++) {
 		// get the pointers
@@ -327,18 +332,18 @@ void print_stats_output() {
 		for(; j < end; j++) {
 			cur = &incoming[j];
 
-			fprintf(fp, "%lu\t%u\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\t\n",
-				cur->flow_id,
+			//fprintf(fp, "%lu\t%u\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\n",
+			fprintf(fp, "%u\t%lu\n",
+				//cur->flow_id,
                 cur->type,
-                //cur->timestamp_tx,
-                get_delta_ns(cur->timestamp_tx, cur->timestamp_rx), // RTT
+                get_delta_ns(cur->timestamp_tx, cur->timestamp_rx) // RTT
                 
-                get_delta_ns(cur->rx_time, cur->app_recv_time), // delay afp -> app
-                get_delta_ns(cur->app_recv_time, cur->app_send_time), // delay app
-                get_delta_ns(cur->app_send_time, cur->tx_time), // delay app -> tx
-                cur->worker_rx, // worker id rx
-                cur->worker_tx, // worker id tx
-                cur->interrupt_count // long count preempt
+                //get_delta_ns(cur->rx_time, cur->app_recv_time), // delay afp -> app
+                //get_delta_ns(cur->app_recv_time, cur->app_send_time), // delay app
+                //get_delta_ns(cur->app_send_time, cur->tx_time), // delay app -> tx
+                //cur->worker_rx, // worker id rx
+                //cur->worker_tx, // worker id tx
+                //cur->interrupt_count // long count preempt
 			);
 		}
 	}
