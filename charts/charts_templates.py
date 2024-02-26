@@ -3,7 +3,7 @@ def get_config_template():
   return {
 	  #'mult_datasets': rows,
 	  #'datasets': datasets,
-	  'xlabel': 'Throughput (MRPS)',
+	  'xlabel': 'Throughput (Mreqs/s)',
 	  'ylabel': '99.9 lat. ($\mu$s)',
 
 	  'font': {
@@ -37,7 +37,7 @@ def get_config_template():
 		#'bbox_to_anchor': (0.5, 1.45),
 		'title_fontsize' : 12,
 		'fontsize': 18,
-		'ncol': 3,
+		#'ncol': 3,
 		#'mode': 'expand',
 		'frameon': False,
 		},

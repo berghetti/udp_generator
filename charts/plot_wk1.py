@@ -5,10 +5,8 @@ import sys
 import json
 
 import charts
-from plot_common import get_latencys, get_policy_name, get_styles
+from plot_common import *
 import charts_templates
-
-PERCENTILES = {'p999': 99.9, 'p99': 99.0, 'p90': 90.0, 'p50': 50.0}
 
 def exist(name, data):
   for pol in data:
@@ -30,7 +28,6 @@ def write_metadata(policys, file, p, force=False):
     name = get_policy_name(policy)
 
     if not exist(name, data):
-      print('here')
       x, s, serr, l, lerr, a, aerr = get_latencys(policy, p)
       d = {
           name : {
@@ -45,24 +42,25 @@ def write_metadata(policys, file, p, force=False):
           }
 
       data.append(d)
+      with open(file, 'w') as f:
+        json.dump(data, f)
 
-  with open(file, 'w') as f:
-    json.dump(data, f)
-
-
-def read_metadata(file):
+def read_metadata(file, name):
 
   with open(file, 'r') as f:
     data = json.load(f)
 
-  return data
+  for pol in data:
+    n = list(pol.keys())[0]
+    if n == name:
+      return pol
 
 def plot_charts(policys, pname, percentil):
-
-  p = PERCENTILES[percentil]
-  file = f'{percentil}_meta.dat'
+  p = get_percentile(percentil)
+  file = get_metadata_name(pname, percentil)
 
   config = charts_templates.get_config_template()
+  config['ylabel'] = f'Lat. p{p} ($\mu$s)'
 
   write_metadata(policys, file, p)
 
@@ -70,11 +68,14 @@ def plot_charts(policys, pname, percentil):
   dataset_longs = []
   dataset_alls = []
 
-  data = read_metadata(file)
-  for policy in data:
-    name = list(policy.keys())[0]
-    x, s, serr, l, lerr, a, aerr = policy[name].values()
-    #print(x, s, serr, l, lerr, a, aerr)
+  for policy in policys:
+    name = get_policy_name(policy)
+    data = read_metadata(file, name)
+    data = list(data.values())[0]
+    print(name)
+    #name = list(policy.keys())[0]
+    x, s, serr, l, lerr, a, aerr = data.values()
+    print(x, s, serr, l, lerr, a, aerr)
 
     color, ls, m = get_styles(name)
 
@@ -85,6 +86,7 @@ def plot_charts(policys, pname, percentil):
 
   config['datasets'] = dataset_shorts
   config['ylim'] = [0, 300]
+  config['set_ticks']['ymajor'] = 25
   config['save'] = f'imgs/{pname}_{percentil}_shorts.pdf'
   charts.line(config)
 

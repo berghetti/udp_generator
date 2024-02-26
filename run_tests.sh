@@ -10,7 +10,8 @@ fi
 
 # times to run same test
 RUNS=5
-CLEINT_DIR="/home/user/udp_generator"
+CLIENT_DIR="/home/user/udp_generator"
+CONF_FILE="${CLIENT_DIR}/addr.cfg"
 run_test()
 {
   DIR="${BASE_DIR}/tests/${1}"
@@ -18,14 +19,14 @@ run_test()
   DIST=$2
   RATE=$3
 
-  pushd ${CLEINT_DIR}
+  pushd ${CLIENT_DIR}
 
   cmd_template="\
     sudo ./build/udp-generator -l 1-16 -- \
     -d ${DIST} \
     -r ${RATE} \
     -f 128 -s 256 -t 10 -q 5 \
-    -c addr.cfg \
+    -c ${CONF_FILE} \
     -o ${DIR}/test\$i \
     -x \$i \
       > ${DIR}/stats\$i"
@@ -41,7 +42,7 @@ run_test()
       exit 1
     fi
 
-    #sleep 10
+    sleep 5
   done
 
   popd
@@ -65,7 +66,7 @@ set_1_100_load()
 set_classification_time()
 {
   TIME=$1
-  sed -i '/\[classification_time\]/{n;s/\(time\s*=\s*\)[0-9]\+/\1${TIME}/;}' $CONF_FILE
+  sed -i '/\[classification_time\]/{n;s/\(time\s*=\s*\)[0-9]\+/\1'${TIME}'/;}' $CONF_FILE
 }
 
 run_1_100()
@@ -87,7 +88,7 @@ run_1_100()
   done
 }
 
-run_w2()
+run_w1()
 {
   policy=$1
   load_name='0.5_100'
@@ -96,7 +97,7 @@ run_w2()
   for dist in 'exponential'; do
 
     for rate in {1000..6000..1000}; do
-    #for rate in 4000; do
+    #for rate in 1000; do
       rate=$((rate * 1000))
       test_dir="${dist}/${load_name}/${policy}/${rate}"
       echo "Runing ${policy} with rate ${rate}"
@@ -106,13 +107,16 @@ run_w2()
   done
 }
 
-#run_w2 "psp-cl0"
-#run_w2 "afp-ws"
-run_w2 "afp"
-#run_shorts "psp-cl50"
-#run_shorts "psp-cl100"
-#run_shorts "psp-cl200"
-#run_shorts "psp-cl400"
-#run_shorts "afp"
-#run_shorts "afp-ws"
+set_classification_time 0
+#run_w1 "psp-cl0"
+#run_w1 "afp-cl0"
+run_w1 "rss-cl0"
+
+#set_classification_time 50
+#run_w1 "psp-cl50"
+#run_w1 "afp-cl50"
+
+#set_classification_time 100
+#run_w1 "psp-cl100"
+#run_w1 "afp-cl100"
 
