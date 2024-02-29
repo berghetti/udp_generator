@@ -14,7 +14,7 @@ popd
 
 # install igb_uio driver
 git clone https://dpdk.org/git/dpdk-kmods
-make -C dpdk-kmods
+make -C dpdk-kmods/linux/igb_uio/
 sudo modprobe uio
 sudo insmod dpdk-kmods/linux/igb_uio/igb_uio.ko
 
