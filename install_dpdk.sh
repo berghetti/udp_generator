@@ -12,3 +12,11 @@ sudo ninja -C build install
 
 popd
 
+# install igb_uio driver
+git clone https://dpdk.org/git/dpdk-kmods
+make -C dpdk-kmods
+sudo modprobe uio
+sudo insmod dpdk-kmods/linux/igb_uio/igb_uio.ko
+
+# TODO bind interface
+# ./dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1
