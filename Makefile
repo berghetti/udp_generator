@@ -7,7 +7,7 @@ APP = udp-generator
 # all source are stored in SRCS-y
 SRCS-y := main.c util.c udp_util.c dpdk_util.c
 
-PKG_LIBDPDK=$(PWD)/dpdk/build/lib64/pkgconfig/
+PKG_LIBDPDK=$(PWD)/dpdk/build/lib/x86_64-linux-gnu/pkgconfig/
 
 PKGCONF=pkg-config
 
