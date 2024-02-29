@@ -7,7 +7,7 @@ APP = udp-generator
 # all source are stored in SRCS-y
 SRCS-y := main.c util.c udp_util.c dpdk_util.c
 
-PKG_LIBDPDK=$(PWD)/dpdk/build/lib64/pkgconfig/
+PKG_LIBDPDK=$(PWD)/dpdk/build/lib/x86_64-linux-gnu/pkgconfig/
 
 PKGCONF=pkg-config
 
@@ -42,7 +42,7 @@ build/$(APP)-shared: $(SRCS-y) Makefile $(PC_FILE) | build
 	$(CC) $(CFLAGS) $(filter %.c,$^) -o $@ $(LDFLAGS) $(LDFLAGS_SHARED) -lm
 
 build/$(APP)-static: $(SRCS-y) Makefile $(PC_FILE) | build
-	$(CC) $(CFLAGS) $(filter %.c,$^) -o $@ $(LDFLAGS) $(LDFLAGS_SHARED) -lm
+	$(CC) $(CFLAGS) $(filter %.c,$^) -o $@ $(LDFLAGS) $(LDFLAGS_STATIC) -lm
 
 build:
 	@mkdir -p $@
