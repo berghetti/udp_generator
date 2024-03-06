@@ -21,24 +21,17 @@ def interval_confidence( data ):
   margin_error = round(margin_error, 4)
   return avg, margin_error
 
-lock = Lock()
-shorts = []
-longs = []
-alls = []
-
 percentile = 99.9
 
-def get_latency_thread(file, cpu):
-  mask = {cpu}
-  os.sched_setaffinity(os.getpid(), mask)
+def process_test(test):
   SHORT=1
   LONG=2
 
   s = []
   l = []
   a = []
-  with open(file, buffering=4096) as f:
-  #next(f) # skip header
+  print(f'Reading {test}')
+  with open(test) as f:
 
     for line in f:
       data = line.split()
@@ -65,29 +58,71 @@ def get_latency_thread(file, cpu):
   l_percentile = np.percentile(l, percentile) if len(l) > 0 else 0
   a_percentile = np.percentile(a, percentile)
 
-  global shorts, longs, alls
-  with lock:
-    shorts.append( s_percentile )
-    if l_percentile > 0:
-      longs.append( l_percentile )
-    alls.append( a_percentile )
+  p = {
+    'shorts': s_percentile,
+    'longs': l_percentile,
+    'all': a_percentile,
+  }
 
-def get_latency(folder):
-  global shorts, longs, alls
-  shorts = []
-  longs = []
-  alls = []
+  for t in 'shorts', 'longs', 'all':
+    with open(f'{test}_{t}_{percentile}_result', 'w') as f:
+      f.write(f'{p[t]}')
 
-  #files = os.listdir(folder)
-  files = glob.glob(f'{folder}/test*')
+  print(f'Finished {test}')
+
+def process_rate(rate):
+    print(f'Reading {rate}')
+
+    # if rate already processed, make nothing
+    r = glob.glob(f'{rate}/*result')
+    if len(r) > 0:
+      print(f'{rate} already processed... skiping...')
+      return
+
+    tests = glob.glob(f'{rate}/test[0-9]')
+    threads = []
+    for test in tests:
+      thread = Thread(target=process_test, args=(test,))
+      thread.start()
+      threads.append(thread)
+
+    for thread in threads:
+      thread.join()
+
+
+def process_policy(pol):
+  print(f'Processing: {pol}')
+
+  rates = os.listdir(pol)
+  rates = sorted(rates, key=load_in_file_name)
+
   threads = []
-  for i, file in enumerate(files):
-    thread = Thread(target=get_latency_thread, args=(os.path.join(folder, file), i  + 1) )
+  for rate in rates:
+    thread = Thread(target=process_rate, args=(os.path.join(pol, rate),) )
     thread.start()
     threads.append(thread)
 
   for thread in threads:
     thread.join()
+
+
+def get_latency(folder):
+  shorts = []
+  longs = []
+  alls = []
+  p = {
+    'shorts': shorts,
+    'longs': longs,
+    'all': alls,
+  }
+
+  for t in 'shorts', 'longs', 'all':
+    files = glob.glob(f'{folder}/test[0-9]*{t}_{percentile}_result')
+    for file in files:
+      with open(file, 'r') as f:
+        v = float(f.read())
+        p[t].append(v)
+
 
   print(shorts, longs, alls)
   return interval_confidence(shorts), \
@@ -97,10 +132,7 @@ def get_latency(folder):
 def load_in_file_name(f):
   return float(f.split('_')[-1])
 
-def get_latencys(folder_tests, p):
-  global percentile
-  percentile = p
-
+def get_latencys(folder_tests):
   x = []
 
   s_y = []
@@ -122,7 +154,7 @@ def get_latencys(folder_tests, p):
 
     print('Reading \'{}\''.format(folder))
 
-    ((s, serr), (l, lerr), (a, aerr))  = get_latency(folder)
+    ((s, serr), (l, lerr), (a, aerr)) = get_latency(folder)
     print(s, l, a)
 
     x.append(tr)
@@ -143,7 +175,7 @@ def get_latencys(folder_tests, p):
 
 
 def get_policy_name(policy):
-  return policy.split('/')[-1]
+  return policy.rstrip('/').split('/')[-1]
 
 
 def get_styles(name):
@@ -196,7 +228,9 @@ def get_metadata_name(wk, percentil):
   file = f'{wk}_{percentil}_meta.dat'
   return file
 
-def get_percentile(p):
+def get_and_set_percentile(p):
   PERCENTILES = {'p999': 99.9, 'p99': 99.0, 'p90': 90.0, 'p50': 50.0}
+  global percentile
+  percentile = PERCENTILES[p]
   return PERCENTILES[p]
 
