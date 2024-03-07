@@ -1,4 +1,5 @@
 #include "udp_util.h"
+#include "util.h"
 
 // Shuffle the UDP source port array
 void shuffle(uint16_t* arr, uint32_t n) {
@@ -21,10 +22,17 @@ void init_blocks() {
 
 	// choose UDP source port for all flows
 	uint16_t src_udp_port;
+	uint32_t src_ip;
 	uint16_t ports[nr_flows];
+	uint32_t ips[nr_flows];
 	for(uint32_t i = 0; i < nr_flows; i++) {
 		//ports[i] = rte_cpu_to_be_16((i % (nr_flows/nr_servers)) + 1);
         ports[i] = rte_cpu_to_be_16(rte_rand() % 65535);
+				uint8_t a = (rte_rand() + 10) % 255;
+				uint8_t b = (rte_rand() + 10) % 255;
+				uint8_t c = (rte_rand() + 10) % 255;
+				uint8_t d = (rte_rand() + 10) % 255;
+				ips[i] = IPV4_ADDR( a, b, c, d );
 	}
 
 	// shuffle port array
@@ -32,8 +40,10 @@ void init_blocks() {
 
 	for(uint32_t i = 0; i < nr_flows; i++) {
 		src_udp_port = ports[i];
+		src_ip = ips[i];
 
-		control_blocks[i].src_addr = src_ipv4_addr;
+		//control_blocks[i].src_addr = src_ipv4_addr;
+		control_blocks[i].src_addr = src_ip;
 		control_blocks[i].dst_addr = dst_ipv4_addr;
 
 		control_blocks[i].src_port = src_udp_port;
@@ -60,7 +70,8 @@ void fill_udp_packet(uint16_t i, struct rte_mbuf *pkt) {
 	control_block_t *block = &control_blocks[i];
 
 	// ensure that IP/UDP checksum offloadings
-	pkt->ol_flags |= (RTE_MBUF_F_TX_IPV4 | RTE_MBUF_F_TX_IP_CKSUM | RTE_MBUF_F_TX_UDP_CKSUM);
+	//pkt->ol_flags |= (RTE_MBUF_F_TX_IPV4 | RTE_MBUF_F_TX_IP_CKSUM | RTE_MBUF_F_TX_UDP_CKSUM);
+	//pkt->ol_flags |= (RTE_MBUF_F_TX_IPV4 );
 
 	// fill Ethernet information
 	struct rte_ether_hdr *eth_hdr = (struct rte_ether_hdr *) rte_pktmbuf_mtod(pkt, struct ether_hdr*);

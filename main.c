@@ -85,16 +85,16 @@ int process_rx_pkt(struct rte_mbuf *pkt, node_t *incoming, uint64_t *incoming_id
 	node->flow_id = payload[FLOW_ID];
 	node->timestamp_tx = t0;
 	node->timestamp_rx = t1;
-    node->type = payload[TYPE];
-    node->service_time = payload[SERVICE_TIME];
+  node->type = payload[TYPE];
+  node->service_time = payload[SERVICE_TIME];
 
-    node->rx_time = payload[RX_TIME];
-    node->app_recv_time = payload[APP_RECV_TIME];
-    node->app_send_time = payload[APP_SEND_TIME];
-    node->tx_time = payload[TX_TIME];
-    node->worker_rx = payload[WORKER_RX];
-    node->worker_tx = payload[WORKER_TX];
-    node->interrupt_count = payload[INTERRUPT_COUNT];
+  //node->rx_time = payload[RX_TIME];
+  //node->app_recv_time = payload[APP_RECV_TIME];
+  //node->app_send_time = payload[APP_SEND_TIME];
+  //node->tx_time = payload[TX_TIME];
+  //node->worker_rx = payload[WORKER_RX];
+  //node->worker_tx = payload[WORKER_TX];
+  //node->interrupt_count = payload[INTERRUPT_COUNT];
 
 	return 1;
 }
@@ -229,7 +229,7 @@ static int lcore_tx(void *arg) {
 		}
 
 		// sleep for while
-		while (rte_rdtsc() < next_tsc) {  }
+		while (rte_rdtsc() < next_tsc);
 
 		// send the batch
 		nb_tx = rte_eth_tx_burst(portid, qid, pkts, nb_pkts);
