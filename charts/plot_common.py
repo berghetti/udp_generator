@@ -73,15 +73,14 @@ def process_test(test):
 def process_rate(rate):
     print(f'Reading {rate}')
 
-    # if rate already processed, make nothing
-    r = glob.glob(f'{rate}/*result')
-    if len(r) > 0:
-      print(f'{rate} already processed... skiping...')
-      return
-
     tests = glob.glob(f'{rate}/test[0-9]')
     threads = []
     for test in tests:
+      r = glob.glob(f'{test}_*_{percentile}_result')
+      if len(r) > 0:
+        print(f'{test} already processed... skiping...')
+        continue
+
       thread = Thread(target=process_test, args=(test,))
       thread.start()
       threads.append(thread)
@@ -106,7 +105,7 @@ def process_policy(pol):
     thread.join()
 
 
-def get_latency(folder):
+def get_latency(rate):
   shorts = []
   longs = []
   alls = []
@@ -117,7 +116,7 @@ def get_latency(folder):
   }
 
   for t in 'shorts', 'longs', 'all':
-    files = glob.glob(f'{folder}/test[0-9]*{t}_{percentile}_result')
+    files = glob.glob(f'{rate}/test[0-9]*{t}_{percentile}_result')
     for file in files:
       with open(file, 'r') as f:
         v = float(f.read())
@@ -132,7 +131,7 @@ def get_latency(folder):
 def load_in_file_name(f):
   return float(f.split('_')[-1])
 
-def get_latencys(folder_tests):
+def get_latencys(pol):
   x = []
 
   s_y = []
@@ -143,14 +142,14 @@ def get_latencys(folder_tests):
   l_err = []
   a_err = []
 
-  folders = os.listdir(folder_tests)
-  folders = sorted(folders, key=load_in_file_name)
+  rates = os.listdir(pol)
+  rates = sorted(rates, key=load_in_file_name)
 
   # get latency to each load
-  for folder in folders:
-    tr = int(folder) / 1e6 # Load
+  for rate in rates:
+    tr = int(rate) / 1e6 # Load
 
-    folder = os.path.join(folder_tests, folder)
+    folder = os.path.join(pol, rate)
 
     print('Reading \'{}\''.format(folder))
 

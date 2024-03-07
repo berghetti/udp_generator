@@ -4,17 +4,8 @@ import os
 import sys
 import json
 
-#import charts
 from plot_common import *
 import charts_templates
-
-def exist(name, data):
-  for pol in data:
-    for key, value in pol.items():
-      if key == name:
-        return True
-
-  return False
 
 def write_metadata(policys, file):
 
@@ -63,9 +54,9 @@ def process(policys, prefix, percentil):
 
 if __name__ == '__main__':
 
-  name = sys.argv[1]
+  prefix = sys.argv[1]
 
   percentil = sys.argv[2]
 
-  process(sys.argv[3:], name, percentil)
+  process(sys.argv[3:], prefix, percentil)
 
