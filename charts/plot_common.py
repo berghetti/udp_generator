@@ -199,7 +199,7 @@ def get_styles(name):
     'ls': '-.',
     'm': '<',
     },
-    'afp-ws': {
+    'afp-cl0-ws': {
     'color': 'blue',
 	'ls': ':',
     'm': '1',
