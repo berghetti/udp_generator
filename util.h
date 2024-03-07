@@ -37,17 +37,17 @@ typedef struct lcore_parameters {
 typedef struct timestamp_node_t {
 	uint64_t flow_id;
 	//uint64_t thread_id;
-	uint64_t ack_dup;
-	uint64_t ack_empty;
+	//uint64_t ack_dup;
+	//uint64_t ack_empty;
 	uint64_t timestamp_rx;
 	uint64_t timestamp_tx;
 	uint64_t nr_never_sent;
 
-    uint32_t type;
-    uint32_t service_time;
+  uint32_t type;
+  uint32_t service_time;
 
-    // server times
-    uint64_t rx_time, app_recv_time, app_send_time, tx_time, worker_rx, worker_tx, interrupt_count;
+  // server times
+  uint64_t rx_time, app_recv_time, app_send_time, tx_time, worker_rx, worker_tx, interrupt_count;
 } node_t;
 
 enum rtype
@@ -120,13 +120,13 @@ enum payload_item
   CLASSIFICATION_TIME,
 
   /* server times */
-  RX_TIME, // 6
-  APP_RECV_TIME,
-  APP_SEND_TIME,
-  TX_TIME,
-  WORKER_RX,
-  WORKER_TX,
-  INTERRUPT_COUNT,
+  //RX_TIME, // 6
+  //APP_RECV_TIME,
+  //APP_SEND_TIME,
+  //TX_TIME,
+  //WORKER_RX,
+  //WORKER_TX,
+  //INTERRUPT_COUNT,
 
   PAYLOAD_TOTAL_ITEMS
 };

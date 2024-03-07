@@ -134,7 +134,7 @@ void create_interarrival_array() {
 
 // Allocate and create an array for all flow indentier to send to the server
 void create_flow_indexes_array() {
-	uint32_t nbits = (uint32_t) log2(nr_queues);
+	//uint32_t nbits = (uint32_t) log2(nr_queues);
 	uint64_t rate_per_queue = rate/nr_queues;
 	uint64_t nr_elements_per_queue = rate_per_queue * duration * 2;
 
