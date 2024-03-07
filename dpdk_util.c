@@ -40,25 +40,25 @@ void init_DPDK(uint16_t portid, uint64_t nr_queues) {
 // Initialize the DPDK port
 int init_DPDK_port(uint16_t portid, uint16_t nb_rx_queue, uint16_t nb_tx_queue, struct rte_mempool *mbuf_pool) {
 	// configurable number of RX/TX ring descriptors
-	uint16_t nb_rxd = 4096;
-	uint16_t nb_txd = 4096;
+	uint16_t nb_rxd = 256;
+	uint16_t nb_txd = 256;
 
 	// get default port_conf
 	struct rte_eth_conf port_conf = {
 		.rxmode = {
 			.mq_mode = nb_rx_queue > 1 ? RTE_ETH_MQ_RX_RSS : RTE_ETH_MQ_RX_NONE,
 			.max_lro_pkt_size = RTE_ETHER_MAX_LEN,
-			.offloads = RTE_ETH_RX_OFFLOAD_CHECKSUM,
+			.offloads = RTE_ETH_RX_OFFLOAD_IPV4_CKSUM | RTE_ETH_RX_OFFLOAD_UDP_CKSUM,
 		},
 		.rx_adv_conf = {
 			.rss_conf = {
 				.rss_key = NULL,
-				.rss_hf = RTE_ETH_RSS_UDP,
+				.rss_hf = RTE_ETH_RSS_NONFRAG_IPV4_UDP,
 			},
 		},
 		.txmode = {
 			.mq_mode = RTE_ETH_MQ_TX_NONE,
-			.offloads = RTE_ETH_TX_OFFLOAD_UDP_CKSUM|RTE_ETH_TX_OFFLOAD_IPV4_CKSUM|RTE_ETH_TX_OFFLOAD_MBUF_FAST_FREE,
+			//.offloads = RTE_ETH_TX_OFFLOAD_UDP_CKSUM|RTE_ETH_TX_OFFLOAD_IPV4_CKSUM,
 		},
 	};
 
@@ -68,11 +68,11 @@ int init_DPDK_port(uint16_t portid, uint16_t nb_rx_queue, uint16_t nb_tx_queue, 
 		return retval;
 	}
 
+
+
 	// adjust and set up the number of RX/TX descriptors
 	retval = rte_eth_dev_adjust_nb_rx_tx_desc(portid, &nb_rxd, &nb_txd);
-	if(retval != 0) {
-		return retval;
-	}
+	if(retval < 0) { return retval; }
 
 	// setup the RX queues
 	for(int q = 0; q < nb_rx_queue; q++) {
@@ -82,12 +82,30 @@ int init_DPDK_port(uint16_t portid, uint16_t nb_rx_queue, uint16_t nb_tx_queue, 
 		}
 	}
 
+	//struct rte_eth_dev_info dev_info;
+	//rte_eth_dev_info_get(portid, &dev_info);
+
+	//struct rte_eth_txconf *txconf;
+	//txconf = &dev_info.default_txconf;
+	//txconf->tx_rs_thresh = 64;
+	//txconf->tx_free_thresh = 64;
+
 	// setup the TX queues
 	for(int q = 0; q < nb_tx_queue; q++) {
 		retval = rte_eth_tx_queue_setup(portid, q, nb_txd, rte_eth_dev_socket_id(portid), NULL);
 		if (retval < 0) {
 			return retval;
 		}
+	}
+	
+	// disable flow control
+	struct rte_eth_fc_conf fc_conf;
+	retval = rte_eth_dev_flow_ctrl_get(portid, &fc_conf);
+	if (retval == 0){
+		fc_conf.mode = RTE_ETH_FC_NONE;
+		rte_eth_dev_flow_ctrl_set(portid, &fc_conf);
+	}else{
+		return retval;
 	}
 
 	// start the Ethernet port
@@ -196,7 +214,7 @@ void insert_flow(uint16_t portid, uint32_t i) {
 
 	action[act_idx].type = RTE_FLOW_ACTION_TYPE_END;
 	action[act_idx].conf = NULL;
-	act_idx++;
+	//act_idx++;
 
 	pattern[pattern_idx].type = RTE_FLOW_ITEM_TYPE_ETH;
 	pattern_idx++;
@@ -212,7 +230,7 @@ void insert_flow(uint16_t portid, uint32_t i) {
 	pattern_idx++;
 
 	pattern[pattern_idx].type = RTE_FLOW_ITEM_TYPE_END;
-	pattern_idx++;
+	//pattern_idx++;
 
 	// validate the rte_flow
 	ret = rte_flow_validate(portid, &attr, pattern, action, &err);
