@@ -88,10 +88,10 @@ int process_rx_pkt(struct rte_mbuf *pkt, node_t *incoming, uint64_t *incoming_id
   node->type = payload[TYPE];
   node->service_time = payload[SERVICE_TIME];
 
-  //node->rx_time = payload[RX_TIME];
-  //node->app_recv_time = payload[APP_RECV_TIME];
-  //node->app_send_time = payload[APP_SEND_TIME];
-  //node->tx_time = payload[TX_TIME];
+  node->rx_time = payload[RX_TIME];
+  node->app_recv_time = payload[APP_RECV_TIME];
+  node->app_send_time = payload[APP_SEND_TIME];
+  node->tx_time = payload[TX_TIME];
   //node->worker_rx = payload[WORKER_RX];
   //node->worker_tx = payload[WORKER_TX];
   //node->interrupt_count = payload[INTERRUPT_COUNT];

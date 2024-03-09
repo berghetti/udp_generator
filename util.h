@@ -120,10 +120,10 @@ enum payload_item
   CLASSIFICATION_TIME,
 
   /* server times */
-  //RX_TIME, // 6
-  //APP_RECV_TIME,
-  //APP_SEND_TIME,
-  //TX_TIME,
+  RX_TIME, // 6
+  APP_RECV_TIME,
+  APP_SEND_TIME,
+  TX_TIME,
   //WORKER_RX,
   //WORKER_TX,
   //INTERRUPT_COUNT,

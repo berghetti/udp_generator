@@ -21,7 +21,7 @@
 #include "udp_util.h"
 
 #define DEFAULT_SEED	            7
-#define BURST_SIZE    			    64
+#define BURST_SIZE    			    8
 #define RING_ELEMENTS			    512*1024
 #define MEMPOOL_CACHE_SIZE 		    512
 #define MAX_RTE_FLOW_PATTERN 		4

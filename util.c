@@ -5,7 +5,7 @@ char output_file[MAXSTRLEN];
 
 // Sample the value using Exponential Distribution
 double sample(double lambda) {
-   	double u = ((double) rte_rand()) / ((uint64_t) -1);
+		double u = ((double) rte_rand()) / ((uint64_t) -1);
 
 	return -log(1 - u) / lambda;
 }
@@ -322,28 +322,26 @@ void print_stats_output() {
 		uint32_t incoming_idx = incoming_idx_array[i];
 
 		// drop the first 50% packets for warming up
-		//uint64_t j = 0.5 * incoming_idx;
-		uint64_t j = 0.25 * incoming_idx;
-        uint64_t end = incoming_idx - (incoming_idx * 0.25);
+		uint64_t j = 0.5 * incoming_idx;
 
 		// print the RTT latency in (ns)
 		node_t *cur;
 		//for(; j < incoming_idx; j++) {
-		for(; j < end; j++) {
+		for(; j < incoming_idx; j++) {
 			cur = &incoming[j];
 
-			//fprintf(fp, "%lu\t%u\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\n",
-			fprintf(fp, "%u\t%lu\n",
+			fprintf(fp, "%u\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\n",
+			//fprintf(fp, "%u\t%lu\n",
 				//cur->flow_id,
                 cur->type,
-                get_delta_ns(cur->timestamp_tx, cur->timestamp_rx) // RTT
+                get_delta_ns(cur->timestamp_tx, cur->timestamp_rx), // RTT
                 
-                //get_delta_ns(cur->rx_time, cur->app_recv_time), // delay afp -> app
-                //get_delta_ns(cur->app_recv_time, cur->app_send_time), // delay app
-                //get_delta_ns(cur->app_send_time, cur->tx_time), // delay app -> tx
-                //cur->worker_rx, // worker id rx
-                //cur->worker_tx, // worker id tx
-                //cur->interrupt_count // long count preempt
+                get_delta_ns(cur->rx_time, cur->app_recv_time), // delay afp -> app
+                get_delta_ns(cur->app_recv_time, cur->app_send_time), // delay app
+                get_delta_ns(cur->app_send_time, cur->tx_time), // delay app -> tx
+                cur->worker_rx, // worker id rx
+                cur->worker_tx, // worker id tx
+                cur->interrupt_count // long count preempt
 			);
 		}
 	}
