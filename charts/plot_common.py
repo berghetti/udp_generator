@@ -50,7 +50,7 @@ def process_test(test):
         exit('Unknow request type')
 
   if len(a) == 0:
-    print(f'Error fo read {file}')
+    print(f'Error fo read {test}')
     return
 
   global percentile
