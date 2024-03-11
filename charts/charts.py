@@ -6,19 +6,13 @@ from matplotlib.ticker import FuncFormatter
 
 import charts_templates
 
-
-def font(v):
-  plt.rcParams.update(v)
-  plt.rcParams['axes.formatter.use_locale'] = True
-
-
 class chart:
   def __init__(self, config, multrows=False):
     self.config = config
 
     # should be first
-    #if config['font']:
-    #  font(config['font'])
+    if config['font']:
+      self.font(config['font'])
     #  #del config['font']
 
     if not multrows:
@@ -58,7 +52,8 @@ class chart:
         pass
 
   def font(self, v):
-    font(v)
+    plt.rcParams.update(v)
+    plt.rcParams['axes.formatter.use_locale'] = True
 
   def datasets(self, v):
     pass
