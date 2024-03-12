@@ -26,7 +26,7 @@ run_test()
     -l $(seq -s , 0 2 28) -- \
     -d ${DIST} \
     -r ${RATE} \
-    -f 140 -s 90 -t 10 -q 1 \
+    -f 140 -s 90 -t 10 -q 4 \
     -c ${CONF_FILE} \
     -o ${DIR}/test$i \
     -x ${RANDOMS[$i]} > ${DIR}/stats$i
@@ -56,6 +56,19 @@ set_w1()
 
   SHORT_RATIO=995
   LONG_RATIO=005
+  sed -i '/\[requests_ratio\]/{n;s/\(short\s*=\s*\)[0-9]\+/\1'${SHORT_RATIO}'/;}' $CONF_FILE
+  sed -i '/\[requests_ratio\]/{n;n;s/\(long\s*=\s*\)[0-9]\+/\1'${LONG_RATIO}'/;}' $CONF_FILE
+}
+
+set_w2()
+{
+  SHORT=1000
+  LONG=100000
+  sed -i '/\[requests_service_time\]/{n;s/\(short\s*=\s*\)[0-9]\+/\1'${SHORT}'/;}' $CONF_FILE
+  sed -i '/\[requests_service_time\]/{n;n;s/\(long\s*=\s*\)[0-9]\+/\1'${LONG}'/;}' $CONF_FILE
+
+  SHORT_RATIO=990
+  LONG_RATIO=010
   sed -i '/\[requests_ratio\]/{n;s/\(short\s*=\s*\)[0-9]\+/\1'${SHORT_RATIO}'/;}' $CONF_FILE
   sed -i '/\[requests_ratio\]/{n;n;s/\(long\s*=\s*\)[0-9]\+/\1'${LONG_RATIO}'/;}' $CONF_FILE
 }
