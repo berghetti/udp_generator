@@ -65,6 +65,15 @@ typedef struct request_type
   uint64_t service_time; // in nanoseconds
 } request_type_t;
 
+#define MAX_QUEUES 16
+struct queue_rps
+{
+	uint64_t rps_offered;
+	uint64_t rps_reached;
+};
+
+extern struct queue_rps q_rps[MAX_QUEUES];
+
 extern uint64_t rate;
 extern uint16_t portid;
 extern uint64_t duration;
@@ -96,6 +105,7 @@ extern volatile uint8_t quit_rx_ring;
 extern node_t **incoming_array;
 extern uint64_t *incoming_idx_array;
 
+
 extern uint64_t seed;
 
 void clean_heap();
@@ -120,10 +130,10 @@ enum payload_item
   CLASSIFICATION_TIME,
 
   /* server times */
-  RX_TIME, // 6
-  APP_RECV_TIME,
-  APP_SEND_TIME,
-  TX_TIME,
+  //RX_TIME, // 6
+  //APP_RECV_TIME,
+  //APP_SEND_TIME,
+  //TX_TIME,
   //WORKER_RX,
   //WORKER_TX,
   //INTERRUPT_COUNT,

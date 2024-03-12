@@ -36,6 +36,8 @@ uint64_t *incoming_idx_array;
 struct rte_mempool *pktmbuf_pool;
 control_block_t *control_blocks;
 
+struct queue_rps q_rps[MAX_QUEUES];
+
 // Internal threads variables
 volatile uint8_t quit_rx = 0;
 volatile uint8_t quit_tx = 0;
@@ -88,10 +90,10 @@ int process_rx_pkt(struct rte_mbuf *pkt, node_t *incoming, uint64_t *incoming_id
   node->type = payload[TYPE];
   node->service_time = payload[SERVICE_TIME];
 
-  node->rx_time = payload[RX_TIME];
-  node->app_recv_time = payload[APP_RECV_TIME];
-  node->app_send_time = payload[APP_SEND_TIME];
-  node->tx_time = payload[TX_TIME];
+  //node->rx_time = payload[RX_TIME];
+  //node->app_recv_time = payload[APP_RECV_TIME];
+  //node->app_send_time = payload[APP_SEND_TIME];
+  //node->tx_time = payload[TX_TIME];
   //node->worker_rx = payload[WORKER_RX];
   //node->worker_tx = payload[WORKER_TX];
   //node->interrupt_count = payload[INTERRUPT_COUNT];
@@ -118,6 +120,7 @@ static int lcore_rx_ring(void *arg) {
 	struct rte_mbuf *pkts[BURST_SIZE];
 	struct rte_ring *rx_ring = rx_rings[qid];
 
+
 	while(!quit_rx_ring) {
 		// retrieve packets from the RX core
 		nb_rx = rte_ring_sc_dequeue_burst(rx_ring, (void**) pkts, BURST_SIZE, NULL); 
@@ -142,6 +145,7 @@ static int lcore_rx_ring(void *arg) {
 		}
 	} while (nb_rx != 0);
 
+
 	return 0;
 }
 
@@ -156,9 +160,26 @@ static int lcore_rx(void *arg) {
 	struct rte_mbuf *pkts[BURST_SIZE];
 	struct rte_ring *rx_ring = rx_rings[qid];
 	
+	uint64_t tot_nb_rx = 0;
+	uint64_t start = 0;
+
+	while(!quit_rx)
+	{
+		nb_rx = rte_eth_rx_burst(portid, qid, pkts, BURST_SIZE);
+		if (nb_rx)
+		{
+			// only set start time when first pkt arrive
+			start = rte_get_tsc_cycles();
+			goto rx_path;
+		}
+	}
+
 	while(!quit_rx) {
 		// retrieve the packets from the NIC
 		nb_rx = rte_eth_rx_burst(portid, qid, pkts, BURST_SIZE);
+
+rx_path:
+		tot_nb_rx += nb_rx;
 
 		// retrive the current timestamp
 		now = rte_rdtsc();
@@ -170,6 +191,10 @@ static int lcore_rx(void *arg) {
 			rte_exit(EXIT_FAILURE, "Cannot enqueue the packet to the RX thread: %s.\n", rte_strerror(errno));
 		}
 	}
+	
+	q_rps[qid].rps_reached = tot_nb_rx /
+		((rte_get_tsc_cycles() - start) / rte_get_timer_hz());
+	
 
 	return 0;
 }
@@ -191,6 +216,9 @@ static int lcore_tx(void *arg) {
     request_type_t *rtype = request_types[qid];
 
 	uint64_t next_tsc = rte_rdtsc() + interarrival_gap[i++];
+
+	uint64_t start = rte_get_tsc_cycles();
+	uint64_t tot_nb_tx = 0;
 
 	while(!quit_tx) { 
 		// reach the limit
@@ -237,10 +265,15 @@ static int lcore_tx(void *arg) {
 			rte_exit(EXIT_FAILURE, "Cannot send the target packets.\n");
 		}
 
+		tot_nb_tx += nb_pkts;
+
 		// update the counter
 		nb_pkts = 0;
 		next_tsc += interarrival_gap[i++];
 	}
+
+	q_rps[qid].rps_offered = tot_nb_tx / 
+		((rte_get_tsc_cycles() - start) / rte_get_timer_hz());
 
 	return 0;
 }

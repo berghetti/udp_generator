@@ -278,8 +278,8 @@ void wait_timeout() {
 	while((rte_rdtsc() - t0) < (2 * duration * 1000000 * TICKS_PER_US)) { }
 
 	// wait for remaining
-	t0 = rte_rdtsc_precise();
-	while((rte_rdtsc() - t0) < (10 * 1000000 * TICKS_PER_US)) { }
+	//t0 = rte_rdtsc_precise();
+	//while((rte_rdtsc() - t0) < (10 * 1000000 * TICKS_PER_US)) { }
 
 	// set quit flag for all internal cores
 	quit_rx = 1;
@@ -314,12 +314,18 @@ void print_stats_output() {
 		rte_exit(EXIT_FAILURE, "Cannot open the output file.\n");
 	}
 
+	uint64_t rps_offered = 0;
+	uint64_t rps_reached = 0;
+
     //fprintf(fp, "%s\n", title);
 
 	for(uint32_t i = 0; i < nr_queues; i++) {
 		// get the pointers
 		node_t *incoming = incoming_array[i];
 		uint32_t incoming_idx = incoming_idx_array[i];
+
+		rps_offered += q_rps[i].rps_offered;
+		rps_reached += q_rps[i].rps_reached;
 
 		// drop the first 50% packets for warming up
 		uint64_t j = 0.5 * incoming_idx;
@@ -330,24 +336,30 @@ void print_stats_output() {
 		for(; j < incoming_idx; j++) {
 			cur = &incoming[j];
 
-			fprintf(fp, "%u\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\n",
-			//fprintf(fp, "%u\t%lu\n",
+			//fprintf(fp, "%u\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\n",
+			fprintf(fp, "%u\t%lu\n",
 				//cur->flow_id,
                 cur->type,
-                get_delta_ns(cur->timestamp_tx, cur->timestamp_rx), // RTT
+                get_delta_ns(cur->timestamp_tx, cur->timestamp_rx) // RTT
                 
-                get_delta_ns(cur->rx_time, cur->app_recv_time), // delay afp -> app
-                get_delta_ns(cur->app_recv_time, cur->app_send_time), // delay app
-                get_delta_ns(cur->app_send_time, cur->tx_time), // delay app -> tx
-                cur->worker_rx, // worker id rx
-                cur->worker_tx, // worker id tx
-                cur->interrupt_count // long count preempt
+                //get_delta_ns(cur->rx_time, cur->app_recv_time), // delay afp -> app
+                //get_delta_ns(cur->app_recv_time, cur->app_send_time), // delay app
+                //get_delta_ns(cur->app_send_time, cur->tx_time), // delay app -> tx
+                //cur->worker_rx, // worker id rx
+                //cur->worker_tx, // worker id tx
+                //cur->interrupt_count // long count preempt
 			);
 		}
 	}
 
 	// close the file
 	fclose(fp);
+
+	char buff[64];
+	snprintf(buff, sizeof(buff), "%s_%s", output_file, "rate");
+	fp = fopen(buff, "w");
+
+	fprintf(fp, "offered\treached\n%lu\t%lu\n", rps_offered, rps_reached);
 }
 
 // Process the config file
