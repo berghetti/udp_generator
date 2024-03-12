@@ -30,16 +30,6 @@ def write_metadata(policys, file):
   with open(file, 'w') as f:
     json.dump(data, f)
 
-def read_metadata(file, name):
-
-  with open(file, 'r') as f:
-    data = json.load(f)
-
-  for pol in data:
-    n = list(pol.keys())[0]
-    if n == name:
-      return pol
-
 def process(policys, prefix, percentil):
   p = get_and_set_percentile(percentil)
   file = get_metadata_name(prefix, percentil)

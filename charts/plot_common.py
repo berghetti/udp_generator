@@ -128,6 +128,19 @@ def get_latency(rate):
       interval_confidence(longs), \
        interval_confidence(alls)
 
+def get_rps(rate):
+  files = glob.glob(f'{rate}/test[0-9]_rate')
+  rps = []
+  for file in files:
+    with open(file, 'r') as f:
+      next(f) # skip first line
+      data = f.read()
+      r = int(data.split()[1]) # get reached RPS
+      rps.append(r)
+
+  return sum(rps)/len(rps)
+
+
 def load_in_file_name(f):
   return float(f.split('_')[-1])
 
@@ -147,16 +160,18 @@ def get_latencys(pol):
 
   # get latency to each load
   for rate in rates:
-    tr = int(rate) / 1e6 # Load
+    #tr = int(rate) / 1e6 # Load
 
     folder = os.path.join(pol, rate)
+
+    rps = get_rps(folder) / 1e6
 
     print('Reading \'{}\''.format(folder))
 
     ((s, serr), (l, lerr), (a, aerr)) = get_latency(folder)
     print(s, l, a)
 
-    x.append(tr)
+    x.append(rps)
 
     s_y.append(s)
     s_err.append(serr)
