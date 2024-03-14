@@ -10,7 +10,7 @@ fi
 RANDOMS=(7 365877 374979 853172 908081 227836 64991 493663 174817 73997)
 
 # times to run same test
-RUNS=5
+RUNS=1
 CONF_FILE="${PWD}/addr.cfg"
 run_test()
 {
@@ -26,7 +26,7 @@ run_test()
     -l $(seq -s , 0 2 28) -- \
     -d ${DIST} \
     -r ${RATE} \
-    -f 140 -s 90 -t 10 -q 4 \
+    -f 256 -s 90 -t 10 -q 1 \
     -c ${CONF_FILE} \
     -o ${DIR}/test$i \
     -x ${RANDOMS[$i]} > ${DIR}/stats$i
