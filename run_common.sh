@@ -21,7 +21,16 @@ run_test()
 
   # run each rate RUNS times
   for i in $(seq 0 $((RUNS-1))); do
-    (set -x;
+
+    if [ -z $4 ]; then
+      RAND=${RANDOMS[$i]}
+    else
+      RAND=$4
+    fi
+
+    echo $RAND
+    date > ${DIR}/start_time$i;
+    set -x;
     sudo ./build/udp-generator \
     -l $(seq -s , 0 2 28) -- \
     -d ${DIST} \
@@ -29,8 +38,9 @@ run_test()
     -f 256 -s 90 -t 10 -q 1 \
     -c ${CONF_FILE} \
     -o ${DIR}/test$i \
-    -x ${RANDOMS[$i]} > ${DIR}/stats$i
-    )
+    -x ${RAND} > ${DIR}/stats$i
+    set +x
+
 
     if [ $? -ne 0 ]; then
       echo "Error start test"
