@@ -1,16 +1,8 @@
 #!/bin/bash
 
-#path to dpdk
-ROOT_PATH=$(dirname $0)"/../deps/dpdk"
+git clone https://github.com/DPDK/dpdk.git -o dpdk
 
-if [ "$1" = "clean" ]; then
-  sudo rm -rf $ROOT_PATH/build
-  exit 0
-fi
-
-git submodule update --init $ROOT_PATH
-
-pushd $ROOT_PATH
+pushd ./dpdk
 
 git checkout v23.11
 
@@ -39,9 +31,8 @@ ninja -C build install
 popd
 
 # install igb_uio driver
-ROOT_PATH=$(dirname $0)"/../deps/dpdk-kmods"
-git submodule update --init $ROOT_PATH
-
-make -C $ROOT_PATH/linux/igb_uio/
+git clone https://dpdk.org/git/dpdk-kmods
+make -C dpdk-kmods/linux/igb_uio/
 sudo modprobe uio
-sudo insmod $ROOT_PATH/linux/igb_uio/igb_uio.ko
+sudo insmod dpdk-kmods/linux/igb_uio/igb_uio.ko
+
