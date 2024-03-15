@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#Usage: set_ip.sh src_ip dst_ip
+
 CONF_FILE="${PWD}/addr.cfg"
 
 # set src address

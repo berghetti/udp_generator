@@ -16,6 +16,11 @@ programs:
             ./bind_interface.sh &&
             make
 
+    set_clients_ip:
+        start: >-
+            pushd udp_generator &&
+            ./set_ip.sh {host.ip} {server_ip}
+
     afp_server:
         start: >-
             pushd afp &&
