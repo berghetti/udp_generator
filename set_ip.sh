@@ -1,0 +1,9 @@
+#!/bin/bash
+
+CONF_FILE="${PWD}/addr.cfg"
+
+# set src address
+sed -i '/\[ipv4\]/{n;s/\(src\s*=\s*\)[0-9.]\+/\1'$1'/;}' $CONF_FILE
+
+# set dst address
+sed -i '/\[ipv4\]/{n;n;s/\(dst\s*=\s*\)[0-9.]\+/\1'$2'/;}' $CONF_FILE
