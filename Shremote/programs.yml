@@ -8,12 +8,13 @@ common_client: &cc
 programs:
     prepare_clients:
         start: >-
-            git clone -b afp_changes https://github.com/berghetti/udp_generator.git &&
-            pushd udp_generator &&
-            ./install_prerequisites.sh &&
-            ./install_dpdk.sh &&
+            git clone -b afp_changes https://github.com/berghetti/udp_generator.git;
+            pushd udp_generator;
+            ./install_prerequisites.sh;
+            ./install_dpdk.sh ||
+            echo 0 &&
             ./bind_interface.sh &&
-            make -B
+            make
 
     afp_server:
         start: >-
