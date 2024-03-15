@@ -1,0 +1,28 @@
+
+
+common_client: &cc
+    start: >-
+        pushd udp_generator &&
+        ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/{client_dir}/ {policy} {0.args.rate} {0.args.wk} {rand}
+
+programs:
+    prepare_clients:
+        start: >-
+            git clone -b afp_changes https://github.com/berghetti/udp_generator.git &&
+            pushd udp_generator &&
+            ./install_prerequisites.sh &&
+            ./install_dpdk.sh &&
+            ./bind_interface.sh &&
+            make
+
+    afp_server:
+        start: >-
+            pushd afp &&
+            sudo src/build/helloworld -n 2 -l 0,2,4,6,8,10,12,14,16,18,20,22,24,26,28 -a 18:00.1
+        stop: sudo kill -2 {pid}
+        log:
+            dir: afp_server
+            out: stdout.txt
+
+    client:
+        <<: *cc

@@ -1,0 +1,60 @@
+[
+  {
+    "addr_": "clnode250.clemson.cloudlab.us",
+    "start_": "git clone -b afp_changes https://github.com/berghetti/udp_generator.git && pushd udp_generator && ./install_prerequisites.sh && ./install_dpdk.sh && ./bind_interface.sh && make",
+    "time_": 1710516112.1264305,
+    "program": {
+      "start": "git clone -b afp_changes https://github.com/berghetti/udp_generator.git && pushd udp_generator && ./install_prerequisites.sh && ./install_dpdk.sh && ./bind_interface.sh && make",
+      "_name": "prepare_clients",
+      "name": "prepare_clients",
+      "stop": null,
+      "log": {
+        "dir": "",
+        "append": false
+      },
+      "duration_reduced_error": true,
+      "duration_exceeded_error": false,
+      "bg": false,
+      "checked_rtn": null,
+      "sudo": false,
+      "defaults": {},
+      "hosts": {
+        "addr": "clnode250.clemson.cloudlab.us",
+        "_name": "client1",
+        "output_dir": "~/shremote_logs/prepare_machines",
+        "hostname": "clnode250.clemson.cloudlab.us",
+        "name": "client1",
+        "ssh": {
+          "user": "fabricio",
+          "key": "~/.ssh/id_rsa",
+          "port": 22
+        },
+        "log_dir": "~/shremote_logs",
+        "sudo_passwd": null,
+        "enabled": true
+      }
+    },
+    "hosts": {
+      "addr": "clnode250.clemson.cloudlab.us",
+      "_name": "client1",
+      "output_dir": "~/shremote_logs/prepare_machines",
+      "hostname": "clnode250.clemson.cloudlab.us",
+      "name": "client1",
+      "ssh": {
+        "user": "fabricio",
+        "key": "~/.ssh/id_rsa",
+        "port": 22
+      },
+      "log_dir": "~/shremote_logs",
+      "sudo_passwd": null,
+      "enabled": true
+    },
+    "begin": 0,
+    "log_dir": "~/shremote_logs/prepare_machines/",
+    "name": "prepare_clients",
+    "min_duration": null,
+    "max_duration": null,
+    "enabled": true,
+    "stop_time_": 1710516182.1658044
+  }
+]

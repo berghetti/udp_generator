@@ -1,0 +1,20 @@
+
+hosts: !import hosts.yml::hosts
+programs: !import programs.yml::programs
+
+common_commands_cmds: &ccc
+    begin: 10
+    policy: afp
+
+commands:
+    - program: afp_server
+      hosts: server
+      begin: 0
+      max_duration: 40
+
+    - program: client
+      hosts: client0
+      client_dir: client0
+      rand: 123456
+      <<: *ccc
+
