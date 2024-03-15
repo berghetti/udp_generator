@@ -355,11 +355,11 @@ void print_stats_output() {
 	// close the file
 	fclose(fp);
 
-	char buff[64];
+	char buff[255];
 	snprintf(buff, sizeof(buff), "%s_%s", output_file, "rate");
 	fp = fopen(buff, "w");
-
 	fprintf(fp, "offered\treached\n%lu\t%lu\n", rps_offered, rps_reached);
+	fclose(fp);
 }
 
 // Process the config file
@@ -370,11 +370,13 @@ void process_config_file(char *cfg_file) {
 		rte_exit(EXIT_FAILURE, "Cannot load configuration profile %s\n", cfg_file);
 	}
 
+	char *entry;
 	// load ethernet addresses
-	char *entry = (char*) rte_cfgfile_get_entry(file, "ethernet", "src");
-	if(entry) {
-		rte_ether_unformat_addr((const char*) entry, &src_eth_addr);
-	}
+	//char *entry = (char*) rte_cfgfile_get_entry(file, "ethernet", "src");
+	//if(entry) {
+	//	rte_ether_unformat_addr((const char*) entry, &src_eth_addr);
+	//}
+	rte_eth_macaddr_get(0, &src_eth_addr);
 	entry = (char*) rte_cfgfile_get_entry(file, "ethernet", "dst");
 	if(entry) {
 		rte_ether_unformat_addr((const char*) entry, &dst_eth_addr);

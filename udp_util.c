@@ -28,11 +28,11 @@ void init_blocks() {
 	for(uint32_t i = 0; i < nr_flows; i++) {
 		//ports[i] = rte_cpu_to_be_16((i % (nr_flows/nr_servers)) + 1);
         ports[i] = rte_cpu_to_be_16(rte_rand() % 65535);
-				uint8_t a = (rte_rand() + 10) % 255;
-				uint8_t b = (rte_rand() + 10) % 255;
-				uint8_t c = (rte_rand() + 10) % 255;
-				uint8_t d = (rte_rand() + 10) % 255;
-				ips[i] = IPV4_ADDR( a, b, c, d );
+				//uint8_t a = (rte_rand() + 10) % 255;
+				//uint8_t b = (rte_rand() + 10) % 255;
+				//uint8_t c = (rte_rand() + 10) % 255;
+				//uint8_t d = (rte_rand() + 10) % 255;
+				//ips[i] = IPV4_ADDR( a, b, c, d );
 	}
 
 	// shuffle port array
@@ -42,8 +42,8 @@ void init_blocks() {
 		src_udp_port = ports[i];
 		src_ip = ips[i];
 
-		//control_blocks[i].src_addr = src_ipv4_addr;
-		control_blocks[i].src_addr = src_ip;
+		control_blocks[i].src_addr = src_ipv4_addr;
+		//control_blocks[i].src_addr = src_ip;
 		control_blocks[i].dst_addr = dst_ipv4_addr;
 
 		control_blocks[i].src_port = src_udp_port;
