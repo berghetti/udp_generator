@@ -30,8 +30,9 @@ def log_to_file(s, **print_kwargs):
     print(s, **print_kwargs)
 
 def log(*args, **kwargs):
-    s = "debug {:.1f}: ".format(time.time() - start_time)
-    log_to_file(s + " ".join([str(x) for x in args]), **kwargs)
+    pass
+    #s = "debug {:.1f}: ".format(time.time() - start_time)
+    #log_to_file(s + " ".join([str(x) for x in args]), **kwargs)
 
 def log_info(*args, **kwargs):
     s = COLORS['info'] + 'info {:.1f}: '.format(time.time() - start_time)

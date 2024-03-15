@@ -1,9 +1,0 @@
-
-hosts: !import hosts.yml::hosts
-programs: !import programs.yml::programs
-
-commands:
-    - program: prepare_clients
-      hosts: [client1]
-      begin: 0
-
