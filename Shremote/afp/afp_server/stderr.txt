@@ -1,0 +1,9 @@
+EAL: Detected CPU lcores: 64
+EAL: Detected NUMA nodes: 2
+EAL: Detected static linkage of DPDK
+EAL: Multi-process socket /var/run/dpdk/rte/mp_socket
+EAL: Selected IOVA mode 'PA'
+EAL: No free 2048 kB hugepages reported on node 1
+EAL: VFIO support initialized
+EAL: Probe PCI driver: net_i40e (8086:1572) device: 0000:18:00.1 (socket 0)
+TELEMETRY: No legacy callbacks, legacy socket not created

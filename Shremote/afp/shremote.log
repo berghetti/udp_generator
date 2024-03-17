@@ -1,0 +1,10 @@
+[0;32minfo 3.0: Executing afp_start on clnode197.clemson.cloudlab.us : pushd afp && sudo src/build/helloworld -n 2 -l 0,2,4,6,8,10,12,14,16,18,20,22,24,26,28 -a 18:00.1 > ~/shremote_logs/afp/afp_server/stdout.txt 2> ~/shremote_logs/afp/afp_server/stderr.txt[0m
+[0;32minfo 13.0: Executing client_start on clnode209.clemson.cloudlab.us : pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client0/ afp 166666 wk2 401572[0m
+[0;32minfo 13.1: Executing client_start on clnode213.clemson.cloudlab.us : pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client1/ afp 166666 wk2 585508[0m
+[0;32minfo 13.1: Executing client_start on clnode185.clemson.cloudlab.us : pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client2/ afp 166666 wk2 135491[0m
+[0;32minfo 13.2: Executing client_start on clnode203.clemson.cloudlab.us : pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client3/ afp 166666 wk2 799764[0m
+[0;32minfo 13.2: Executing client_start on clnode194.clemson.cloudlab.us : pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client4/ afp 166666 wk2 513682[0m
+[0;32minfo 13.3: Executing client_start on clnode205.clemson.cloudlab.us : pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client5/ afp 166666 wk2 949674[0m
+[0;32minfo 46.7: Copying logs into ./afp/[0m
+[0;32minfo 50.9: Test complete! Output to ./afp/[0m
+[0;32minfo 50.9: Done with test![0m

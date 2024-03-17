@@ -1,0 +1,76 @@
+[32;1m[INFO] [0;0mCores available 15. Main core 0.
+[32;1m[INFO] [0;0mFlow control disabled
+[32;1m[INFO] [0;0mPort speed: 10000Mbps duplex: Full MAC: 3c:fd:fe:55:28:da
+[32;1m[INFO] [0;0mStarting worker 0 on core 2 (queue 0).
+[32;1m[INFO] [0;0mStarting worker 1 on core 4 (queue 1).
+[32;1m[INFO] [0;0mStarting worker 2 on core 6 (queue 2).
+[32;1m[INFO] [0;0mStarting worker 3 on core 8 (queue 3).
+[32;1m[INFO] [0;0mStarting worker 4 on core 10 (queue 4).
+[32;1m[INFO] [0;0mStarting worker 5 on core 12 (queue 5).
+[32;1m[INFO] [0;0mStarting worker 6 on core 14 (queue 6).
+[32;1m[INFO] [0;0mStarting worker 7 on core 16 (queue 7).
+[32;1m[INFO] [0;0mStarting worker 8 on core 18 (queue 8).
+[32;1m[INFO] [0;0mStarting worker 9 on core 20 (queue 9).
+[32;1m[INFO] [0;0mStarting worker 10 on core 22 (queue 10).
+[32;1m[INFO] [0;0mStarting worker 11 on core 24 (queue 11).
+[32;1m[INFO] [0;0mStarting worker 12 on core 26 (queue 12).
+[32;1m[INFO] [0;0mStarting timer core on core 0
+[32;1m[INFO] [0;0mStarting worker 13 on core 28 (queue 13).
+[32;1m[INFO] [0;0mTSC frequency: 2590 ticks per us
+[32;1m[INFO] [0;0mQUANTUM: 1 us
+[32;1m[INFO] [0;0mWorker 13 stats:
+ RX count: 1457130 RX dropped: 0 Interruptions: 83405 Invalid interruptions: 662 Work stealing: 69629 Sched counter: 0
+[32;1m[INFO] [0;0mWorker 1 stats:
+ RX count: 1300919 RX dropped: 0 Interruptions: 96006 Invalid interruptions: 806 Work stealing: 68744 Sched counter: 0
+[32;1m[INFO] [0;0mWorker 4 stats:
+ RX count: 1353072 RX dropped: 0 Interruptions: 88392 Invalid interruptions: 724 Work stealing: 68015 Sched counter: 0
+[32;1m[INFO] [0;0mWorker 0 stats:
+ RX count: 1509158 RX dropped: 0 Interruptions: 94905 Invalid interruptions: 819 Work stealing: 65103 Sched counter: 0
+[32;1m[INFO] [0;0mWorker 12 stats:
+ RX count: 1183877 RX dropped: 0 Interruptions: 74839 Invalid interruptions: 658 Work stealing: 65582 Sched counter: 0
+[32;1m[INFO] [0;0mWorker 6 stats:
+ RX count: 1509135 RX dropped: 0 Interruptions: 83204 Invalid interruptions: 678 Work stealing: 63574 Sched counter: 0
+[32;1m[INFO] [0;0mWorker 8 stats:
+ RX count: 1678230 RX dropped: 0 Interruptions: 87419 Invalid interruptions: 692 Work stealing: 62406 Sched counter: 0
+[32;1m[INFO] [0;0mWorker 9 stats:
+ RX count: 1652279 RX dropped: 0 Interruptions: 91896 Invalid interruptions: 724 Work stealing: 64768 Sched counter: 0
+[32;1m[INFO] [0;0mWorker 3 stats:
+ RX count: 1574246 RX dropped: 0 Interruptions: 91536 Invalid interruptions: 721 Work stealing: 62445 Sched counter: 0
+[32;1m[INFO] [0;0mWorker 10 stats:
+ RX count: 1496201 RX dropped: 0 Interruptions: 69124 Invalid interruptions: 553 Work stealing: 57536 Sched counter: 0
+[32;1m[INFO] [0;0mWorker 7 stats:
+ RX count: 1483104 RX dropped: 0 Interruptions: 85805 Invalid interruptions: 694 Work stealing: 65652 Sched counter: 0
+[32;1m[INFO] [0;0mWorker 2 stats:
+ RX count: 1027803 RX dropped: 0 Interruptions: 84192 Invalid interruptions: 817 Work stealing: 71163 Sched counter: 0
+[32;1m[INFO] [0;0mWorker 5 stats:
+ RX count: 1366047 RX dropped: 0 Interruptions: 88344 Invalid interruptions: 709 Work stealing: 67369 Sched counter: 0
+[32;1m[INFO] [0;0mWorker 11 stats:
+ RX count: 1392066 RX dropped: 0 Interruptions: 76615 Invalid interruptions: 662 Work stealing: 62005 Sched counter: 0
+[32;1m[INFO] [0;0mGerenal stats:
+  Tot RX count:           19983267
+  Tot RX dropped:         0
+  Tot interrupts:         1195682
+  Tot invalid interrupts: 9919
+[32;1m[INFO] [0;0mDPDK RX Stats:
+  ipackets: 19983267
+  ibytes: 1798494030
+  ierror: 0
+  imissed: 0
+  rxnombuf: 0
+[32;1m[INFO] [0;0mDPDK TX Stats:
+  opackets: 19983267
+  obytes: 1798494030
+  oerror: 0
+[32;1m[INFO] [0;0mPORT 0 statistics:
+  rx_good_packets   : 19983267
+  tx_good_packets   : 19983267
+  rx_good_bytes     : 1798494030
+  tx_good_bytes     : 1798494030
+  rx_unicast_packets: 19983267
+  rx_unknown_protocol_packets: 19983270
+  tx_unicast_packets: 19983267
+  mac_remote_errors : 1
+  rx_size_64_packets: 3
+  rx_size_65_to_127_packets: 19983267
+  tx_size_65_to_127_packets: 19983275
+  rx_flow_director_sb_match_packets: 4294967293

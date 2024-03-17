@@ -1,0 +1,9 @@
+[0;32minfo 2.6: Executing client_run_setup on clnode209.clemson.cloudlab.us : pushd udp_generator && ./setup.sh[0m
+[0;32minfo 2.6: Executing client_run_setup on clnode213.clemson.cloudlab.us : pushd udp_generator && ./setup.sh[0m
+[0;32minfo 2.7: Executing client_run_setup on clnode185.clemson.cloudlab.us : pushd udp_generator && ./setup.sh[0m
+[0;32minfo 2.7: Executing client_run_setup on clnode203.clemson.cloudlab.us : pushd udp_generator && ./setup.sh[0m
+[0;32minfo 2.8: Executing client_run_setup on clnode194.clemson.cloudlab.us : pushd udp_generator && ./setup.sh[0m
+[0;32minfo 2.9: Executing client_run_setup on clnode205.clemson.cloudlab.us : pushd udp_generator && ./setup.sh[0m
+[0;32minfo 5.3: Copying logs into ./prepare_machines/[0m
+[0;32minfo 9.1: Test complete! Output to ./prepare_machines/[0m
+[0;32minfo 9.1: Done with test![0m

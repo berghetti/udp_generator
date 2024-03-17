@@ -1,4 +1,9 @@
 
+common_client: &cc
+    start: >-
+        pushd udp_generator &&
+        ./run.sh {0.args.basedir}/{client_dir}/ {policy} {0.args.rate} {0.args.wk} {rand}
+
 programs:
     prepare_clients:
         start: >-
@@ -63,6 +68,4 @@ programs:
             err: stderr.txt
 
     client_start:
-        start: >-
-            pushd udp_generator &&
-            ./run.sh {0.args.basedir}/{host.name}/ {policy} {0.args.rate} {0.args.wk} {host.rand}
+        <<: *cc
