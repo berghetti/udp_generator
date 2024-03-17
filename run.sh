@@ -11,7 +11,6 @@ run_w1()
   load_name='0.5_500'
   dist='exponential'
 
-  rate=$((rate * 1000))
   test_dir="${dist}/${load_name}/${policy}/${rate}"
   echo "Runing ${policy} with rate ${rate}"
   run_test $test_dir $dist $rate $rand
@@ -26,7 +25,6 @@ run_w2()
   load_name='1_100'
   dist='exponential'
 
-  rate=$((rate * 1000))
   test_dir="${dist}/${load_name}/${policy}/${rate}"
   echo "Runing ${policy} with rate ${rate}"
   run_test $test_dir $dist $rate $rand
