@@ -11,7 +11,7 @@ RANDOMS=(7 365877 374979 853172 908081 227836 64991 493663 174817 73997)
 
 # times to run same test
 RUNS=1
-CONF_FILE="${PWD}/addr.cfg"
+CONF_FILE="${PWD}/config.cfg"
 run_test()
 {
   DIR="${BASE_DIR}/tests/${1}"
