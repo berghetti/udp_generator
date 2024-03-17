@@ -1,0 +1,17 @@
+
+hosts: !import hosts.yml::hosts
+programs: !import programs.yml::programs
+
+commands:
+    - program: psp_start
+      hosts: server
+      begin: 0
+      #max_duration: 40
+      stop_after: client_start
+
+    - program: client_start
+      hosts: [client0, client1, client2, client3, client4, client5]
+      begin: 10
+      policy: psp
+        #enabled: false
+
