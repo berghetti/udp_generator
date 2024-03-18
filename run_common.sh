@@ -28,7 +28,7 @@ run_test()
     fi
     echo $RAND
 
-    date > ${DIR}/start_time$i;
+    date +%H:%M:%S:%N > ${DIR}/start_time$i;
     set -x;
     sudo ./build/udp-generator \
     -l $(seq -s , 0 2 28) -- \
@@ -60,7 +60,7 @@ run_one()
   RAND=$4
   i=$5
 
-  date > ${DIR}/start_time$i;
+  date +%H:%M:%S:%N > ${DIR}/start_time$i;
   sudo ./build/udp-generator \
   -l $(seq -s , 0 2 28) -- \
   -d ${DIST} \
