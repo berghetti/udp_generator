@@ -44,8 +44,8 @@ void init_DPDK(uint16_t portid, uint64_t nr_queues) {
 int init_DPDK_port(uint16_t portid, uint16_t nb_rx_queue, uint16_t nb_tx_queue,
                    struct rte_mempool *mbuf_pool) {
   // configurable number of RX/TX ring descriptors
-  uint16_t nb_rxd = 128;
-  uint16_t nb_txd = 128;
+  uint16_t nb_rxd = 256;
+  uint16_t nb_txd = 256;
 
   // get default port_conf
   struct rte_eth_conf port_conf = {
