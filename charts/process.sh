@@ -44,13 +44,14 @@ done
 popd
 
 # finally compute tail latency for each policy
-for pol in $BASE_DIR/tests/*/*; do
+#for pol in $BASE_DIR/tests/*/*; do
+#
+#  #echo $pol
+#  ./process.py 'wk1' p999 $pol/*
+#
+#done
 
-  #echo $pol
-  ./process.py 'wk2' p999 $pol/*
+./process.py 'wk1' p999 $BASE_DIR/tests/exponential/0.5_500/*
 
-done
-
-#./process.py 'wk1' p999 $BASE_DIR/tests/exponential/0.5_500/*
 
 

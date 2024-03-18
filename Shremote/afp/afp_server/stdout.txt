@@ -14,63 +14,63 @@
 [32;1m[INFO] [0;0mStarting worker 10 on core 22 (queue 10).
 [32;1m[INFO] [0;0mStarting worker 11 on core 24 (queue 11).
 [32;1m[INFO] [0;0mStarting worker 12 on core 26 (queue 12).
-[32;1m[INFO] [0;0mStarting timer core on core 0
 [32;1m[INFO] [0;0mStarting worker 13 on core 28 (queue 13).
-[32;1m[INFO] [0;0mTSC frequency: 2590 ticks per us
+[32;1m[INFO] [0;0mStarting timer core on core 0
+[32;1m[INFO] [0;0mTSC frequency: 2600 ticks per us
 [32;1m[INFO] [0;0mQUANTUM: 1 us
-[32;1m[INFO] [0;0mWorker 13 stats:
- RX count: 1457130 RX dropped: 0 Interruptions: 83405 Invalid interruptions: 662 Work stealing: 69629 Sched counter: 0
-[32;1m[INFO] [0;0mWorker 1 stats:
- RX count: 1300919 RX dropped: 0 Interruptions: 96006 Invalid interruptions: 806 Work stealing: 68744 Sched counter: 0
-[32;1m[INFO] [0;0mWorker 4 stats:
- RX count: 1353072 RX dropped: 0 Interruptions: 88392 Invalid interruptions: 724 Work stealing: 68015 Sched counter: 0
-[32;1m[INFO] [0;0mWorker 0 stats:
- RX count: 1509158 RX dropped: 0 Interruptions: 94905 Invalid interruptions: 819 Work stealing: 65103 Sched counter: 0
 [32;1m[INFO] [0;0mWorker 12 stats:
- RX count: 1183877 RX dropped: 0 Interruptions: 74839 Invalid interruptions: 658 Work stealing: 65582 Sched counter: 0
-[32;1m[INFO] [0;0mWorker 6 stats:
- RX count: 1509135 RX dropped: 0 Interruptions: 83204 Invalid interruptions: 678 Work stealing: 63574 Sched counter: 0
+ RX count: 5410294 RX dropped: 0 Interruptions: 532254 Invalid interruptions: 843 Work stealing: 0 Sched counter: 0
 [32;1m[INFO] [0;0mWorker 8 stats:
- RX count: 1678230 RX dropped: 0 Interruptions: 87419 Invalid interruptions: 692 Work stealing: 62406 Sched counter: 0
-[32;1m[INFO] [0;0mWorker 9 stats:
- RX count: 1652279 RX dropped: 0 Interruptions: 91896 Invalid interruptions: 724 Work stealing: 64768 Sched counter: 0
+ RX count: 5358301 RX dropped: 0 Interruptions: 577266 Invalid interruptions: 823 Work stealing: 0 Sched counter: 0
 [32;1m[INFO] [0;0mWorker 3 stats:
- RX count: 1574246 RX dropped: 0 Interruptions: 91536 Invalid interruptions: 721 Work stealing: 62445 Sched counter: 0
-[32;1m[INFO] [0;0mWorker 10 stats:
- RX count: 1496201 RX dropped: 0 Interruptions: 69124 Invalid interruptions: 553 Work stealing: 57536 Sched counter: 0
-[32;1m[INFO] [0;0mWorker 7 stats:
- RX count: 1483104 RX dropped: 0 Interruptions: 85805 Invalid interruptions: 694 Work stealing: 65652 Sched counter: 0
-[32;1m[INFO] [0;0mWorker 2 stats:
- RX count: 1027803 RX dropped: 0 Interruptions: 84192 Invalid interruptions: 817 Work stealing: 71163 Sched counter: 0
+ RX count: 6398490 RX dropped: 0 Interruptions: 988165 Invalid interruptions: 1504 Work stealing: 0 Sched counter: 2
+[32;1m[INFO] [0;0mWorker 1 stats:
+ RX count: 5202008 RX dropped: 0 Interruptions: 1013080 Invalid interruptions: 1600 Work stealing: 0 Sched counter: 0
+[32;1m[INFO] [0;0mWorker 0 stats:
+ RX count: 5878493 RX dropped: 0 Interruptions: 1019074 Invalid interruptions: 1525 Work stealing: 0 Sched counter: 1
+[32;1m[INFO] [0;0mWorker 4 stats:
+ RX count: 5878426 RX dropped: 0 Interruptions: 931369 Invalid interruptions: 1483 Work stealing: 0 Sched counter: 1
+[32;1m[INFO] [0;0mWorker 9 stats:
+ RX count: 6242424 RX dropped: 0 Interruptions: 546057 Invalid interruptions: 805 Work stealing: 0 Sched counter: 2
 [32;1m[INFO] [0;0mWorker 5 stats:
- RX count: 1366047 RX dropped: 0 Interruptions: 88344 Invalid interruptions: 709 Work stealing: 67369 Sched counter: 0
+ RX count: 5826113 RX dropped: 0 Interruptions: 817960 Invalid interruptions: 1311 Work stealing: 0 Sched counter: 2
+[32;1m[INFO] [0;0mWorker 2 stats:
+ RX count: 4161715 RX dropped: 0 Interruptions: 989123 Invalid interruptions: 1553 Work stealing: 0 Sched counter: 0
+[32;1m[INFO] [0;0mWorker 7 stats:
+ RX count: 5566182 RX dropped: 0 Interruptions: 619061 Invalid interruptions: 928 Work stealing: 0 Sched counter: 1
+[32;1m[INFO] [0;0mWorker 13 stats:
+ RX count: 6658653 RX dropped: 0 Interruptions: 525980 Invalid interruptions: 801 Work stealing: 0 Sched counter: 1
 [32;1m[INFO] [0;0mWorker 11 stats:
- RX count: 1392066 RX dropped: 0 Interruptions: 76615 Invalid interruptions: 662 Work stealing: 62005 Sched counter: 0
+ RX count: 5410388 RX dropped: 0 Interruptions: 534729 Invalid interruptions: 837 Work stealing: 0 Sched counter: 0
+[32;1m[INFO] [0;0mWorker 10 stats:
+ RX count: 5357992 RX dropped: 0 Interruptions: 543418 Invalid interruptions: 828 Work stealing: 0 Sched counter: 0
+[32;1m[INFO] [0;0mWorker 6 stats:
+ RX count: 6554650 RX dropped: 0 Interruptions: 653695 Invalid interruptions: 972 Work stealing: 0 Sched counter: 3
 [32;1m[INFO] [0;0mGerenal stats:
-  Tot RX count:           19983267
+  Tot RX count:           79904129
   Tot RX dropped:         0
-  Tot interrupts:         1195682
-  Tot invalid interrupts: 9919
+  Tot interrupts:         10291231
+  Tot invalid interrupts: 15813
 [32;1m[INFO] [0;0mDPDK RX Stats:
-  ipackets: 19983267
-  ibytes: 1798494030
+  ipackets: 79904129
+  ibytes: 7191371610
   ierror: 0
   imissed: 0
   rxnombuf: 0
 [32;1m[INFO] [0;0mDPDK TX Stats:
-  opackets: 19983267
-  obytes: 1798494030
+  opackets: 79904129
+  obytes: 7191371610
   oerror: 0
 [32;1m[INFO] [0;0mPORT 0 statistics:
-  rx_good_packets   : 19983267
-  tx_good_packets   : 19983267
-  rx_good_bytes     : 1798494030
-  tx_good_bytes     : 1798494030
-  rx_unicast_packets: 19983267
-  rx_unknown_protocol_packets: 19983270
-  tx_unicast_packets: 19983267
+  rx_good_packets   : 79904129
+  tx_good_packets   : 79904129
+  rx_good_bytes     : 7191371610
+  tx_good_bytes     : 7191371610
+  rx_unicast_packets: 79904129
+  rx_unknown_protocol_packets: 79904132
+  tx_unicast_packets: 79904129
   mac_remote_errors : 1
   rx_size_64_packets: 3
-  rx_size_65_to_127_packets: 19983267
-  tx_size_65_to_127_packets: 19983275
-  rx_flow_director_sb_match_packets: 4294967293
+  rx_size_65_to_127_packets: 79904129
+  tx_size_65_to_127_packets: 79904138
+  rx_flow_director_sb_match_packets: 4294967275

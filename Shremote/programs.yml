@@ -24,6 +24,14 @@ programs:
             pushd udp_generator &&
             ./set_ip.sh {host.ip} {server_ip}
 
+    client_update:
+        start: >-
+            pushd udp_generator; git pull
+
+    client_set_runs:
+        start: >-
+            pushd udp_generator; ./set_runs.sh {runs}
+
     client_run_setup:
         start: >-
             pushd udp_generator && ./setup.sh

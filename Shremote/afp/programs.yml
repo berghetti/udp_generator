@@ -1,5 +1,13 @@
 
 programs:
+    set_kernel_params:
+        start: >-
+            pushd udp_generator;
+            ./set_boot_params.sh &&
+            sudo update-grub &&
+            sudo reboot
+        checked_rtn: null
+
     prepare_clients:
         start: >-
             rm -rf udp_generator;
@@ -15,6 +23,14 @@ programs:
         start: >-
             pushd udp_generator &&
             ./set_ip.sh {host.ip} {server_ip}
+
+    client_update:
+        start: >-
+            pushd udp_generator; git pull
+
+    client_set_runs:
+        start: >-
+            pushd udp_generator; ./set_runs.sh {runs}
 
     client_run_setup:
         start: >-
@@ -54,7 +70,7 @@ programs:
 
     psp_start:
         start: >-
-            pushd &&
+            pushd psp &&
             sudo ./build/src/c++/apps/app/psp-app --cfg ./configs/base_psp_cfg.yml --label test
         stop: sudo kill -2 {pid}
         log:

@@ -2,7 +2,7 @@
   {
     "addr_": "clnode197.clemson.cloudlab.us",
     "start_": "pushd afp && sudo src/build/helloworld -n 2 -l 0,2,4,6,8,10,12,14,16,18,20,22,24,26,28 -a 18:00.1 > ~/shremote_logs/afp/afp_server/stdout.txt 2> ~/shremote_logs/afp/afp_server/stderr.txt",
-    "time_": 1710706617.413371,
+    "time_": 1710783325.1901176,
     "program": {
       "start": "pushd afp && sudo src/build/helloworld -n 2 -l 0,2,4,6,8,10,12,14,16,18,20,22,24,26,28 -a 18:00.1",
       "stop": "sudo kill -2 __pid__",
@@ -64,14 +64,14 @@
     "min_duration": null,
     "max_duration": null,
     "enabled": true,
-    "stop_time_": 1710706660.9639046
+    "stop_time_": 1710783369.8223524
   },
   {
     "addr_": "clnode209.clemson.cloudlab.us",
-    "start_": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client0/ afp 166666 wk2 401572",
-    "time_": 1710706627.442964,
+    "start_": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client0/ afp 666666 wk1 401572",
+    "time_": 1710783335.2186937,
     "program": {
-      "start": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client0/ afp 166666 wk2 401572",
+      "start": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client0/ afp 666666 wk1 401572",
       "_name": "client_start",
       "name": "client_start",
       "stop": null,
@@ -127,14 +127,14 @@
     "min_duration": null,
     "max_duration": null,
     "enabled": true,
-    "stop_time_": 1710706658.654694
+    "stop_time_": 1710783367.9130647
   },
   {
     "addr_": "clnode213.clemson.cloudlab.us",
-    "start_": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client1/ afp 166666 wk2 585508",
-    "time_": 1710706627.4618275,
+    "start_": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client1/ afp 666666 wk1 585508",
+    "time_": 1710783335.2370625,
     "program": {
-      "start": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client1/ afp 166666 wk2 585508",
+      "start": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client1/ afp 666666 wk1 585508",
       "_name": "client_start",
       "name": "client_start",
       "stop": null,
@@ -190,14 +190,14 @@
     "min_duration": null,
     "max_duration": null,
     "enabled": true,
-    "stop_time_": 1710706658.2135136
+    "stop_time_": 1710783367.954466
   },
   {
     "addr_": "clnode185.clemson.cloudlab.us",
-    "start_": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client2/ afp 166666 wk2 135491",
-    "time_": 1710706627.5297475,
+    "start_": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client2/ afp 666666 wk1 135491",
+    "time_": 1710783335.2820158,
     "program": {
-      "start": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client2/ afp 166666 wk2 135491",
+      "start": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client2/ afp 666666 wk1 135491",
       "_name": "client_start",
       "name": "client_start",
       "stop": null,
@@ -253,14 +253,14 @@
     "min_duration": null,
     "max_duration": null,
     "enabled": true,
-    "stop_time_": 1710706659.5934646
+    "stop_time_": 1710783367.1894941
   },
   {
     "addr_": "clnode203.clemson.cloudlab.us",
-    "start_": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client3/ afp 166666 wk2 799764",
-    "time_": 1710706627.5860577,
+    "start_": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client3/ afp 666666 wk1 799764",
+    "time_": 1710783335.3567066,
     "program": {
-      "start": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client3/ afp 166666 wk2 799764",
+      "start": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client3/ afp 666666 wk1 799764",
       "_name": "client_start",
       "name": "client_start",
       "stop": null,
@@ -316,14 +316,14 @@
     "min_duration": null,
     "max_duration": null,
     "enabled": true,
-    "stop_time_": 1710706659.5781446
+    "stop_time_": 1710783367.9808936
   },
   {
     "addr_": "clnode194.clemson.cloudlab.us",
-    "start_": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client4/ afp 166666 wk2 513682",
-    "time_": 1710706627.6544828,
+    "start_": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client4/ afp 666666 wk1 513682",
+    "time_": 1710783335.4333706,
     "program": {
-      "start": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client4/ afp 166666 wk2 513682",
+      "start": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client4/ afp 666666 wk1 513682",
       "_name": "client_start",
       "name": "client_start",
       "stop": null,
@@ -379,14 +379,14 @@
     "min_duration": null,
     "max_duration": null,
     "enabled": true,
-    "stop_time_": 1710706659.5779734
+    "stop_time_": 1710783367.960939
   },
   {
     "addr_": "clnode205.clemson.cloudlab.us",
-    "start_": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client5/ afp 166666 wk2 949674",
-    "time_": 1710706627.7377262,
+    "start_": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client5/ afp 666666 wk1 949674",
+    "time_": 1710783335.5151155,
     "program": {
-      "start": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client5/ afp 166666 wk2 949674",
+      "start": "pushd udp_generator && ./run.sh /proj/demeter-PG0/users/fabricio/afp_tests/client5/ afp 666666 wk1 949674",
       "_name": "client_start",
       "name": "client_start",
       "stop": null,
@@ -442,6 +442,6 @@
     "min_duration": null,
     "max_duration": null,
     "enabled": true,
-    "stop_time_": 1710706659.578285
+    "stop_time_": 1710783368.4283826
   }
 ]

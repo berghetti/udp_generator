@@ -1,12 +1,12 @@
 [
   {
     "addr_": "clnode209.clemson.cloudlab.us",
-    "start_": "pushd udp_generator && ./setup.sh",
-    "time_": 1710705773.453748,
+    "start_": "pushd udp_generator; ./set_runs.sh 5",
+    "time_": 1710782188.2027526,
     "program": {
-      "start": "pushd udp_generator && ./setup.sh",
-      "_name": "client_run_setup",
-      "name": "client_run_setup",
+      "start": "pushd udp_generator; ./set_runs.sh 5",
+      "_name": "client_set_runs",
+      "name": "client_set_runs",
       "stop": null,
       "log": {
         "dir": "",
@@ -21,6 +21,7 @@
       "hosts": {
         "addr": "clnode209.clemson.cloudlab.us",
         "ip": "192.168.10.10",
+        "rand": 401572,
         "_name": "client0",
         "output_dir": "~/shremote_logs/prepare_machines",
         "hostname": "clnode209.clemson.cloudlab.us",
@@ -38,6 +39,7 @@
     "hosts": {
       "addr": "clnode209.clemson.cloudlab.us",
       "ip": "192.168.10.10",
+      "rand": 401572,
       "_name": "client0",
       "output_dir": "~/shremote_logs/prepare_machines",
       "hostname": "clnode209.clemson.cloudlab.us",
@@ -52,21 +54,22 @@
       "enabled": true
     },
     "begin": 0,
+    "runs": 5,
     "enabled": true,
     "log_dir": "~/shremote_logs/prepare_machines/",
-    "name": "client_run_setup",
+    "name": "client_set_runs",
     "min_duration": null,
     "max_duration": null,
-    "stop_time_": 1710705775.2555673
+    "stop_time_": 1710782190.0421057
   },
   {
     "addr_": "clnode213.clemson.cloudlab.us",
-    "start_": "pushd udp_generator && ./setup.sh",
-    "time_": 1710705773.4720411,
+    "start_": "pushd udp_generator; ./set_runs.sh 5",
+    "time_": 1710782188.2264988,
     "program": {
-      "start": "pushd udp_generator && ./setup.sh",
-      "_name": "client_run_setup",
-      "name": "client_run_setup",
+      "start": "pushd udp_generator; ./set_runs.sh 5",
+      "_name": "client_set_runs",
+      "name": "client_set_runs",
       "stop": null,
       "log": {
         "dir": "",
@@ -81,6 +84,7 @@
       "hosts": {
         "addr": "clnode213.clemson.cloudlab.us",
         "ip": "192.168.10.11",
+        "rand": 585508,
         "_name": "client1",
         "output_dir": "~/shremote_logs/prepare_machines",
         "hostname": "clnode213.clemson.cloudlab.us",
@@ -98,6 +102,7 @@
     "hosts": {
       "addr": "clnode213.clemson.cloudlab.us",
       "ip": "192.168.10.11",
+      "rand": 585508,
       "_name": "client1",
       "output_dir": "~/shremote_logs/prepare_machines",
       "hostname": "clnode213.clemson.cloudlab.us",
@@ -112,21 +117,22 @@
       "enabled": true
     },
     "begin": 0,
+    "runs": 5,
     "enabled": true,
     "log_dir": "~/shremote_logs/prepare_machines/",
-    "name": "client_run_setup",
+    "name": "client_set_runs",
     "min_duration": null,
     "max_duration": null,
-    "stop_time_": 1710705775.6485355
+    "stop_time_": 1710782190.0476518
   },
   {
     "addr_": "clnode185.clemson.cloudlab.us",
-    "start_": "pushd udp_generator && ./setup.sh",
-    "time_": 1710705773.5274363,
+    "start_": "pushd udp_generator; ./set_runs.sh 5",
+    "time_": 1710782188.2711225,
     "program": {
-      "start": "pushd udp_generator && ./setup.sh",
-      "_name": "client_run_setup",
-      "name": "client_run_setup",
+      "start": "pushd udp_generator; ./set_runs.sh 5",
+      "_name": "client_set_runs",
+      "name": "client_set_runs",
       "stop": null,
       "log": {
         "dir": "",
@@ -141,6 +147,7 @@
       "hosts": {
         "addr": "clnode185.clemson.cloudlab.us",
         "ip": "192.168.10.12",
+        "rand": 135491,
         "_name": "client2",
         "output_dir": "~/shremote_logs/prepare_machines",
         "hostname": "clnode185.clemson.cloudlab.us",
@@ -158,6 +165,7 @@
     "hosts": {
       "addr": "clnode185.clemson.cloudlab.us",
       "ip": "192.168.10.12",
+      "rand": 135491,
       "_name": "client2",
       "output_dir": "~/shremote_logs/prepare_machines",
       "hostname": "clnode185.clemson.cloudlab.us",
@@ -172,21 +180,22 @@
       "enabled": true
     },
     "begin": 0,
+    "runs": 5,
     "enabled": true,
     "log_dir": "~/shremote_logs/prepare_machines/",
-    "name": "client_run_setup",
+    "name": "client_set_runs",
     "min_duration": null,
     "max_duration": null,
-    "stop_time_": 1710705775.7737012
+    "stop_time_": 1710782190.0806007
   },
   {
     "addr_": "clnode203.clemson.cloudlab.us",
-    "start_": "pushd udp_generator && ./setup.sh",
-    "time_": 1710705773.5603747,
+    "start_": "pushd udp_generator; ./set_runs.sh 5",
+    "time_": 1710782188.3465679,
     "program": {
-      "start": "pushd udp_generator && ./setup.sh",
-      "_name": "client_run_setup",
-      "name": "client_run_setup",
+      "start": "pushd udp_generator; ./set_runs.sh 5",
+      "_name": "client_set_runs",
+      "name": "client_set_runs",
       "stop": null,
       "log": {
         "dir": "",
@@ -201,6 +210,7 @@
       "hosts": {
         "addr": "clnode203.clemson.cloudlab.us",
         "ip": "192.168.10.13",
+        "rand": 799764,
         "_name": "client3",
         "output_dir": "~/shremote_logs/prepare_machines",
         "hostname": "clnode203.clemson.cloudlab.us",
@@ -218,6 +228,7 @@
     "hosts": {
       "addr": "clnode203.clemson.cloudlab.us",
       "ip": "192.168.10.13",
+      "rand": 799764,
       "_name": "client3",
       "output_dir": "~/shremote_logs/prepare_machines",
       "hostname": "clnode203.clemson.cloudlab.us",
@@ -232,21 +243,22 @@
       "enabled": true
     },
     "begin": 0,
+    "runs": 5,
     "enabled": true,
     "log_dir": "~/shremote_logs/prepare_machines/",
-    "name": "client_run_setup",
+    "name": "client_set_runs",
     "min_duration": null,
     "max_duration": null,
-    "stop_time_": 1710705775.9783337
+    "stop_time_": 1710782190.1572547
   },
   {
     "addr_": "clnode194.clemson.cloudlab.us",
-    "start_": "pushd udp_generator && ./setup.sh",
-    "time_": 1710705773.6817589,
+    "start_": "pushd udp_generator; ./set_runs.sh 5",
+    "time_": 1710782188.4431148,
     "program": {
-      "start": "pushd udp_generator && ./setup.sh",
-      "_name": "client_run_setup",
-      "name": "client_run_setup",
+      "start": "pushd udp_generator; ./set_runs.sh 5",
+      "_name": "client_set_runs",
+      "name": "client_set_runs",
       "stop": null,
       "log": {
         "dir": "",
@@ -261,6 +273,7 @@
       "hosts": {
         "addr": "clnode194.clemson.cloudlab.us",
         "ip": "192.168.10.14",
+        "rand": 513682,
         "_name": "client4",
         "output_dir": "~/shremote_logs/prepare_machines",
         "hostname": "clnode194.clemson.cloudlab.us",
@@ -278,6 +291,7 @@
     "hosts": {
       "addr": "clnode194.clemson.cloudlab.us",
       "ip": "192.168.10.14",
+      "rand": 513682,
       "_name": "client4",
       "output_dir": "~/shremote_logs/prepare_machines",
       "hostname": "clnode194.clemson.cloudlab.us",
@@ -292,21 +306,22 @@
       "enabled": true
     },
     "begin": 0,
+    "runs": 5,
     "enabled": true,
     "log_dir": "~/shremote_logs/prepare_machines/",
-    "name": "client_run_setup",
+    "name": "client_set_runs",
     "min_duration": null,
     "max_duration": null,
-    "stop_time_": 1710705775.9886136
+    "stop_time_": 1710782190.0905051
   },
   {
     "addr_": "clnode205.clemson.cloudlab.us",
-    "start_": "pushd udp_generator && ./setup.sh",
-    "time_": 1710705773.72819,
+    "start_": "pushd udp_generator; ./set_runs.sh 5",
+    "time_": 1710782188.5188537,
     "program": {
-      "start": "pushd udp_generator && ./setup.sh",
-      "_name": "client_run_setup",
-      "name": "client_run_setup",
+      "start": "pushd udp_generator; ./set_runs.sh 5",
+      "_name": "client_set_runs",
+      "name": "client_set_runs",
       "stop": null,
       "log": {
         "dir": "",
@@ -321,6 +336,7 @@
       "hosts": {
         "addr": "clnode205.clemson.cloudlab.us",
         "ip": "192.168.10.15",
+        "rand": 949674,
         "_name": "client5",
         "output_dir": "~/shremote_logs/prepare_machines",
         "hostname": "clnode205.clemson.cloudlab.us",
@@ -338,6 +354,7 @@
     "hosts": {
       "addr": "clnode205.clemson.cloudlab.us",
       "ip": "192.168.10.15",
+      "rand": 949674,
       "_name": "client5",
       "output_dir": "~/shremote_logs/prepare_machines",
       "hostname": "clnode205.clemson.cloudlab.us",
@@ -352,11 +369,12 @@
       "enabled": true
     },
     "begin": 0,
+    "runs": 5,
     "enabled": true,
     "log_dir": "~/shremote_logs/prepare_machines/",
-    "name": "client_run_setup",
+    "name": "client_set_runs",
     "min_duration": null,
     "max_duration": null,
-    "stop_time_": 1710705776.156256
+    "stop_time_": 1710782190.273659
   }
 ]
