@@ -26,11 +26,11 @@ programs:
 
     client_update:
         start: >-
-            pushd udp_generator; git pull
+            pushd udp_generator && git pull
 
     client_set_runs:
         start: >-
-            pushd udp_generator; ./set_runs.sh {runs}
+            pushd udp_generator && ./set_runs.sh {runs}
 
     client_run_setup:
         start: >-
@@ -81,4 +81,4 @@ programs:
     client_start:
         start: >-
             pushd udp_generator &&
-            ./run.sh {0.args.basedir}/{host.name}/ {policy} {0.args.rate} {0.args.wk} {host.rand}
+            ./run.sh {0.args.basedir}/{host.name}/ {policy} {0.args.rate} {0.args.wk} $({host.rand} + {0.args.rand} )$ {0.args.test}

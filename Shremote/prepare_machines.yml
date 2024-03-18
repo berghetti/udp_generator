@@ -45,7 +45,7 @@ commands:
     - program: client_set_runs
       hosts: [client0, client1, client2, client3, client4, client5]
       begin: 0
-      runs: 5
+      runs: 1
       enabled: $(hasarg('clients-runs'))$
 
 
