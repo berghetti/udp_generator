@@ -6,7 +6,6 @@ commands:
     - program: afp_start
       hosts: server
       begin: 0
-      #max_duration: 40
       stop_after: client_start
 
     - program: client_start
