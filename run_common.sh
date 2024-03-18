@@ -49,11 +49,31 @@ run_test()
     sleep 5
   done
 
-  # compress result
-  #pushd $DIR
-  #cd ..
-  #tar -caf ${RATE}.tar.bz2 ${RATE}
-  #popd
+}
+
+run_one()
+{
+  DIR="${BASE_DIR}/tests/${1}"
+  mkdir -p $DIR
+  DIST=$2
+  RATE=$3
+  RAND=$4
+  i=$5
+
+  date > ${DIR}/start_time$i;
+  sudo ./build/udp-generator \
+  -l $(seq -s , 0 2 28) -- \
+  -d ${DIST} \
+  -r ${RATE} \
+  -f 256 -s 90 -t 10 -q 1 \
+  -c ${CONF_FILE} \
+  -o ${DIR}/test$i \
+  -x ${RAND} > ${DIR}/stats$i
+
+  if [ $? -ne 0 ]; then
+    echo "Error start test"
+    exit 1
+  fi
 }
 
 set_w1()

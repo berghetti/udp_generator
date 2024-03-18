@@ -13,7 +13,7 @@ run_w1()
 
   test_dir="${dist}/${load_name}/${policy}/${rate}"
   echo "Runing ${policy} with rate ${rate}"
-  run_test $test_dir $dist $rate $rand
+  run_one $test_dir $dist $rate $rand
 }
 
 run_w2()
@@ -27,7 +27,7 @@ run_w2()
 
   test_dir="${dist}/${load_name}/${policy}/${rate}"
   echo "Runing ${policy} with rate ${rate}"
-  run_test $test_dir $dist $rate $rand
+  run_one $test_dir $dist $rate $rand
 }
 
 set_classification_time 0
@@ -36,11 +36,12 @@ policy=$2
 rate=$3
 wk=$4
 rand=$5
+test_i=$6
 
 if [ "$wk" = "wk1" ]; then
-  run_w1 $policy $rate $rand
+  run_w1 $policy $rate $rand $test_i
 fi;
 
 if [ "$wk" = "wk2" ]; then
-  run_w2 $policy $rate $rand
+  run_w2 $policy $rate $rand $test_i
 fi;
