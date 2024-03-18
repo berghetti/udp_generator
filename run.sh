@@ -8,12 +8,13 @@ run_w1()
   policy=$1
   rate=$2
   $rand=$3
+  i=$4
   load_name='0.5_500'
   dist='exponential'
 
   test_dir="${dist}/${load_name}/${policy}/${rate}"
   echo "Runing ${policy} with rate ${rate}"
-  run_one $test_dir $dist $rate $rand
+  run_one $test_dir $dist $rate $rand $i
 }
 
 run_w2()
@@ -22,12 +23,13 @@ run_w2()
   policy=$1
   rate=$2
   $rand=$3
+  i=$4
   load_name='1_100'
   dist='exponential'
 
   test_dir="${dist}/${load_name}/${policy}/${rate}"
   echo "Runing ${policy} with rate ${rate}"
-  run_one $test_dir $dist $rate $rand
+  run_one $test_dir $dist $rate $rand $i
 }
 
 set_classification_time 0
