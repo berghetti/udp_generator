@@ -277,8 +277,9 @@ void wait_timeout() {
   }
 
   // wait for remaining
-  // t0 = rte_rdtsc_precise();
-  // while((rte_rdtsc() - t0) < (10 * 1000000 * TICKS_PER_US)) { }
+  t0 = rte_rdtsc_precise();
+  while ((rte_rdtsc() - t0) < (10 * 1000000 * TICKS_PER_US))
+    ;
 
   // set quit flag for all internal cores
   quit_rx = 1;
