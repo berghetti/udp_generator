@@ -135,7 +135,8 @@ def get_rps(rate):
     with open(file, 'r') as f:
       next(f) # skip first line
       data = f.read()
-      r = int(data.split()[1]) # get reached RPS
+      #r = int(data.split()[1]) # get reached RPS
+      r = int(data.split()[0]) # get offered RPS
       rps.append(r)
 
   return sum(rps)/len(rps)
