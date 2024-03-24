@@ -32,6 +32,21 @@ run_w2()
   run_one $test_dir $dist $rate $rand $i
 }
 
+run_shorts()
+{
+  set_only_shorts
+  policy=$1
+  rate=$2
+  $rand=$3
+  i=$4
+  load_name='shorts_1'
+  dist='exponential'
+
+  test_dir="${dist}/${load_name}/${policy}/${rate}"
+  echo "Runing ${policy} with rate ${rate}"
+  run_one $test_dir $dist $rate $rand $i
+}
+
 set_classification_time 0
 
 policy=$2
@@ -46,4 +61,8 @@ fi;
 
 if [ "$wk" = "wk2" ]; then
   run_w2 $policy $rate $rand $test_i
+fi;
+
+if [ "$wk" = "shorts" ]; then
+  run_shorts $policy $rate $rand $test_i
 fi;
