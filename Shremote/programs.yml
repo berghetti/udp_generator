@@ -1,4 +1,6 @@
 
+hosts: !import hosts.yml::hosts
+
 programs:
     set_kernel_params:
         start: >-
@@ -36,6 +38,10 @@ programs:
         start: >-
             pushd udp_generator && ./setup.sh
 
+    generic:
+        start: >-
+            {0.args.cmd}
+
     prepare_afp:
         start: >-
             rm -rf afp;
@@ -62,7 +68,8 @@ programs:
         start: >-
             pushd afp &&
             sudo src/build/helloworld -n 2 -l 0,2,4,6,8,10,12,14,16,18,20,22,24,26,28 -a 18:00.1
-        stop: sudo kill -2 {pid}
+            #stop: sudo kill -2 {pid}
+        stop: sudo pkill -2 helloworld
         log:
             dir: afp_server
             out: stdout.txt
@@ -72,7 +79,8 @@ programs:
         start: >-
             pushd psp &&
             sudo ./build/src/c++/apps/app/psp-app --cfg ./configs/base_psp_cfg.yml --label test
-        stop: sudo kill -2 {pid}
+            #stop: sudo kill -9 {pid}
+        stop: sudo pkill -2 psp-app
         log:
             dir: psp_server
             out: stdout.txt
@@ -81,4 +89,5 @@ programs:
     client_start:
         start: >-
             pushd udp_generator &&
-            ./run.sh {0.args.basedir}/{host.name}/ {policy} {0.args.rate} {0.args.wk} $({host.rand} + {0.args.rand} )$ {0.args.test}
+            ./run.sh {0.args.basedir}/{host.name}/ {0.args.policy} {0.args.rate} {0.args.wk} $({host.rand} + {0.args.rand})$ {0.args.test}
+

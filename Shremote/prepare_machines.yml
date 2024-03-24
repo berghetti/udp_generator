@@ -48,5 +48,16 @@ commands:
       runs: 1
       enabled: $(hasarg('clients-runs'))$
 
+    - program: generic
+      hosts: [client0, client1, client2, client3, client4, client5]
+      begin: 0
+      enabled: $(hasarg('clients-generic'))$
+
+    - program: generic
+      hosts: server
+      begin: 0
+      bg: true
+      enabled: $(hasarg('server-generic'))$
+
 
 
