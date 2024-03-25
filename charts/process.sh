@@ -33,8 +33,11 @@ for pol in client0/tests/*/*/*; do
       # sum reached rps
       offered=$(cat client[0-9.]/$general_folder/$rate/test${i}_rate | awk '$2 ~ /^[0-9]+$/ {sum += $1} END {print sum}')
       reached=$(cat client[0-9.]/$general_folder/$rate/test${i}_rate | awk '$2 ~ /^[0-9]+$/ {sum += $2} END {print sum}')
+      tot_tx=$(cat client[0-9.]/$general_folder/$rate/test${i}_rate | awk '$2 ~ /^[0-9]+$/ {sum += $3} END {print sum}')
+      tot_rx=$(cat client[0-9.]/$general_folder/$rate/test${i}_rate | awk '$2 ~ /^[0-9]+$/ {sum += $4} END {print sum}')
+      dropped=$(cat client[0-9.]/$general_folder/$rate/test${i}_rate | awk '$2 ~ /^[0-9]+$/ {sum += $5} END {print sum}')
 
-      echo -e "offered\treached\n$offered\t$reached" > $general_folder/$rate_total/test${i}_rate
+      echo -e "offered\treached\ttot_tx\ttot_rx\tdropped\n$offered\t$reached\t$tot_tx\t$tot_rx\t$dropped" > $general_folder/$rate_total/test${i}_rate
 
     done
   done
@@ -51,7 +54,8 @@ popd
 #
 #done
 
-./process.py 'wk1' p999 $BASE_DIR/tests/exponential/0.5_500/*
+#./process.py 'wk1' p999 $BASE_DIR/tests/exponential/0.5_500/*
+./process.py 'shorts' p999 $BASE_DIR/tests/exponential/shorts_1/*
 
 
 

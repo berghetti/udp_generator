@@ -314,6 +314,8 @@ void print_stats_output() {
 
   uint64_t rps_offered = 0;
   uint64_t rps_reached = 0;
+  uint64_t tot_tx = 0;
+  uint64_t tot_rx = 0;
   uint64_t dropped = 0;
 
   // fprintf(fp, "%s\n", title);
@@ -325,7 +327,8 @@ void print_stats_output() {
 
     rps_offered += q_rps[i].rps_offered;
     rps_reached += q_rps[i].rps_reached;
-    dropped += q_rps[i].tot_tx - q_rps[i].tot_rx;
+    tot_tx += q_rps[i].tot_tx;
+    tot_rx += q_rps[i].tot_rx;
 
     // drop the first 50% packets for warming up
     uint64_t j = 0.5 * incoming_idx;
@@ -353,12 +356,15 @@ void print_stats_output() {
 
   // close the file
   fclose(fp);
+  dropped = tot_tx - tot_rx;
 
   char buff[255];
   snprintf(buff, sizeof(buff), "%s_%s", output_file, "rate");
   fp = fopen(buff, "w");
-  fprintf(fp, "offered\treached\tdropped\n%lu\t%lu\t%lu\n", rps_offered,
-          rps_reached, dropped);
+  fprintf(
+      fp,
+      "offered\treached\ttot_tx\ttot_rx\tdropped\n%lu\t%lu\t%lu\t%lu\t%lu\n",
+      rps_offered, rps_reached, tot_tx, tot_rx, dropped);
   fclose(fp);
 }
 
