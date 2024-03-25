@@ -54,8 +54,9 @@ int init_DPDK_port(uint16_t portid, uint16_t nb_rx_queue, uint16_t nb_tx_queue,
               .mq_mode =
                   nb_rx_queue > 1 ? RTE_ETH_MQ_RX_RSS : RTE_ETH_MQ_RX_NONE,
               .max_lro_pkt_size = RTE_ETHER_MAX_LEN,
-              .offloads =
-                  RTE_ETH_RX_OFFLOAD_IPV4_CKSUM | RTE_ETH_RX_OFFLOAD_UDP_CKSUM,
+              //.offloads =
+              //    RTE_ETH_RX_OFFLOAD_IPV4_CKSUM |
+              //    RTE_ETH_RX_OFFLOAD_UDP_CKSUM,
           },
       .rx_adv_conf =
           {
@@ -86,10 +87,14 @@ int init_DPDK_port(uint16_t portid, uint16_t nb_rx_queue, uint16_t nb_tx_queue,
     return retval;
   }
 
+  struct rte_eth_txconf *rxconf;
+  rxconf = &dev_info.default_rxconf;
+  rxconf->rx_free_thresh = 128;
+
   // setup the RX queues
   for (int q = 0; q < nb_rx_queue; q++) {
     retval = rte_eth_rx_queue_setup(
-        portid, q, nb_rxd, rte_eth_dev_socket_id(portid), NULL, mbuf_pool);
+        portid, q, nb_rxd, rte_eth_dev_socket_id(portid), rxconf, mbuf_pool);
     if (retval < 0) {
       return retval;
     }
@@ -100,8 +105,8 @@ int init_DPDK_port(uint16_t portid, uint16_t nb_rx_queue, uint16_t nb_tx_queue,
 
   struct rte_eth_txconf *txconf;
   txconf = &dev_info.default_txconf;
-  txconf->tx_rs_thresh = 64;
-  txconf->tx_free_thresh = 64;
+  // txconf->tx_rs_thresh = 64;
+  // txconf->tx_free_thresh = 64;
 
   // setup the TX queues
   for (int q = 0; q < nb_tx_queue; q++) {
