@@ -87,6 +87,9 @@ int init_DPDK_port(uint16_t portid, uint16_t nb_rx_queue, uint16_t nb_tx_queue,
     return retval;
   }
 
+  struct rte_eth_dev_info dev_info;
+  rte_eth_dev_info_get(portid, &dev_info);
+
   struct rte_eth_txconf *rxconf;
   rxconf = &dev_info.default_rxconf;
   rxconf->rx_free_thresh = 128;
@@ -99,9 +102,6 @@ int init_DPDK_port(uint16_t portid, uint16_t nb_rx_queue, uint16_t nb_tx_queue,
       return retval;
     }
   }
-
-  struct rte_eth_dev_info dev_info;
-  rte_eth_dev_info_get(portid, &dev_info);
 
   struct rte_eth_txconf *txconf;
   txconf = &dev_info.default_txconf;
