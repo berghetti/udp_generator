@@ -203,6 +203,8 @@ static int lcore_rx(void *arg) {
   q_rps[qid].rps_reached =
       tot_nb_rx / ((rte_get_tsc_cycles() - start) / rte_get_timer_hz());
 
+  q_rps[qid].tot_rx = tot_nb_rx;
+
   return 0;
 }
 
@@ -282,6 +284,8 @@ static int lcore_tx(void *arg) {
 
   q_rps[qid].rps_offered =
       tot_nb_tx / ((rte_get_tsc_cycles() - start) / rte_get_timer_hz());
+
+  q_rps[qid].tot_tx = tot_nb_tx;
 
   return 0;
 }
