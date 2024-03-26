@@ -75,28 +75,27 @@ int process_rx_pkt(struct rte_mbuf *pkt, node_t *incoming,
       sizeof(struct rte_ether_hdr) + (ipv4_hdr->version_ihl & 0x0f) * 4);
 
   // get UDP payload size
-  uint32_t packet_data_size = rte_be_to_cpu_16(ipv4_hdr->total_length) -
-                              ((ipv4_hdr->version_ihl & 0x0f) * 4) -
-                              sizeof(struct rte_udp_hdr);
+  // uint32_t packet_data_size = rte_be_to_cpu_16(ipv4_hdr->total_length) -
+  //                            ((ipv4_hdr->version_ihl & 0x0f) * 4) -
+  //                            sizeof(struct rte_udp_hdr);
 
-  // do not process empty packets
-  if (unlikely(packet_data_size == 0)) {
-    return 0;
-  }
+  //// do not process empty packets
+  // if (unlikely(packet_data_size == 0)) {
+  //  return 0;
+  //}
+
+  node_t *node = &incoming[(*incoming_idx)++];
 
   // obtain both timestamp from the packet
   uint64_t *payload =
       (uint64_t *)(((uint8_t *)udp_hdr) + (sizeof(struct rte_udp_hdr)));
-  uint64_t t0 = payload[SEND_TIME];
-  uint64_t t1 = payload[RECV_TIME];
 
-  // fill the node previously allocated
-  node_t *node = &incoming[(*incoming_idx)++];
-  node->flow_id = payload[FLOW_ID];
-  node->timestamp_tx = t0;
-  node->timestamp_rx = t1;
+  node->timestamp_tx = payload[SEND_TIME];
+  node->timestamp_rx = payload[RECV_TIME];
   node->type = payload[TYPE];
   node->service_time = payload[SERVICE_TIME];
+
+  // node->flow_id = payload[FLOW_ID];
 
   // node->rx_time = payload[RX_TIME];
   // node->app_recv_time = payload[APP_RECV_TIME];
@@ -243,8 +242,15 @@ static int lcore_tx(void *arg) {
       pkts[nb_pkts] = rte_pktmbuf_alloc(pktmbuf_pool);
       // fill the packet with the flow information
       fill_udp_packet(flow_id, pkts[nb_pkts]);
+
       // fill the payload to gather server information
-      fill_payload_pkt(pkts[nb_pkts], FLOW_ID, flow_id);
+      // fill_payload_pkt(pkts[nb_pkts], FLOW_ID, flow_id);
+
+      fill_payload_pkt(pkts[nb_pkts], SEND_TIME, next_tsc);
+
+      fill_payload_pkt(pkts[nb_pkts], TYPE, rtype[i].type);
+      fill_payload_pkt(pkts[nb_pkts], SERVICE_TIME, rtype[i].service_time);
+      fill_payload_pkt(pkts[nb_pkts], CLASSIFICATION_TIME, classification_time);
     }
 
     // unable to keep up with the requested rate
@@ -253,16 +259,6 @@ static int lcore_tx(void *arg) {
       nr_never_sent++;
       next_tsc += interarrival_gap[i++];
       continue;
-    }
-
-    // fill the timestamp, request type and service time
-    // into the packet payload
-    for (int j = 0; j < nb_pkts; j++) {
-      fill_payload_pkt(pkts[j], SEND_TIME, next_tsc);
-
-      fill_payload_pkt(pkts[j], TYPE, rtype[i].type);
-      fill_payload_pkt(pkts[j], SERVICE_TIME, rtype[i].service_time);
-      fill_payload_pkt(pkts[j], CLASSIFICATION_TIME, classification_time);
     }
 
     // sleep for while
