@@ -44,8 +44,8 @@ void init_DPDK(uint16_t portid, uint64_t nr_queues) {
 int init_DPDK_port(uint16_t portid, uint16_t nb_rx_queue, uint16_t nb_tx_queue,
                    struct rte_mempool *mbuf_pool) {
   // configurable number of RX/TX ring descriptors
-  uint16_t nb_rxd = 256;
-  uint16_t nb_txd = 256;
+  uint16_t nb_rxd = 2048;
+  uint16_t nb_txd = 2048;
 
   // get default port_conf
   struct rte_eth_conf port_conf = {
@@ -53,7 +53,7 @@ int init_DPDK_port(uint16_t portid, uint16_t nb_rx_queue, uint16_t nb_tx_queue,
           {
               .mq_mode =
                   nb_rx_queue > 1 ? RTE_ETH_MQ_RX_RSS : RTE_ETH_MQ_RX_NONE,
-              .max_lro_pkt_size = RTE_ETHER_MAX_LEN,
+              //.max_lro_pkt_size = RTE_ETHER_MAX_LEN,
               //.offloads =
               //    RTE_ETH_RX_OFFLOAD_IPV4_CKSUM |
               //    RTE_ETH_RX_OFFLOAD_UDP_CKSUM,
@@ -111,7 +111,7 @@ int init_DPDK_port(uint16_t portid, uint16_t nb_rx_queue, uint16_t nb_tx_queue,
   // setup the TX queues
   for (int q = 0; q < nb_tx_queue; q++) {
     retval = rte_eth_tx_queue_setup(portid, q, nb_txd,
-                                    rte_eth_dev_socket_id(portid), NULL);
+                                    rte_eth_dev_socket_id(portid), txconf);
     if (retval < 0) {
       return retval;
     }
