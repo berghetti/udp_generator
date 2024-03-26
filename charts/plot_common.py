@@ -141,6 +141,18 @@ def get_rps(rate):
 
   return sum(rps)/len(rps)
 
+def get_drop(rate):
+  files = glob.glob(f'{rate}/test[0-9]_rate')
+  drops = []
+  for file in files:
+    with open(file, 'r') as f:
+      next(f) # skip first line
+      data = f.read()
+      r = int(data.split()[-1]) # get drop
+      drops.append(r)
+
+  return sum(drops)
+
 
 def load_in_file_name(f):
   return float(f.split('_')[-1])
@@ -164,10 +176,15 @@ def get_latencys(pol):
     #tr = int(rate) / 1e6 # Load
 
     folder = os.path.join(pol, rate)
+    print('Reading \'{}\''.format(folder))
 
     rps = get_rps(folder) / 1e6
 
-    print('Reading \'{}\''.format(folder))
+    drop = get_drop(folder)
+
+    if drop:
+      print(f'Dropped {drop} pkts in rate {rps}: Stoping')
+      break
 
     ((s, serr), (l, lerr), (a, aerr)) = get_latency(folder)
     print(s, l, a)
