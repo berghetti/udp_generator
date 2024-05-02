@@ -48,9 +48,8 @@ concat_results()
   popd
 }
 
-
-concat_results
-./process.py 'wk1' p999 $BASE_DIR/tests/exponential/0.5_500/*
+#concat_results
+./process_policys.py 'shorts-2us' p999 $BASE_DIR/tests/exponential/shorts-2us/*
 #./process.py 'shorts' p999 $BASE_DIR/tests/exponential/shorts_1/*
 
 
