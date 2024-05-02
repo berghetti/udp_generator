@@ -7,6 +7,7 @@
 *.dat
 
 dpdk/
+dpdk-kmods/
 build/
 
 tags

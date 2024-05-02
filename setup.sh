@@ -8,4 +8,4 @@ sudo modprobe uio
 sudo insmod dpdk-kmods/linux/igb_uio/igb_uio.ko
 sudo ./dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1
 
-./turbo.sh disable
+./misc/turbo.sh disable

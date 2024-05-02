@@ -1,10 +1,8 @@
 # UDP_generator
 
-Follow these instructions to build the udp generator using DPDK 22.11 and CloudLab nodes
+Tested using DPDK 23.11 and ubuntu 20.04
 
 ## Building
-
-> **Make sure that `PKG_CONFIG_PATH` is configured properly.**
 
 ```bash
 git clone https://github.com/carvalhof/udp_generator
@@ -16,9 +14,8 @@ make
 
 ## Running
 
-> **Make sure that `LD_LIBRARY_PATH` is configured properly.**
-
 ```bash
+./setup.sh # once
 sudo ./build/udp-generator -a 41:00.0 -n 4 -c 0xff -- -d $DISTRIBUTION -r $RATE -f $FLOWS -s $SIZE -t $DURATION -q $QUEUES -c $ADDR_FILE -o $OUTPUT_FILE -x $SEED
 ```
 

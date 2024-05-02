@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xe
+
 git clone https://github.com/DPDK/dpdk.git -o dpdk
 
 pushd ./dpdk
