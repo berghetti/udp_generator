@@ -18,6 +18,8 @@ def get_pol_data(metadata, name):
     if n == name:
       return pol
 
+  return None
+
 def plot_charts(policys, pname, percentil):
   p = get_and_set_percentile(percentil)
   file = get_metadata_name(pname, percentil)
@@ -32,13 +34,13 @@ def plot_charts(policys, pname, percentil):
   for policy in policys:
     name = get_policy_name(policy)
     pol = get_pol_data(file, name)
-    
+
     if pol == None:
         print(f'Name {name} not found in metada file')
         continue
 
     dict_values = list(pol.values())[0]
-    
+
     x, s, serr, l, lerr, a, aerr = dict_values.values()
     print(name)
     print(x, s, serr, l, lerr, a, aerr)

@@ -1,19 +1,23 @@
 #!/bin/python3
 
+# process policys and create metadata file with latencys to each policy and request type
+
 import os
 import sys
 import json
 
 from plot_common import *
+from process_common import process_get_policy_name, process_get_metadata_name, process_get_and_set_percentile, process_policy, process_get_latencys
+
 import charts_templates
 
 def write_metadata(policys, file):
 
   data = []
   for policy in policys:
-    name = get_policy_name(policy)
+    name = process_get_policy_name(policy)
 
-    x, s, serr, l, lerr, a, aerr = get_latencys(policy)
+    x, s, serr, l, lerr, a, aerr = process_get_latencys(policy)
     d = {
         name : {
           'x' : x,
@@ -31,13 +35,15 @@ def write_metadata(policys, file):
     json.dump(data, f)
 
 def process(policys, prefix, percentil):
-  p = get_and_set_percentile(percentil)
-  file = get_metadata_name(prefix, percentil)
+  p = process_get_and_set_percentile(percentil)
 
-  print('Processing policys')
+  # calc latency for each policy
   for policy in policys:
     process_policy(policy)
 
+  # write metadata file with policys and latencys.
+  # This file is used to chart plot after.
+  file = process_get_metadata_name(prefix, percentil)
   print(f'\nWriting metadata {file}')
   write_metadata(policys, file)
 

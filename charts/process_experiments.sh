@@ -1,10 +1,10 @@
 #!/bin/bash
 
+# concat all individual clients results and process each policy.
+
 BASE_DIR='/proj/demeter-PG0/users/fabricio/afp_tests'
 
-
 # join individual client results
-
 concat_results()
 {
   pushd $BASE_DIR
