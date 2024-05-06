@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $(dirname $0)/common.sh
+source $(dirname $0)/../run/common.sh
 
 policy=$2
 rate=$3
