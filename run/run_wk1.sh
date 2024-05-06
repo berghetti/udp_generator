@@ -1,19 +1,19 @@
 #!/bin/bash
 set -e
 
-source ./common.sh
+source $(dirname $0)/common.sh
 
 RUNS=1
 TOT_WORKER=14
-AVG_SERVICE_TIME=$(awk 'BEGIN {print 1*0.99 + 100*0.01 }')
+AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.995 + 500*0.005 }')
 
 create_rps_array
 
 run()
 {
   policy=$1
-  load_name='1_100'
-  set_w2
+  load_name='0.5_500'
+  set_w1
 
   for dist in 'exponential'; do
 
@@ -27,5 +27,4 @@ run()
 }
 
 set_classification_time 0
-run "psp-cl0"
-
+run "afp-cl0-ws"

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-source ./common.sh
+source $(dirname $0)/common.sh
 
 RUNS=1
 TOT_WORKER=14

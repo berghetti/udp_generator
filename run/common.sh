@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ROOT_PATH=$(dirname $0)"/.."
+
 # Default base_dir
 BASE_DIR=${BASE_DIR:-/proj/demeter-PG0/users/fabricio/afp_tests/}
 
@@ -17,7 +19,6 @@ create_rps_array()
   # load percent
   for load in {10..90..10};
   do
-    echo "$load"
     r=$(awk -v st=$AVG_SERVICE_TIME -v w=$TOT_WORKER -v load=$load 'BEGIN { print 10^6 / st * w * (load / 100)}')
     RPS+=($r)
   done
@@ -25,7 +26,7 @@ create_rps_array()
 
 RANDOMS=(7 365877 374979 853172 908081 227836 64991 493663 174817 73997)
 
-CONF_FILE="${PWD}/config.cfg"
+CONF_FILE="${ROOT_PATH}/config.cfg"
 run_test()
 {
   DIR="${BASE_DIR}/tests/${1}"
@@ -45,7 +46,7 @@ run_test()
 
     date +%H:%M:%S:%N > ${DIR}/start_time$i;
     set -x;
-    sudo ./build/udp-generator \
+    sudo ${ROOT_PATH}/build/udp-generator \
     -l $(seq -s , 0 2 28) -- \
     -d ${DIST} \
     -r ${RATE} \
