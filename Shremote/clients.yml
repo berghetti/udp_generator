@@ -4,7 +4,7 @@ programs: !import programs.yml::programs
 
 commands:
     - program: client_start
-      hosts: [client0, client1, client2, client3, client4, client5]
+      hosts: [client0, client1, client2, client3, client4]
       begin: 0
         #policy: afp
 

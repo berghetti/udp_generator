@@ -5,7 +5,7 @@ programs:
     set_kernel_params:
         start: >-
             pushd udp_generator;
-            ./set_boot_params.sh &&
+            ./misc/set_boot_params.sh &&
             sudo update-grub &&
             sudo reboot
         checked_rtn: null
@@ -15,28 +15,16 @@ programs:
             rm -rf udp_generator;
             git clone -b afp_changes https://github.com/berghetti/udp_generator.git;
             pushd udp_generator;
-            ./install_prerequisites.sh;
+            ./install_requirements.sh;
             ./install_dpdk.sh ||
             echo 0 &&
-            ./bind_interface.sh &&
+            ./setup.sh &&
             make
 
     set_clients_ip:
         start: >-
             pushd udp_generator &&
-            ./set_ip.sh {host.ip} {server_ip}
-
-    client_update:
-        start: >-
-            pushd udp_generator && git pull
-
-    client_set_runs:
-        start: >-
-            pushd udp_generator && ./set_runs.sh {runs}
-
-    client_run_setup:
-        start: >-
-            pushd udp_generator && ./setup.sh
+            ./misc/set_ip.sh {host.ip} {server_ip}
 
     generic:
         start: >-
@@ -89,5 +77,5 @@ programs:
     client_start:
         start: >-
             pushd udp_generator &&
-            ./run.sh {0.args.basedir}/{host.name}/ {0.args.policy} {0.args.rate} {0.args.wk} $({host.rand} + {0.args.rand})$ {0.args.test}
+            ./run/run.sh {0.args.basedir}/{host.name}/ {0.args.policy} {0.args.rate} {0.args.wk} $({host.rand} + {0.args.rand})$ {0.args.test}
 

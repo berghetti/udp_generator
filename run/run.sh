@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# Script utilized to run in multiples clientes using Shremote
+
 source $(dirname $0)/../run/common.sh
 
+BASE_DIR=$1
 policy=$2
 rate=$3
 wk=$4
