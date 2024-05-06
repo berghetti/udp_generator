@@ -1,12 +1,13 @@
 #!/bin/bash
 
-source ./run_common.sh
+source $(dirname $0)/common.sh
 
 policy=$2
 rate=$3
 wk=$4
 rand=$5
 test_i=$6
+dist='exponential'
 
 set_classification_time 0
 
@@ -16,7 +17,6 @@ run_w1()
 {
   set_w1
   load_name='0.5_500'
-  dist='exponential'
 
   test_dir="${dist}/${load_name}/${policy}/${rate}"
   run_one $test_dir $dist $rate $rand $test_i
@@ -26,7 +26,6 @@ run_w2()
 {
   set_w2
   load_name='1_100'
-  dist='exponential'
 
   test_dir="${dist}/${load_name}/${policy}/${rate}"
   run_one $test_dir $dist $rate $rand $test_i
@@ -36,7 +35,6 @@ run_shorts()
 {
   set_only_shorts
   load_name='shorts_1'
-  dist='exponential'
 
   test_dir="${dist}/${load_name}/${policy}/${rate}"
   run_one $test_dir $dist $rate $rand $test_i
