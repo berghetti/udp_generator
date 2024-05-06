@@ -1,23 +1,38 @@
 #!/bin/bash
 
-if [ -z $1 ]; then
-  #BASE_DIR=$PWD
-  BASE_DIR=/proj/demeter-PG0/users/fabricio/afp_tests/
-else
-  BASE_DIR=${1}
-fi
+# Default base_dir
+BASE_DIR=${BASE_DIR:-/proj/demeter-PG0/users/fabricio/afp_tests/}
+
+# times to run same test
+RUNS=${RUNS:-1}
+
+TOT_WORKER=14
+AVG_SERVICE_TIME=1
+
+RPS=()
+
+create_rps_array()
+{
+  echo "Creating RPS array to $TOT_WORKER worker and average service time $AVG_SERVICE_TIME"
+  # load percent
+  for load in {10..90..10};
+  do
+    echo "$load"
+    r=$(awk -v st=$AVG_SERVICE_TIME -v w=$TOT_WORKER -v load=$load 'BEGIN { print 10^6 / st * w * (load / 100)}')
+    RPS+=($r)
+  done
+}
 
 RANDOMS=(7 365877 374979 853172 908081 227836 64991 493663 174817 73997)
 
-# times to run same test
-RUNS=1
 CONF_FILE="${PWD}/config.cfg"
 run_test()
 {
   DIR="${BASE_DIR}/tests/${1}"
-  mkdir -p $DIR
   DIST=$2
   RATE=$3
+
+  mkdir -p $DIR
 
   # run each rate RUNS times
   for i in $(seq 0 $((RUNS-1))); do
@@ -54,21 +69,22 @@ run_test()
 run_one()
 {
   DIR="${BASE_DIR}/tests/${1}"
-  mkdir -p $DIR
   DIST=$2
   RATE=$3
   RAND=$4
-  i=$5
+  TEST_N=$5
 
-  date +%H:%M:%S:%N > ${DIR}/start_time$i;
+  mkdir -p $DIR
+
+  date +%H:%M:%S:%N > ${DIR}/start_time$TEST_N;
   sudo ./build/udp-generator \
   -l $(seq -s , 0 2 28) -- \
   -d ${DIST} \
   -r ${RATE} \
   -f 256 -s 90 -t 10 -q 1 \
   -c ${CONF_FILE} \
-  -o ${DIR}/test$i \
-  -x ${RAND} > ${DIR}/stats$i
+  -o ${DIR}/test$TEST_N \
+  -x ${RAND} > ${DIR}/stats$TEST_N
 
   if [ $? -ne 0 ]; then
     echo "Error start test"
@@ -106,6 +122,19 @@ set_only_shorts()
 {
   SHORT=1000
   LONG=100000
+  sed -i '/\[requests_service_time\]/{n;s/\(short\s*=\s*\)[0-9]\+/\1'${SHORT}'/;}' $CONF_FILE
+  sed -i '/\[requests_service_time\]/{n;n;s/\(long\s*=\s*\)[0-9]\+/\1'${LONG}'/;}' $CONF_FILE
+
+  SHORT_RATIO=1000
+  LONG_RATIO=0
+  sed -i '/\[requests_ratio\]/{n;s/\(short\s*=\s*\)[0-9]\+/\1'${SHORT_RATIO}'/;}' $CONF_FILE
+  sed -i '/\[requests_ratio\]/{n;n;s/\(long\s*=\s*\)[0-9]\+/\1'${LONG_RATIO}'/;}' $CONF_FILE
+}
+
+set_only_shorts_rate()
+{
+  SHORT=$1
+  LONG=100000000000000000
   sed -i '/\[requests_service_time\]/{n;s/\(short\s*=\s*\)[0-9]\+/\1'${SHORT}'/;}' $CONF_FILE
   sed -i '/\[requests_service_time\]/{n;n;s/\(long\s*=\s*\)[0-9]\+/\1'${LONG}'/;}' $CONF_FILE
 

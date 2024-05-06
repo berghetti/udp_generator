@@ -1,9 +1,15 @@
 #!/bin/bash
+set -e
 
-source ./run_common.sh
+source ./common.sh
 
+RUNS=1
+TOT_WORKER=14
+AVG_SERVICE_TIME=$(awk 'BEGIN {print 1*0.99 + 100*0.01 }')
 
-run_w1()
+create_rps_array
+
+run()
 {
   policy=$1
   load_name='1_100'
@@ -11,9 +17,7 @@ run_w1()
 
   for dist in 'exponential'; do
 
-    for rate in {1000..5000..1000}; do
-    #for rate in 5000; do
-      rate=$((rate * 1000))
+    for rate in ${RPS[@]}; do
       test_dir="${dist}/${load_name}/${policy}/${rate}"
       echo "Runing ${policy} with rate ${rate}"
       run_test $test_dir $dist $rate
@@ -23,17 +27,5 @@ run_w1()
 }
 
 set_classification_time 0
-#run_w1 "psp-cl0"
-run_w1 "afp-cl0-ws"
-#run_w1 "rss-cl0"
-#run_w1 "afp-cl0"
-#run_w1 "afp-cl0-sig"
-
-#set_classification_time 50
-#run_w1 "psp-cl50"
-#run_w1 "afp-cl50"
-
-#set_classification_time 100
-#run_w1 "psp-cl100"
-#run_w1 "afp-cl100"
+run "psp-cl0"
 
