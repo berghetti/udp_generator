@@ -21,15 +21,19 @@ def process_get_metadata_name(wk, percentil):
   return file
 
 def interval_confidence( data: list ):
+  lenght = len(data)
+  if lenght == 0:
+    return 0, 0
+
   Z = 1.96 # nivel de confiança 95%
-  avg = sum(data) / len(data)
+  avg = sum(data) / lenght
 
   sum_ = 0
   for i in range(len(data)):
     sum_ += math.pow( data[i] - avg, 2 )
 
   desvio = math.sqrt( sum_ / len(data) )
-  margin_error = Z * ( desvio / math.sqrt(len(data) ) ) # intervalo de confiança
+  margin_error = Z * ( desvio / math.sqrt(lenght ) ) # intervalo de confiança
 
   avg = round(avg, 4)
   margin_error = round(margin_error, 4)
@@ -113,7 +117,7 @@ def process_get_latencys(pol):
     drop = get_drop(folder)
 
     if drop:
-      print(f'Dropped {drop} pkts in rate {rps}: Stoping')
+      print(f'Dropped {drop} pkts in rate {rps} MRPS: Stoping')
       break
 
     ((s, serr), (l, lerr), (a, aerr)) = get_latency(folder)
@@ -152,7 +156,7 @@ def calculate_overall_percentile(df: pl.DataFrame) -> float:
     return df['latency'].quantile(float(percentile/100))
 
 # process a file with requests latencys
-def process_test(test: str) -> None:
+def process_test(rate_folder_path: str, test: str) -> None:
   print(f'Processing {test}')
 
   # Read the data from the 'test' file
@@ -169,6 +173,7 @@ def process_test(test: str) -> None:
   overall_result_df = pl.DataFrame({'latency': [overall_percentile]})
   overall_result_df.select('latency').write_csv(overall_result_path, has_header=False)
 
+  TYPES = {1: 'shorts', 2: 'longs'}
   # Save latency by request type
   for Type in per_type_percentile['type'].to_list():
     # Get the 99th percentile value for the current group
@@ -184,8 +189,6 @@ def process_policy(base_folder: str, force: bool = False) -> None:
   rate_folders = [f for f in os.listdir(base_folder) if os.path.isdir(os.path.join(base_folder, f))]
   rate_folders = sorted(rate_folders, key=lambda x: int(x.split('_')[-1]))
 
-  TYPES = {1: 'shorts', 2: 'longs'}
-
   for rate_folder in rate_folders:
 
     rate_folder_path = os.path.join(base_folder, rate_folder)
@@ -197,5 +200,5 @@ def process_policy(base_folder: str, force: bool = False) -> None:
         print(f'{test} already processed... skiping...')
         continue
 
-      process_test(test)
+      process_test(rate_folder_path, test)
 
