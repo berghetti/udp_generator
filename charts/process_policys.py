@@ -17,7 +17,7 @@ def write_metadata(policys, file):
   for policy in policys:
     name = process_get_policy_name(policy)
 
-    x, s, serr, l, lerr, a, aerr = process_get_latencys(policy)
+    x, s, serr, l, lerr, a, aerr, drop = process_get_latencys(policy)
     d = {
         name : {
           'x' : x,
@@ -26,7 +26,8 @@ def write_metadata(policys, file):
           'l': l,
           'lerr': lerr,
           'a': a,
-          'aerr': aerr
+          'aerr': aerr,
+          'drop': drop
           }
         }
 
@@ -39,7 +40,7 @@ def process(policys, prefix, percentil):
 
   # calc latency for each policy
   for policy in policys:
-    process_policy(policy)
+    process_policy(policy, force=False)
 
   # write metadata file with policys and latencys.
   # This file is used to chart plot after.

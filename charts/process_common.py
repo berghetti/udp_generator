@@ -102,6 +102,8 @@ def process_get_latencys(pol):
   l_err = []
   a_err = []
 
+  drops = []
+
   rates = os.listdir(pol)
   rates = sorted(rates, key=load_in_file_name)
 
@@ -114,11 +116,12 @@ def process_get_latencys(pol):
 
     rps = get_rps(folder) / 1e6
 
-    drop = get_drop(folder)
+    d = get_drop(folder)
+    drops.append(d)
 
-    if drop:
-      print(f'Dropped {drop} pkts in rate {rps} MRPS: Stoping')
-      break
+    #if d:
+    #  print(f'Dropped {drop} pkts in rate {rps} MRPS: Stoping')
+    #  break
 
     ((s, serr), (l, lerr), (a, aerr)) = get_latency(folder)
     print(s, l, a)
@@ -137,7 +140,8 @@ def process_get_latencys(pol):
   return x,\
     s_y, s_err, \
     l_y, l_err, \
-    a_y, a_err
+    a_y, a_err, \
+    drops
 
 
 # Function to read the 'test' file in a given rate folder

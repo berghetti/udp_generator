@@ -13,8 +13,10 @@ if __name__ == '__main__':
     name = list(pol.keys())[0]
     x = pol[name]['x']
     s = pol[name]['s']
+    drop = pol[name]['drop']
 
     print(name)
     print(f'  x: {x}')
-    print(f'  shorts: {s}\n')
+    print(f'  shorts: {s}')
+    print(f'  drop: {drop}\n')
 
