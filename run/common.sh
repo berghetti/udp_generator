@@ -17,7 +17,7 @@ create_rps_array()
 {
   echo "Creating RPS array to $TOT_WORKER worker and average service time $AVG_SERVICE_TIME"
   # load percent
-  for load in {10..100..10};
+  for load in {5..50..5};
   do
     r=$(awk -v st=$AVG_SERVICE_TIME -v w=$TOT_WORKER -v load=$load 'BEGIN { OFMT="%d"; print 10^6 / st * w * (load / 100)}')
     RPS+=($r)
