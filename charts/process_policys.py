@@ -51,6 +51,7 @@ def process(policys, prefix, percentil):
 
 if __name__ == '__main__':
 
+  # only a identifier to this test
   prefix = sys.argv[1]
 
   percentil = sys.argv[2]

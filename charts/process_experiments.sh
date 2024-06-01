@@ -65,8 +65,4 @@ fi
 
 $(dirname $0)/process_policys.py 'shorts_1' p999 $BASE_DIR/tests/exponential/shorts_1/*
 #$(dirname $0)/process_policys.py 'shorts_1' p999 $BASE_DIR/tests/exponential/shorts_1/afp-cfcfs
-#./process_policys.py 'shorts-2us' p999 $BASE_DIR/tests/exponential/shorts-2us/*
-#./process.py 'shorts' p999 $BASE_DIR/tests/exponential/shorts_1/*
-
-
 
