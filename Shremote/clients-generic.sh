@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./shremote.py prepare_machines.yml clintes -- --clients-generic --cmd "$1"
+./shremote.py prepare_machines.yml clients -- --clients-generic --cmd "$1"
