@@ -29,6 +29,7 @@ commands:
     - program: set_kernel_params
       hosts: [client0, client1, client2, client3, client4]
       start_after: set_clients_ip
+      checked_rtn: null
       #begin: 0
       enabled: $(hasarg('clients-kernel') or hasarg('clients'))$
 

@@ -18,7 +18,6 @@ programs:
             ./install_requirements.sh;
             ./install_dpdk.sh ||
             echo 0 &&
-            ./setup.sh &&
             make
 
     set_clients_ip:
