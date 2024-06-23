@@ -2,10 +2,10 @@ asn1crypto==1.2.0
 bcrypt
 certifi==2019.11.28
 cffi==1.13.2
-cryptography
+cryptography==3.3
 idna==2.8
-paramiko==3.4
+paramiko
 pycparser==2.19
-PyNaCl
+PyNaCl==1.5
 PyYAML==5.2
 six==1.13.0
