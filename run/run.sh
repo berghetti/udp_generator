@@ -19,7 +19,7 @@ echo "Runing ${policy} with rate ${rate}"
 run_w1()
 {
   set_w1
-  load_name='0.5_500'
+  load_name='wk1'
 
   test_dir="${dist}/${load_name}/${policy}/${rate}"
   run_one $test_dir $dist $rate $rand $test_i
@@ -28,7 +28,7 @@ run_w1()
 run_w2()
 {
   set_w2
-  load_name='1_100'
+  load_name='wk2'
 
   test_dir="${dist}/${load_name}/${policy}/${rate}"
   run_one $test_dir $dist $rate $rand $test_i
