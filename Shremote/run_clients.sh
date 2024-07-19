@@ -6,7 +6,7 @@ set -e
 source $(dirname $0)/../run/common.sh
 
 N_CLIENTS=5
-N_TESTS=5
+N_TESTS=1
 BASE_DIR='/proj/demeter-PG0/users/fabricio/afp_tests'
 
 WK="extreme"
@@ -33,7 +33,7 @@ for rate in ${RPS[@]}; do
   for i in $(seq 0 $((N_TESTS-1))); do
     rand=${RANDOMS[$i]}
 
-    until ./shremote.py clients.yml $1 -- --basedir $BASE_DIR --rate $rate --wk wk1 --rand $rand --test $i --policy $1
+    until ./shremote.py clients.yml $1 -- --basedir $BASE_DIR --rate $rate --wk $WK --rand $rand --test $i --policy $1
     do
       echo "Trying again after 60 seconds"
       sleep 60
