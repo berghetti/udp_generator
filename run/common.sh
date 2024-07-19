@@ -97,7 +97,7 @@ run_one()
   fi
 }
 
-set_w1()
+set_extreme()
 {
   SHORT=500
   LONG=500000
@@ -110,7 +110,7 @@ set_w1()
   sed -i '/\[requests_ratio\]/{n;n;s/\(long\s*=\s*\)[0-9]\+/\1'${LONG_RATIO}'/;}' $CONF_FILE
 }
 
-set_w2()
+set_high()
 {
   SHORT=1000
   LONG=100000

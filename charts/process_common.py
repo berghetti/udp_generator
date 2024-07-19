@@ -175,7 +175,7 @@ def process_test(rate_folder_path: str, test: str) -> None:
   overall_result_path = os.path.join(rate_folder_path, overall_result_filename)
 
   overall_result_df = pl.DataFrame({'latency': [overall_percentile]})
-  overall_result_df.select('latency').write_csv(overall_result_path, has_header=False)
+  overall_result_df.select('latency').write_csv(overall_result_path, include_header=False)
 
   TYPES = {1: 'shorts', 2: 'longs'}
   # Save latency by request type
@@ -187,7 +187,7 @@ def process_test(rate_folder_path: str, test: str) -> None:
     result_path = os.path.join(rate_folder_path, result_filename)
 
     # Save the group's 99th percentile data to CSV
-    group_df.select('latency').write_csv(result_path, has_header=False)
+    group_df.select('latency').write_csv(result_path, include_header=False)
 
 def process_policy(base_folder: str, force: bool = False) -> None:
   rate_folders = [f for f in os.listdir(base_folder) if os.path.isdir(os.path.join(base_folder, f))]

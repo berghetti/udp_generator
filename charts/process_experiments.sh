@@ -63,6 +63,6 @@ if [ "$1" == concat ]; then
   concat_results
 fi
 
-$(dirname $0)/process_policys.py 'shorts_1' p999 $BASE_DIR/tests/exponential/shorts_1/*
+$(dirname $0)/process_policys.py 'leveldb' p999 $BASE_DIR/tests/exponential/wk1/*
 #$(dirname $0)/process_policys.py 'shorts_1' p999 $BASE_DIR/tests/exponential/shorts_1/afp-cfcfs
 

@@ -16,19 +16,19 @@ set_classification_time 0
 
 echo "Runing ${policy} with rate ${rate}"
 
-run_w1()
+run_extreme()
 {
-  set_w1
-  load_name='wk1'
+  set_extreme
+  load_name='extreme'
 
   test_dir="${dist}/${load_name}/${policy}/${rate}"
   run_one $test_dir $dist $rate $rand $test_i
 }
 
-run_w2()
+run_high()
 {
-  set_w2
-  load_name='wk2'
+  set_high
+  load_name='high'
 
   test_dir="${dist}/${load_name}/${policy}/${rate}"
   run_one $test_dir $dist $rate $rand $test_i
@@ -37,7 +37,7 @@ run_w2()
 run_shorts()
 {
   set_only_shorts
-  load_name='shorts_1'
+  load_name='shorts'
 
   test_dir="${dist}/${load_name}/${policy}/${rate}"
   run_one $test_dir $dist $rate $rand $test_i
@@ -45,12 +45,12 @@ run_shorts()
 
 
 
-if [ "$wk" = "wk1" ]; then
-  run_w1
+if [ "$wk" = "extreme" ]; then
+  run_extreme
 fi;
 
-if [ "$wk" = "wk2" ]; then
-  run_w2
+if [ "$wk" = "high" ]; then
+  run_high
 fi;
 
 if [ "$wk" = "shorts" ]; then

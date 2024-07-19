@@ -6,27 +6,27 @@ set -e
 source $(dirname $0)/../run/common.sh
 
 N_CLIENTS=5
-N_TESTS=1
+N_TESTS=5
 BASE_DIR='/proj/demeter-PG0/users/fabricio/afp_tests'
 
-WK="rocks"
+WK="extreme"
 
 TOT_WORKER=14
 
 case $WK in
-  "shorts") AVG_SERVICE_TIME=1 ;;
-  "wk1") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.995 + 500*0.005 }') ;;
-  "wk2") AVG_SERVICE_TIME=$(awk 'BEGIN {print 1*0.99 + 100*0.01 }') ;;
-  "rocks") AVG_SERVICE_TIME=$(awk 'BEGIN {print 4.5*0.995 + 835*0.005 }') ;; #extreme
+  "shorts") AVG_SERVICE_TIME=$(awk 'BEGIN {print 1.0*1.0 }')  ;; #only one type
+  "extreme") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.8*0.995 + 650*0.005 }') ;; #extreme 99.5%/0.5%
+  "high") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.8*0.5 + 650*0.5 }') ;;   #high 50%/50%
 esac
 
 # create RPS[] based on TOT_WORKER and AVG_SERVICE_TIME
 create_rps_array 10 90 10
+echo ${RPS[@]}
 
 RANDOMS=(7 365877 374979 853172 908081 227836 64991 493663 174817 73997)
 
-#for rate in ${RPS[@]}; do
-for rate in ${RPS[0]}; do
+for rate in ${RPS[@]}; do
+#for rate in ${RPS[0]}; do
   echo "Rate: ${rate}"
   rate=$((rate / N_CLIENTS)) # per client rate
 
