@@ -15,16 +15,22 @@ concat_policy()
     rates=$(ls $pol)
     for rate in $rates; do
       rate_total=$((rate * CLIENT_COUNT))
-      echo "Creating $general_folder/$rate_total"
+      dir_test=$general_folder/$rate_total
 
-      mkdir -p $general_folder/$rate_total
+      if [ -d "$dir_test" ]; then
+        echo "Removing old files in $dir_test"
+        rm -f "$dir_test"/*
+      else
+        echo "Creating $dir_test"
+        mkdir -p $dir_test
+      fi
 
       # runs using same rate
       runs=$(ls $pol/$rate/test[0-9.] | wc -l)
 
       for i in $(seq 0 $((runs-1))); do
         # concat requests
-        cat client[0-9.]/$general_folder/$rate/test$i > $general_folder/$rate_total/test$i
+        cat client[0-9.]/$general_folder/$rate/test$i > $dir_test/test$i
 
         # sum reached rps
         offered=$(cat client[0-9.]/$general_folder/$rate/test${i}_rate | awk '$2 ~ /^[0-9]+$/ {sum += $1} END {print sum}')
@@ -63,6 +69,9 @@ if [ "$1" == concat ]; then
   concat_results
 fi
 
-$(dirname $0)/process_policys.py 'leveldb' p999 $BASE_DIR/tests/exponential/wk1/*
+#$(dirname $0)/process_policys.py 'db' p999 $BASE_DIR/tests/exponential/shorts/*
+$(dirname $0)/process_policys.py 'rocksdb' p999 $BASE_DIR/tests/exponential/extreme/*
+#$(dirname $0)/process_policys.py 'leveldb' p999 $BASE_DIR/tests/exponential/high/*
+#$(dirname $0)/process_policys.py 'leveldb' p999 $BASE_DIR/tests/exponential/extreme/*
 #$(dirname $0)/process_policys.py 'shorts_1' p999 $BASE_DIR/tests/exponential/shorts_1/afp-cfcfs
 
