@@ -73,7 +73,11 @@ def get_rps(rate):
       r = int(data.split()[0]) # get offered RPS
       rps.append(r)
 
+  if len(rps) == 0:
+    return 0
+
   return sum(rps)/len(rps)
+
 
 def get_drop(rate):
   files = glob.glob(f'{rate}/test[0-9]_rate')

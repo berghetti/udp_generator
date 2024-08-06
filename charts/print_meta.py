@@ -22,9 +22,9 @@ if __name__ == '__main__':
     print(name)
     print(f'  x: {x}')
     print(f'  shorts: {s}')
-    print(f'  shorts err: {serr}')
+    #print(f'  shorts err: {serr}')
     print(f'  longs: {l}')
-    print(f'  longs err: {lerr}')
+    #print(f'  longs err: {lerr}')
     print(f'  alls: {a}')
     print(f'  drop: {drop}\n')
 

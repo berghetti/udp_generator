@@ -6,7 +6,7 @@ set -e
 source $(dirname $0)/../run/common.sh
 
 N_CLIENTS=5
-N_TESTS=5
+N_TESTS=1
 BASE_DIR='/proj/demeter-PG0/users/fabricio/afp_tests'
 
 WK="extreme"
@@ -25,10 +25,8 @@ echo ${RPS[@]}
 
 RANDOMS=(7 365877 374979 853172 908081 227836 64991 493663 174817 73997)
 
-for rate in ${RPS[@]}; do
-#for rate in ${RPS[0]}; do
-#for rate in {600000..2000000..200000}; do
-#for rate in 1000000; do
+#for rate in ${RPS[@]}; do
+for rate in ${RPS[8]}; do
   echo "Rate: ${rate}"
   rate=$((rate / N_CLIENTS)) # per client rate
 
