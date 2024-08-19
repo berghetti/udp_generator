@@ -52,8 +52,8 @@ concat_results()
   CLIENT_COUNT=$(ls -l ./client[0-9.] | grep -c ^d)
   echo "Client counting: ${CLIENT_COUNT}"
 
-  #for pol in client0/tests/*/*/*; do
-  for pol in client0/tests/exponential/extreme/afp-teste; do
+  for pol in client0/tests/*/*/*; do
+  #for pol in client0/tests/exponential/extreme/afp-teste; do
     #remove client0/ of pol
     general_folder="${pol//client0\//}"
 
@@ -70,7 +70,7 @@ if [ "$1" == concat ]; then
   concat_results
 fi
 
-$(dirname $0)/process_policys.py 'afp_test' p999 $BASE_DIR/tests/exponential/extreme/afp-teste
+$(dirname $0)/process_policys.py 'rocksdb' p999 $BASE_DIR/tests/exponential/extreme/afp-rocksdb
 #$(dirname $0)/process_policys.py 'db' p999 $BASE_DIR/tests/exponential/shorts/*
 #$(dirname $0)/process_policys.py 'rocksdb' p999 $BASE_DIR/tests/exponential/extreme/*
 #$(dirname $0)/process_policys.py 'leveldb' p999 $BASE_DIR/tests/exponential/high/*
