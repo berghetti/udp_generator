@@ -70,7 +70,13 @@ if [ "$1" == concat ]; then
   concat_results
 fi
 
-$(dirname $0)/process_policys.py 'rocksdb' p999 $BASE_DIR/tests/exponential/extreme/afp-rocksdb
+for p in {p50,p99,p999}; do
+  echo $p
+  #$(dirname $0)/process_policys.py 'rocksdb' $p $BASE_DIR/tests/exponential/extreme/*
+  $(dirname $0)/process_policys.py "rocksdb_high" $p $BASE_DIR/tests/exponential/high/*
+done
+
+#$(dirname $0)/process_policys.py 'rocksdb' p999 $BASE_DIR/tests/exponential/extreme/*
 #$(dirname $0)/process_policys.py 'db' p999 $BASE_DIR/tests/exponential/shorts/*
 #$(dirname $0)/process_policys.py 'rocksdb' p999 $BASE_DIR/tests/exponential/extreme/*
 #$(dirname $0)/process_policys.py 'leveldb' p999 $BASE_DIR/tests/exponential/high/*

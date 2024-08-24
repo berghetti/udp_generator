@@ -2,7 +2,7 @@
 
 import os
 import sys
-import json
+import json5 as json
 
 if __name__ == '__main__':
   data = []
