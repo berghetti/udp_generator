@@ -80,7 +80,7 @@ class chart:
       self.fig, self.ax = plt.subplots(figsize=(9.0, 6.0), dpi=300)
       self.config['datasets'] = self.config.pop('datasets')
     else:
-      len_rows = len(config['mult_datasets'])
+      len_rows = len(self.config['mult_datasets'])
       self.fig, self.ax = plt.subplots(len_rows, 1, figsize=(9.0, 6.0), dpi=300, sharex=True, sharey=True)
       # hack subscriptable ax
       if len_rows == 1:
@@ -170,8 +170,6 @@ class chart:
       plt.tight_layout()
       plt.show()
 
-
-
 class line(chart):
   def __init__(self, dataset):
     config = DEFAULT_CONFIG.copy()
@@ -187,17 +185,24 @@ class line(chart):
       if dataset['errorbar']:
         self.ax.errorbar(**dataset['errorbar'])
 
+# class plot a chart with multple ax on one column
+# each key represet a ax to plot. each key is a list of dicts like class line
 class multrows_line(chart):
-  def __init__(self, config):
-    self.num_rows = len(config['mult_datasets'])
+  def __init__(self, dataset):
+    config = DEFAULT_CONFIG.copy()
+    config['mult_datasets'] = dataset
+    self.num_rows = len(dataset)
+    print(self.num_rows)
     super().__init__(config, multrows=True)
 
   def mult_datasets(self, v):
-    for i, arrival_dist in enumerate(v):
-      datasets = v[arrival_dist]
+    #print(v)
+    for i, key in enumerate(v):
+      datasets = v[key]
       for dataset in datasets:
+        print(dataset)
         #text = self.ax[i].set_title(str(arrival_dist).capitalize(), x=0.5, y=0.5, color='gray')
-        text = self.ax[i].set_title(str(arrival_dist).capitalize(), x=0.01, y=0.75, color='gray', loc='left')
+        text = self.ax[i].set_title(str(key).capitalize(), x=0.01, y=0.75, color='gray', loc='left')
         text.set_alpha(0.9)
         self.ax[i].plot(dataset['x'],
                         dataset['y'],
