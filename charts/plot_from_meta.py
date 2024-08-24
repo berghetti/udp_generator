@@ -5,20 +5,38 @@ import sys
 import json
 
 import charts
-from plot_common import *
 import charts_templates
 
 workload_name = ''
 percentil = ''
 
-def plot_shorts(dataset):
-  config = charts_templates.get_config_template()
+def get_styles(name):
+  if "afp" in name:
+    return 'blue', '--', '*'
 
-  config['datasets'] = dataset
-  config['ylim'] = [0, 300]
-  config['set_ticks']['ymajor'] = 25
-  config['save'] = f'imgs/{workload_name}_{percentil}_shorts.pdf'
-  charts.line(config)
+  if "psp" in name:
+    return 'orange', '-', '>'
+
+  if "rss" in name:
+    return 'red', '--', '<'
+
+  if "cfcfs" in name:
+    return 'green', '-.', '<'
+
+
+def plot_shorts(dataset):
+  line = charts.line(dataset)
+  line.update_config({
+    'ylim': [0, 300],
+    'set_ticks': {
+      'xmajor': 1,
+      'xminor': 0,
+      'ymajor': 25,
+      'yminor': 0,
+    },
+    'save': f'imgs/{workload_name}_{percentil}_shorts.pdf'
+  })
+  line.run()
 
 def plot_longs(dataset):
   config = charts_templates.get_config_template()
@@ -90,9 +108,9 @@ def plot_from_meta(meta_file):
 
 
   plot_shorts(dataset_shorts)
-  plot_longs(dataset_longs)
-  plot_alls(dataset_alls)
-  plot_drop(drops)
+  #plot_longs(dataset_longs)
+  #plot_alls(dataset_alls)
+  #plot_drop(drops)
 
 
 if __name__ == '__main__':

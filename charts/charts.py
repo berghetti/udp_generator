@@ -6,16 +6,76 @@ from matplotlib.ticker import FuncFormatter
 
 import charts_templates
 
+DEFAULT_CONFIG = {
+  #'mult_datasets': rows,
+  #'datasets': datasets,
+  'xlabel': 'Throughput (Mreqs/s)',
+  'ylabel': '99.9 lat. ($\mu$s)',
+
+  'font': {
+    'font.size':20,
+    'axes.labelsize': 20,
+    'axes.titlesize': 20,
+    'xtick.labelsize': 20,
+    'ytick.labelsize': 20,
+  },
+
+  'grid': {
+    'visible' : False,
+    'which': 'major',
+    'style' : {
+      #'color': '#ccc',
+      'linestyle': '-',
+      'linewidth': 0.2
+    },
+  },
+
+  'set_ticks': {
+    'xmajor': 1,
+    'xminor': 0,
+    'ymajor': 50,
+    'yminor': 0,
+  },
+
+  'legend': {
+    #'loc': 'upper center',
+    'loc': 'best',
+    #'bbox_to_anchor': (0.5, 1.45),
+    'title_fontsize' : 12,
+    'fontsize': 18,
+    #'ncol': 3,
+    #'mode': 'expand',
+    'frameon': False,
+  },
+
+  #'title':{
+  #    #'label': '{} requests'.format(TYPE).capitalize(),
+  #    'label': 'Curtas',
+  #    'loc': 'center'
+  #},
+
+  'ylim': [0, 100],
+  'xlim': [0, 100],  # max(overhead) + 10],
+  'save': 'default_save_name',
+  'save': '',
+  'show': 'n',
+}
+
 class chart:
   def __init__(self, config, multrows=False):
     self.config = config
+    self.multrows = multrows
 
+  def update_config(self, new_config: dict):
+    self.config.update(new_config)
+
+  def run(self):
     # should be first
-    if config['font']:
-      self.font(config['font'])
+    if self.config['font']:
+      self.font(self.config['font'])
     #  #del config['font']
 
-    if not multrows:
+    if not self.multrows:
       #self.fig, self.ax = plt.subplots(figsize=(9.0, 4.1), dpi=300) # fig 1
       self.fig, self.ax = plt.subplots(figsize=(9.0, 6.0), dpi=300)
       self.config['datasets'] = self.config.pop('datasets')
@@ -39,7 +99,7 @@ class chart:
     if 'save' in self.config:
       self.config['save'] = self.config.pop('save')
 
-    # call all functions in config dict
+    # magic, call all functions in config dict
     for func, value in self.config.items():
       if not value:
         continue
@@ -111,16 +171,18 @@ class chart:
       plt.show()
 
 
-class line(chart):
-  def __init__(self, config):
-    super().__init__(config)
 
+class line(chart):
+  def __init__(self, dataset):
+    config = DEFAULT_CONFIG.copy()
+    config['datasets'] = dataset
+    super().__init__(config)
 
   def datasets(self, v):
     for dataset in v:
       self.ax.plot(dataset['x'],
-                       dataset['y'],
-                       **dataset['style'])
+                   dataset['y'],
+                   **dataset['style'])
 
       if dataset['errorbar']:
         self.ax.errorbar(**dataset['errorbar'])
@@ -138,8 +200,8 @@ class multrows_line(chart):
         text = self.ax[i].set_title(str(arrival_dist).capitalize(), x=0.01, y=0.75, color='gray', loc='left')
         text.set_alpha(0.9)
         self.ax[i].plot(dataset['x'],
-                         dataset['y'],
-                         **dataset['style'])
+                        dataset['y'],
+                        **dataset['style'])
 
         if dataset['errorbar']:
           self.ax[i].errorbar(**dataset['errorbar'])
@@ -183,8 +245,8 @@ class multrows_line(chart):
 
 
   def ticklabel_format(self, v):
-      #for i in range(self.num_rows):
-      self.ax[0].ticklabel_format(**v)
+    #for i in range(self.num_rows):
+    self.ax[0].ticklabel_format(**v)
 
   def legend(self, v):
     self.ax[0].legend(**v)
