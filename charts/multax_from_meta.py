@@ -23,68 +23,10 @@ def get_styles(name):
   if "cfcfs" in name:
     return 'green', '-.', '<'
 
-
-def plot_shorts(dataset):
-  line = charts.line(dataset)
-  line.update_config({
-    'ylim': [0, 300],
-    'set_ticks': {
-      'xmajor': 1,
-      'xminor': 0,
-      'ymajor': 25,
-      'yminor': 0,
-    },
-    'save': f'imgs/{workload_name}_{percentil}_shorts.pdf'
-  })
-  line.run()
-
-def plot_longs(dataset):
-  line = charts.line(dataset)
-  line.update_config({
-    'ylim': [0, 2000],
-    'set_ticks': {
-      'xmajor': 1,
-      'xminor': 0,
-      'ymajor': 500,
-      'yminor': 250,
-    },
-    'save': f'imgs/{workload_name}_{percentil}_longs.pdf'
-  })
-  line.run()
-
-def plot_alls(dataset):
-  line = charts.line(dataset)
-  line.update_config({
-    'ylim': [0, 1000],
-    'set_ticks': {
-      'xmajor': 1,
-      'xminor': 0,
-      'ymajor': 100,
-      'yminor': 50,
-    },
-    'save': f'imgs/{workload_name}_{percentil}_alls.pdf'
-  })
-  line.run()
-
-def plot_drop(dataset):
-  line = charts.line(dataset)
-  line.update_config({
-    'ylim': [0, 500],
-    'ylabel': 'Packets Dropped',
-    'set_ticks': {
-      'xmajor': 1,
-      'xminor': 0,
-      'ymajor': 100,
-      'yminor': 50,
-    },
-    'save': f'imgs/{workload_name}_{percentil}_drops.pdf'
-  })
-  line.run()
-
 def get_datasets_from_meta(meta_file):
 
   global workload_name, percentil
-  workload_name = meta_file.split('_')[1]
+  workload_name = "_".join(meta_file.split('_')[:-2])
   percentil = meta_file.split('_')[-2]
 
   data = []
@@ -101,6 +43,7 @@ def get_datasets_from_meta(meta_file):
 
     print(name)
     x = policy[name]['x']
+    #x = [value * 1000 for value in x] #scale x
     s = [value / 1000 for value in policy[name]['s'] ]
     serr = [value / 1000 for value in policy[name]['serr'] ]
     l = [value / 1000 for value in policy[name]['l'] ]
@@ -135,9 +78,11 @@ def create_multax_dataset(files):
     percentil = str(file.split('_')[-2])
 
     if percentil == 'p999':
-      percentil = 'Percentil 99.9% ($\mu$s)'
+      percentil = 'p99.9% ($\mu$s)'
+    elif percentil == 'p99':
+      percentil = 'p99% ($\mu$s)'
     elif percentil == 'p50':
-      percentil = 'Median ($\mu$s)'
+      percentil = 'median ($\mu$s)'
     else:
       continue
 
@@ -149,6 +94,7 @@ def create_multax_dataset(files):
       d_a[percentil] = []
 
     ds, dl, da, _ = get_datasets_from_meta(file)
+    #print(ds)
 
     d_s[percentil] += ds
     d_l[percentil] += dl
@@ -156,21 +102,73 @@ def create_multax_dataset(files):
 
   return d_s, d_l, d_a
 
+def plot_shorts(dataset):
+  chart = charts.multrows_line(dataset)
+  chart.update_config({
+    'ylim': [0, 300],
+    'xlim': [0, 5.9],
+    'ylabel': '',
+    'set_ticks': {
+      'xmajor': 1,
+      'xminor': 0.5,
+      'ymajor': 50,
+      'yminor': 0,
+    },
+  'title':{
+      'label': f'{workload_name} get',
+      'loc': 'center'
+  },
+    'save': f'imgs/{workload_name}_shorts.pdf'
+  })
+  chart.run()
+
+def plot_longs(dataset):
+  chart = charts.multrows_line(dataset)
+  chart.update_config({
+    'ylim': [0, 2000],
+    'xlim': [0, 5.9],
+    'ylabel': '',
+    'set_ticks': {
+      'xmajor': 1,
+      'xminor': 0.5,
+      'ymajor': 500,
+      'yminor': 0,
+    },
+  'title':{
+      'label': f'{workload_name} scan',
+      'loc': 'center'
+  },
+    'save': f'imgs/{workload_name}_longs.pdf'
+  })
+  chart.run()
+
+def plot_alls(dataset):
+  chart = charts.multrows_line(dataset)
+  chart.update_config({
+    'ylim': [0, 500],
+    'xlim': [0, 5.9],
+    'ylabel': '',
+    'set_ticks': {
+      'xmajor': 1,
+      'xminor': 0.5,
+      'ymajor': 100,
+      'yminor': 0,
+    },
+  'title':{
+      'label': f'{workload_name} all',
+      'loc': 'center'
+  },
+    'save': f'imgs/{workload_name}_all.pdf'
+  })
+  chart.run()
+
 def plot_from_files(files):
   ds, dl, da = create_multax_dataset(files)
 
-  chart = charts.multrows_line(ds)
-  chart.update_config({
-    'ylim': [0, 300],
-    'set_ticks': {
-      'xmajor': 1,
-      'xminor': 0,
-      'ymajor': 25,
-      'yminor': 0,
-    },
-    'save': f'imgs/{workload_name}_{percentil}_shorts.pdf'
-  })
-  chart.run()
+  plot_shorts(ds)
+  plot_longs(dl)
+  plot_alls(da)
+
 
 if __name__ == '__main__':
   plot_from_files(sys.argv[1:])

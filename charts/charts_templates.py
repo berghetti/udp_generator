@@ -1,7 +1,4 @@
 
-def get_config_template():
-	pass
-
 def entry_dataset(x, y, yerr, label, m=None, ls=None, color=None):
   config = {
 	  'x': x,

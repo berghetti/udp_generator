@@ -21,11 +21,11 @@ DEFAULT_CONFIG = {
   },
 
   'grid': {
-    'visible' : False,
+    'visible' : True,
     'which': 'major',
     'style' : {
-      #'color': '#ccc',
-      'linestyle': '-',
+      'color': '#ccc',
+      'linestyle': '--',
       'linewidth': 0.2
     },
   },
@@ -39,18 +39,18 @@ DEFAULT_CONFIG = {
 
   'legend': {
     #'loc': 'upper center',
-    'loc': 'best',
-    #'bbox_to_anchor': (0.5, 1.45),
+    'loc': 'upper left',
+    #'loc': 'best',
+    'bbox_to_anchor': (0, 1.15, 1, 0.2),
     'title_fontsize' : 12,
     'fontsize': 18,
-    #'ncol': 3,
-    #'mode': 'expand',
+    'ncol': 4,
+    'mode': 'expand',
     'frameon': False,
   },
 
   #'title':{
   #    #'label': '{} requests'.format(TYPE).capitalize(),
-  #    'label': 'Curtas',
   #    'loc': 'center'
   #},
 
@@ -81,7 +81,8 @@ class chart:
       self.config['datasets'] = self.config.pop('datasets')
     else:
       len_rows = len(self.config['mult_datasets'])
-      self.fig, self.ax = plt.subplots(len_rows, 1, figsize=(9.0, 6.0), dpi=300, sharex=True, sharey=True)
+      #self.fig, self.ax = plt.subplots(len_rows, 1, figsize=(9.0, 6.0), dpi=300, sharex=True, sharey=True)
+      self.fig, self.ax = plt.subplots(len_rows, 1, figsize=(8.0, 8.0), dpi=300, sharex=True, sharey=False)
       # hack subscriptable ax
       if len_rows == 1:
         self.ax = [self.ax]
@@ -192,18 +193,18 @@ class multrows_line(chart):
     config = DEFAULT_CONFIG.copy()
     config['mult_datasets'] = dataset
     self.num_rows = len(dataset)
-    print(self.num_rows)
     super().__init__(config, multrows=True)
 
   def mult_datasets(self, v):
     #print(v)
     for i, key in enumerate(v):
       datasets = v[key]
+      self.ax[i].set_ylabel(key)
       for dataset in datasets:
-        print(dataset)
+        #print(dataset)
         #text = self.ax[i].set_title(str(arrival_dist).capitalize(), x=0.5, y=0.5, color='gray')
-        text = self.ax[i].set_title(str(key).capitalize(), x=0.01, y=0.75, color='gray', loc='left')
-        text.set_alpha(0.9)
+        #text = self.ax[i].set_title(str(key).capitalize(), x=0.01, y=0.75, color='gray', loc='left')
+        #text.set_alpha(0.9)
         self.ax[i].plot(dataset['x'],
                         dataset['y'],
                         **dataset['style'])
@@ -243,11 +244,10 @@ class multrows_line(chart):
     plt.xlabel(v)
 
   def ylabel(self, v):
-    #self.fig.supylabel(v)
+    self.fig.supylabel(v)
     #plt.ylabel(v, loc='center')
     #self.fig.text(0.02, 0.5, v, ha='center', va='center', rotation='vertical')
-    self.fig.text(0.01, 0.5, v, ha='center', va='center', rotation='vertical')
-
+    #self.fig.text(0.01, 0.5, v, ha='center', va='center', rotation='vertical')
 
   def ticklabel_format(self, v):
     #for i in range(self.num_rows):
@@ -255,6 +255,9 @@ class multrows_line(chart):
 
   def legend(self, v):
     self.ax[0].legend(**v)
+
+  def title(self, v):
+    self.fig.suptitle(v['label'])
 
 
 class bar(chart):
