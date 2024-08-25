@@ -8,7 +8,7 @@ def entry_dataset(x, y, yerr, label, m=None, ls=None, color=None):
 		'color': color,
 	    'linestyle': ls,
 		'marker': m,
-		'linewidth': 1.0,
+		'linewidth': 1.5,
 		'markersize': 4,
 		#'markerfacecolor': mc,
 		#'markeredgecolor': mc

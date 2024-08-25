@@ -9,7 +9,7 @@ import charts_templates
 DEFAULT_CONFIG = {
   #'mult_datasets': rows,
   #'datasets': datasets,
-  'xlabel': 'Throughput (Mreqs/s)',
+  'xlabel': 'Throughput (Kreqs/s)',
   'ylabel': '99.9 lat. ($\mu$s)',
 
   'font': {
