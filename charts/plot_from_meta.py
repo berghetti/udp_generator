@@ -5,7 +5,6 @@ import sys
 import json
 
 import charts
-import charts_templates
 
 workload_name = ''
 percentil = ''
@@ -113,16 +112,16 @@ def plot_from_meta(meta_file):
     color, ls, m = get_styles(name)
 
     dataset_shorts.append(
-      charts_templates.entry_dataset(x, s, serr, name, m, ls, color))
+      charts.entry_dataset(x, s, serr, name, m, ls, color))
 
     dataset_longs.append(
-      charts_templates.entry_dataset(x, l, lerr, name, m, ls, color))
+      charts.entry_dataset(x, l, lerr, name, m, ls, color))
 
     dataset_alls.append(
-      charts_templates.entry_dataset(x, a, aerr, name, m, ls, color))
+      charts.entry_dataset(x, a, aerr, name, m, ls, color))
 
     drops.append(
-      charts_templates.entry_dataset(x, drop, [0], name, m, ls, color))
+      charts.entry_dataset(x, drop, [0], name, m, ls, color))
 
 
   plot_shorts(dataset_shorts)

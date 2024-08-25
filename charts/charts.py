@@ -4,11 +4,8 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 from matplotlib.ticker import FuncFormatter
 
-import charts_templates
-
 DEFAULT_CONFIG = {
-  #'mult_datasets': rows,
-  #'datasets': datasets,
+  'datasets': '',
   'xlabel': 'Throughput (Kreqs/s)',
   'ylabel': '99.9 lat. ($\mu$s)',
 
@@ -49,10 +46,10 @@ DEFAULT_CONFIG = {
     'frameon': False,
   },
 
-  #'title':{
-  #    #'label': '{} requests'.format(TYPE).capitalize(),
-  #    'loc': 'center'
-  #},
+  'title':{
+      'label': 'Title',
+      'loc': 'center'
+  },
 
   'ylim': [0, 100],
   'xlim': [0, 100],  # max(overhead) + 10],
@@ -60,6 +57,40 @@ DEFAULT_CONFIG = {
   'save': '',
   'show': 'n',
 }
+
+def entry_dataset(x, y, yerr, label, m=None, ls=None, color=None):
+  config = {
+	  'x': x,
+	  'y': y,
+	  'style': {
+		'label': label,
+		'color': color,
+	    'linestyle': ls,
+		'marker': m,
+		'linewidth': 1.5,
+		'markersize': 4,
+		#'markerfacecolor': mc,
+		#'markeredgecolor': mc
+		},
+	  'errorbar': {
+		'x': x,
+		'y': y,
+		'yerr': yerr,
+		'ecolor': 'black',
+		'color': color,
+		'linestyle': ls,
+		'marker': m,
+		'elinewidth': 1,
+		#'barsabove': True,
+		'linewidth': 1.0,
+		'markersize': 4,
+		'capsize': 3, # upper and bottom in error bar
+		#'markerfacecolor': mc,
+		#'markeredgecolor': mc
+		},
+	  }
+
+  return config
 
 class chart:
   def __init__(self, config, multrows=False):
@@ -75,19 +106,15 @@ class chart:
       self.font(self.config['font'])
     #  #del config['font']
 
-    if not self.multrows:
-      #self.fig, self.ax = plt.subplots(figsize=(9.0, 4.1), dpi=300) # fig 1
-      self.fig, self.ax = plt.subplots(figsize=(9.0, 6.0), dpi=300)
-      self.config['datasets'] = self.config.pop('datasets')
-    else:
-      len_rows = len(self.config['mult_datasets'])
-      #self.fig, self.ax = plt.subplots(len_rows, 1, figsize=(9.0, 6.0), dpi=300, sharex=True, sharey=True)
-      self.fig, self.ax = plt.subplots(len_rows, 1, figsize=(8.0, 8.0), dpi=300, sharex=True, sharey=False)
+    self.config['datasets'] = self.config.pop('datasets')
+
+    len_rows = len(self.config['datasets'])
+    self.fig, self.ax = plt.subplots(len_rows, 1, figsize=(9.0, 6.0), dpi=300, sharex=(len_rows>1), sharey=False)
+
+    if self.multrows and len_rows == 1:
       # hack subscriptable ax
       if len_rows == 1:
         self.ax = [self.ax]
-
-      self.config['mult_datasets'] = self.config.pop('mult_datasets')
 
     #the order matters, leave the dataset second to last and show last
     #self.config['rows'] = self.config.pop('rows')
@@ -117,9 +144,6 @@ class chart:
     plt.rcParams['axes.formatter.use_locale'] = True
 
   def datasets(self, v):
-    pass
-
-  def mult_datasets(self, v):
     pass
 
   def title(self, v):
@@ -191,11 +215,11 @@ class line(chart):
 class multrows_line(chart):
   def __init__(self, dataset):
     config = DEFAULT_CONFIG.copy()
-    config['mult_datasets'] = dataset
+    config['datasets'] = dataset
     self.num_rows = len(dataset)
     super().__init__(config, multrows=True)
 
-  def mult_datasets(self, v):
+  def datasets(self, v):
     #print(v)
     for i, key in enumerate(v):
       datasets = v[key]
