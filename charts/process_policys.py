@@ -8,7 +8,10 @@ import json
 
 from process_common import process_get_policy_name, process_get_metadata_name, process_get_and_set_percentile, process_policy, process_get_latencys
 
-import charts_templates
+def remove_if_present(name, data):
+  for i, pol in enumerate(data):
+    if name == list(pol.keys())[0]:
+      del data[i]
 
 def write_metadata(policys, file, concat=True):
 
@@ -17,8 +20,12 @@ def write_metadata(policys, file, concat=True):
     with open(file, 'r') as f:
       data = json.load(f)
 
+
   for policy in policys:
     name = process_get_policy_name(policy)
+
+    #update data if already present in file
+    remove_if_present(name, data)
 
     x, s, serr, l, lerr, a, aerr, drop = process_get_latencys(policy)
     d = {
