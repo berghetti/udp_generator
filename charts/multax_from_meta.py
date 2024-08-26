@@ -5,86 +5,30 @@ import sys
 import json
 
 import charts
-import charts_templates
 
 workload_name = ''
 percentil = ''
 
 def get_styles(name):
   if "afp" in name:
-    return 'blue', '--', '*'
+    return 'blue', '--', 'o'
 
   if "psp" in name:
-    return 'orange', '-', '>'
+    return 'orange', ':', '^'
 
   if "rss" in name:
-    return 'red', '--', '<'
+    return 'red', '--', 'x'
 
   if "cfcfs" in name:
-    return 'green', '-.', '<'
+    return 'green', '-.', 's'
 
+def get_index_first_non_zero(array: list):
+  return next((i for i, x in enumerate(array) if x != 0), None)
 
-def plot_shorts(dataset):
-  line = charts.line(dataset)
-  line.update_config({
-    'ylim': [0, 300],
-    'set_ticks': {
-      'xmajor': 1,
-      'xminor': 0,
-      'ymajor': 25,
-      'yminor': 0,
-    },
-    'save': f'imgs/{workload_name}_{percentil}_shorts.pdf'
-  })
-  line.run()
-
-def plot_longs(dataset):
-  line = charts.line(dataset)
-  line.update_config({
-    'ylim': [0, 2000],
-    'set_ticks': {
-      'xmajor': 1,
-      'xminor': 0,
-      'ymajor': 500,
-      'yminor': 250,
-    },
-    'save': f'imgs/{workload_name}_{percentil}_longs.pdf'
-  })
-  line.run()
-
-def plot_alls(dataset):
-  line = charts.line(dataset)
-  line.update_config({
-    'ylim': [0, 1000],
-    'set_ticks': {
-      'xmajor': 1,
-      'xminor': 0,
-      'ymajor': 100,
-      'yminor': 50,
-    },
-    'save': f'imgs/{workload_name}_{percentil}_alls.pdf'
-  })
-  line.run()
-
-def plot_drop(dataset):
-  line = charts.line(dataset)
-  line.update_config({
-    'ylim': [0, 500],
-    'ylabel': 'Packets Dropped',
-    'set_ticks': {
-      'xmajor': 1,
-      'xminor': 0,
-      'ymajor': 100,
-      'yminor': 50,
-    },
-    'save': f'imgs/{workload_name}_{percentil}_drops.pdf'
-  })
-  line.run()
-
-def get_datasets_from_meta(meta_file):
+def get_datasets_from_meta(meta_file, discard_drop=True):
 
   global workload_name, percentil
-  workload_name = meta_file.split('_')[1]
+  workload_name = "_".join(meta_file.split('_')[:-2])
   percentil = meta_file.split('_')[-2]
 
   data = []
@@ -100,29 +44,36 @@ def get_datasets_from_meta(meta_file):
     name = list(policy.keys())[0]
 
     print(name)
-    x = policy[name]['x']
-    s = [value / 1000 for value in policy[name]['s'] ]
-    serr = [value / 1000 for value in policy[name]['serr'] ]
-    l = [value / 1000 for value in policy[name]['l'] ]
-    lerr = [value / 1000 for value in policy[name]['lerr'] ]
-    a = [value / 1000 for value in policy[name]['a'] ]
-    aerr = [value / 1000 for value in policy[name]['aerr'] ]
-
     drop = policy[name]['drop']
+
+    if discard_drop:
+      idx_drop_start = get_index_first_non_zero(drop)
+    else:
+      idx_drop_start = None
+
+    x = policy[name]['x'][:idx_drop_start]
+    x = [value * 1000 for value in x] #scale x
+    s = [value / 1000 for value in policy[name]['s'] ][:idx_drop_start]
+    serr = [value / 1000 for value in policy[name]['serr'] ][:idx_drop_start]
+    l = [value / 1000 for value in policy[name]['l'] ][:idx_drop_start]
+    lerr = [value / 1000 for value in policy[name]['lerr'] ][:idx_drop_start]
+    a = [value / 1000 for value in policy[name]['a'] ][:idx_drop_start]
+    aerr = [value / 1000 for value in policy[name]['aerr'] ][:idx_drop_start]
+    drop = drop[:idx_drop_start]
 
     color, ls, m = get_styles(name)
 
     dataset_shorts.append(
-      charts_templates.entry_dataset(x, s, serr, name, m, ls, color))
+      charts.entry_dataset(x, s, serr, name, m, ls, color))
 
     dataset_longs.append(
-      charts_templates.entry_dataset(x, l, lerr, name, m, ls, color))
+      charts.entry_dataset(x, l, lerr, name, m, ls, color))
 
     dataset_alls.append(
-      charts_templates.entry_dataset(x, a, aerr, name, m, ls, color))
+      charts.entry_dataset(x, a, aerr, name, m, ls, color))
 
     drops.append(
-      charts_templates.entry_dataset(x, drop, [0], name, m, ls, color))
+      charts.entry_dataset(x, drop, [0], name, m, ls, color))
 
   return dataset_shorts, dataset_longs, dataset_alls, drops
 
@@ -135,9 +86,11 @@ def create_multax_dataset(files):
     percentil = str(file.split('_')[-2])
 
     if percentil == 'p999':
-      percentil = 'Percentil 99.9% ($\mu$s)'
+      percentil = 'p99.9% ($\mu$s)'
+    elif percentil == 'p99':
+      percentil = 'p99% ($\mu$s)'
     elif percentil == 'p50':
-      percentil = 'Median ($\mu$s)'
+      percentil = 'median ($\mu$s)'
     else:
       continue
 
@@ -156,21 +109,73 @@ def create_multax_dataset(files):
 
   return d_s, d_l, d_a
 
+def plot_shorts(dataset):
+  chart = charts.multrows_line(dataset)
+  chart.update_config({
+    'ylim': [0, 300],
+    'xlim': [0, 89],
+    'ylabel': '',
+    'set_ticks': {
+      'xmajor': 10,
+      'xminor': 5,
+      'ymajor': 50,
+      'yminor': 25,
+    },
+  'title':{
+      'label': f'{workload_name} get',
+      'loc': 'center'
+  },
+    'save': f'imgs/{workload_name}_shorts.pdf'
+  })
+  chart.run()
+
+def plot_longs(dataset):
+  chart = charts.multrows_line(dataset)
+  chart.update_config({
+    'ylim': [0, 2000],
+    'xlim': [0, 89],
+    'ylabel': '',
+    'set_ticks': {
+      'xmajor': 10,
+      'xminor': 5,
+      'ymajor': 500,
+      'yminor': 250,
+    },
+  'title':{
+      'label': f'{workload_name} scan',
+      'loc': 'center'
+  },
+    'save': f'imgs/{workload_name}_longs.pdf'
+  })
+  chart.run()
+
+def plot_alls(dataset):
+  chart = charts.multrows_line(dataset)
+  chart.update_config({
+    'ylim': [0, 500],
+    'xlim': [0, 89],
+    'ylabel': '',
+    'set_ticks': {
+      'xmajor': 10,
+      'xminor': 5,
+      'ymajor': 100,
+      'yminor': 0,
+    },
+  'title':{
+      'label': f'{workload_name} all',
+      'loc': 'center'
+  },
+    'save': f'imgs/{workload_name}_all.pdf'
+  })
+  chart.run()
+
 def plot_from_files(files):
   ds, dl, da = create_multax_dataset(files)
 
-  chart = charts.multrows_line(ds)
-  chart.update_config({
-    'ylim': [0, 300],
-    'set_ticks': {
-      'xmajor': 1,
-      'xminor': 0,
-      'ymajor': 25,
-      'yminor': 0,
-    },
-    'save': f'imgs/{workload_name}_{percentil}_shorts.pdf'
-  })
-  chart.run()
+  plot_shorts(ds)
+  plot_longs(dl)
+  plot_alls(da)
+
 
 if __name__ == '__main__':
   plot_from_files(sys.argv[1:])
