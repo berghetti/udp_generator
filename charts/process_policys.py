@@ -11,9 +11,13 @@ from process_common import process_get_policy_name, process_get_metadata_name, p
 
 import charts_templates
 
-def write_metadata(policys, file):
+def write_metadata(policys, file, concat=True):
 
   data = []
+  if (concat):
+    with open(file, 'r') as f:
+      data = json.load(f)
+
   for policy in policys:
     name = process_get_policy_name(policy)
 
