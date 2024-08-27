@@ -17,9 +17,13 @@ def write_metadata(policys, file, concat=True):
 
   data = []
   if (concat):
-    with open(file, 'r') as f:
-      data = json.load(f)
-
+    try:
+      f = open(file, 'r')
+    except:
+      pass
+    else:
+      with f:
+       data = json.load(f)
 
   for policy in policys:
     name = process_get_policy_name(policy)
