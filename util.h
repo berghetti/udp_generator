@@ -26,16 +26,18 @@
 #define MAXSTRLEN 128
 #define UNIFORM_VALUE 0
 #define EXPONENTIAL_VALUE 1
-#define IPV4_ADDR(a, b, c, d)                                                  \
+#define IPV4_ADDR(a, b, c, d)                                                 \
   (((d & 0xff) << 24) | ((c & 0xff) << 16) | ((b & 0xff) << 8) | (a & 0xff))
 
-typedef struct lcore_parameters {
+typedef struct lcore_parameters
+{
   uint8_t qid;
   uint16_t portid;
   uint64_t nr_elements;
 } __rte_cache_aligned lcore_param;
 
-typedef struct timestamp_node_t {
+typedef struct timestamp_node_t
+{
   uint64_t flow_id;
   // uint64_t thread_id;
   // uint64_t ack_dup;
@@ -48,25 +50,29 @@ typedef struct timestamp_node_t {
   uint32_t service_time;
 
   // server times
-  uint64_t rx_time, app_recv_time, app_send_time, tx_time, worker_rx, worker_tx,
-      interrupt_count;
+  uint64_t rx_time, app_recv_time, app_send_time, tx_time, worker_rx,
+      worker_tx, interrupt_count;
 } node_t;
 
-enum rtype {
+enum rtype
+{
   SHORT = 0,
   LONG,
 
   TOTAL_RTYPES
 };
 
-typedef struct request_type {
+typedef struct request_type
+{
   enum rtype type;
   uint32_t ratio;
   uint64_t service_time; // in nanoseconds
+  uint64_t db_key;       // Database key
 } request_type_t;
 
 #define MAX_QUEUES 16
-struct queue_rps {
+struct queue_rps
+{
   uint64_t rps_offered;
   uint64_t rps_reached;
   uint64_t tot_tx;
@@ -108,25 +114,26 @@ extern uint64_t *incoming_idx_array;
 
 extern uint64_t seed;
 
-void clean_heap();
-void wait_timeout();
-void print_dpdk_stats();
-void print_stats_output();
-void process_config_file();
-double sample(double lambda);
-void allocate_incoming_nodes();
-void create_interarrival_array();
-void create_flow_indexes_array();
-void create_request_types_array();
-int app_parse_args(int argc, char **argv);
+void clean_heap ();
+void wait_timeout ();
+void print_dpdk_stats ();
+void print_stats_output ();
+void process_config_file ();
+double sample (double lambda);
+void allocate_incoming_nodes ();
+void create_interarrival_array ();
+void create_flow_indexes_array ();
+void create_request_types_array ();
+int app_parse_args (int argc, char **argv);
 
-enum payload_item {
+enum payload_item
+{
   FLOW_ID = 0,
   SEND_TIME,
   RECV_TIME,
   TYPE, // 3
+  DB_KEY,
   SERVICE_TIME,
-  CLASSIFICATION_TIME,
 
   /* server times */
   // RX_TIME, // 6
@@ -140,7 +147,7 @@ enum payload_item {
   PAYLOAD_TOTAL_ITEMS
 };
 
-void fill_payload_pkt(struct rte_mbuf *pkt, enum payload_item item,
-                      uint64_t value);
+void fill_payload_pkt (struct rte_mbuf *pkt, enum payload_item item,
+                       uint64_t value);
 
 #endif // __UTIL_H__

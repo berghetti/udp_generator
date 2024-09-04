@@ -98,13 +98,16 @@ create_request_types_array (void)
             }
 
           // printf("t %u\n", t);
+          // to fake work server
           debug_types[t]++;
           rtype[j].type = t + 1; // psp server
-          // rtype[j].service_time = cfg_request_types[t].service_time;
+          rtype[j].service_time = cfg_request_types[t].service_time;
+
+          // to DB server
           char buff[8] = { 0 };
           unsigned r = rte_rand () % 5000; // 5000 keys in server DB
           snprintf (buff, sizeof buff, "k%u", r);
-          memcpy (&rtype[j].service_time, buff, 8);
+          memcpy (&rtype[j].db_key, buff, sizeof (buff));
         }
     }
 
