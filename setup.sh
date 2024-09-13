@@ -1,11 +1,27 @@
 #!/bin/bash
+source ./MACHINE_CONFIG
 
-# 16GiB
-sudo bash -c 'echo 8192 > /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages'
+# disable whatchdog
+sudo sysctl -w kernel.watchdog=0
 
-sudo ip link set down dev enp24s0f1
-sudo modprobe uio
-sudo insmod dpdk-kmods/linux/igb_uio/igb_uio.ko
-sudo ./dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1
+# set hugepages
+sudo bash -c "echo 8192 > /sys/devices/system/node/node${NUMA_ID}/hugepages/hugepages-2048kB/nr_hugepages"
 
-./misc/turbo.sh disable
+# load kmod_ipi
+$(dirname $0)/../kmod/load_ipi.sh
+
+# disabe turbo boost
+$(dirname $0)/turbo.sh disable
+
+# bind NIC
+if [[ "$NIC_BIND" != "false" ]]; then
+  sudo modprobe uio
+  sudo insmod $(dirname $0)/../deps/dpdk-kmods/linux/igb_uio/igb_uio.ko
+  sudo ip link set down dev ${NIC_NAME}
+  sudo $(dirname $0)/../deps/dpdk/usertools/dpdk-devbind.py -b igb_uio ${NIC_PCI}
+fi
+
+# create database
+sudo mkdir -p /tmpfs
+sudo mount -t tmpfs -o size=50G,mode=1777 tmpfs /tmpfs
+make database -C $(dirname $0)/..

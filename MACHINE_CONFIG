@@ -1,0 +1,8 @@
+#trick: use lstopo
+
+NUMA_ID=0
+CPUS=0,2,4,6,8,10,12
+
+NIC_BIND=true
+NIC_NAME=enp4s0f0
+NIC_PCI=04:00.0
