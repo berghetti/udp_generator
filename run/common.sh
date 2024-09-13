@@ -84,7 +84,7 @@ run_one()
 
   date +%H:%M:%S:%N > ${DIR}/start_time$TEST_N;
   sudo ./build/udp-generator \
-  -l $(seq -s , 0 2 28) -- \
+  -l ${CPUS} -- \
   -d ${DIST} \
   -r ${RATE} \
   -f 256 -s 90 -t 10 -q 1 \
