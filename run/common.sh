@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ROOT_PATH=$(dirname $0)"/.."
-source $(ROOT_PATH)/MACHINE_CONFIG
+source ${ROOT_PATH}/MACHINE_CONFIG
 
 # Default base_dir
 BASE_DIR=${BASE_DIR:-/proj/demeter-PG0/users/fabricio/afp_tests/}
@@ -24,7 +24,7 @@ create_rps_array()
   # load percent
   for load in $(seq $start $step $end);
   do
-    r=$(awk -v st=$AVG_SERVICE_TIME -v w=$TOT_WORKER -v load=$load 'BEGIN { OFMT="%d"; print 10^6 / st * w * (load / 100)}')
+    r=$(awk -v st=$AVG_SERVICE_TIME -v w=$TOT_WORKER -v L=$load 'BEGIN { OFMT="%d"; print 10^6 / st * w * (L / 100)}')
     RPS+=($r)
   done
 }

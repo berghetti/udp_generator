@@ -12,6 +12,7 @@ rand=$5
 test_i=$6
 dist='exponential'
 
+
 set_classification_time 0
 
 echo "Runing ${policy} with rate ${rate}"
