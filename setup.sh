@@ -16,12 +16,8 @@ $(dirname $0)/turbo.sh disable
 # bind NIC
 if [[ "$NIC_BIND" != "false" ]]; then
   sudo modprobe uio
-  sudo insmod $(dirname $0)/../deps/dpdk-kmods/linux/igb_uio/igb_uio.ko
+  sudo insmod $(dirname $0)/dpdk-kmods/linux/igb_uio/igb_uio.ko
   sudo ip link set down dev ${NIC_NAME}
-  sudo $(dirname $0)/../deps/dpdk/usertools/dpdk-devbind.py -b igb_uio ${NIC_PCI}
+  sudo $(dirname $0)/dpdk/usertools/dpdk-devbind.py -b igb_uio ${NIC_PCI}
 fi
 
-# create database
-sudo mkdir -p /tmpfs
-sudo mount -t tmpfs -o size=50G,mode=1777 tmpfs /tmpfs
-make database -C $(dirname $0)/..
