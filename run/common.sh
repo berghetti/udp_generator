@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ROOT_PATH=$(dirname $0)"/.."
+source $(ROOT_PATH)/MACHINE_CONFIG
 
 # Default base_dir
 BASE_DIR=${BASE_DIR:-/proj/demeter-PG0/users/fabricio/afp_tests/}
@@ -51,7 +52,7 @@ run_test()
     date +%H:%M:%S:%N > ${DIR}/start_time$i;
     set -x;
     sudo ${ROOT_PATH}/build/udp-generator \
-    -l $(seq -s , 0 2 28) -- \
+    -l ${CPUS} -- \
     -d ${DIST} \
     -r ${RATE} \
     -f 256 -s 90 -t 10 -q 1 \
