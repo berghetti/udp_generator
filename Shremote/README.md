@@ -1,6 +1,6 @@
 
 ## Install requirements
-pip install -r ./requirements.txt
+bash ./setup.sh
 
 ## Edit address of remote clients and ensure than this server can login using ssh on clients
 Edit `hosts.yml`
