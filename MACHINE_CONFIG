@@ -1,8 +1,8 @@
 #trick: use lstopo
 
 NUMA_ID=0
-CPUS=0,2,4,6,8,10,12
+CPUS=0,2,4,6,8,10,12,14,16,18,20,22,24,26,28
 
 NIC_BIND=true
-NIC_NAME=enp4s0f1
-NIC_PCI=04:00.1
+NIC_NAME=enp24s0f1
+NIC_PCI=18:00.1
