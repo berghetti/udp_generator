@@ -12,6 +12,9 @@ This not should show any error.
 
 ## Prepare clients machines
 
+edit ../MACHINE_CONFIG
+`git add ../MACHINE_CONFIG; git commit -m "update MACHINE_CONFIG"; git push`
+
 Part1 (install DPDK, adjusts clients IPs, set boot parameters and reboot):
 `./prepare_clients.sh`
 
