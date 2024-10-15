@@ -203,7 +203,7 @@ def process_policy(base_folder: str, force: bool = False) -> None:
     tests = glob.glob(f'{rate_folder_path}/test[0-9]')
 
     for test in tests:
-      r = glob.glob(f'{test}_{percentile}_result')
+      r = glob.glob(f'{test}_*_{percentile}_result')
       if len(r) > 0 and force == False:
         print(f'{test} already processed... skiping...')
         continue
