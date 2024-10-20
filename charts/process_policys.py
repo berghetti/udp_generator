@@ -4,7 +4,7 @@
 
 import os
 import sys
-import json
+import json5 as json
 
 from process_common import process_get_policy_name, process_get_metadata_name, process_get_and_set_percentile, process_policy, process_get_latencys
 
