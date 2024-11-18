@@ -7,9 +7,7 @@ Tested using DPDK 23.11 and ubuntu 20.04
 ```bash
 git clone https://github.com/carvalhof/udp_generator
 cd udp_generator
-./install_requirements.sh
-./install_dpdk.sh
-make
+./install_requirements.sh; ./install_dpdk.sh; make
 ```
 
 ## Running
