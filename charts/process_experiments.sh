@@ -40,9 +40,12 @@ concat_policy()
         dropped=$(cat client[0-9.]/$general_folder/$rate/test${i}_rate | awk '$2 ~ /^[0-9]+$/ {sum += $5} END {print sum}')
 
         echo -e "offered\treached\ttot_tx\ttot_rx\tdropped\n$offered\t$reached\t$tot_tx\t$tot_rx\t$dropped" > $general_folder/$rate_total/test${i}_rate
-
       done
+
     done
+
+    # remove computed policy to save disk space
+    rm -rf $pol
 }
 
 # join individual client results
@@ -73,7 +76,7 @@ fi
 for p in {p50,p99,p999}; do
   echo $p
   #$(dirname $0)/process_policys.py 'rocksdb' $p $BASE_DIR/tests/exponential/extreme/*
-  $(dirname $0)/process_policys.py "rocksdb_high" $p $BASE_DIR/tests/exponential/high/*
+  $(dirname $0)/process_policys.py "fake_high" $p $BASE_DIR/tests/exponential/high/*
 done
 
 #$(dirname $0)/process_policys.py 'rocksdb' p999 $BASE_DIR/tests/exponential/extreme/*
