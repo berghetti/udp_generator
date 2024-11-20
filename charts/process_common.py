@@ -81,15 +81,24 @@ def get_rps(rate):
 
 def get_drop(rate):
   files = glob.glob(f'{rate}/test[0-9]_rate')
-  drops = []
+  #drops = []
+  tot_tx = []
+  tot_rx = []
   for file in files:
     with open(file, 'r') as f:
-      next(f) # skip first line
+      next(f) # skip header line
       data = f.read()
-      r = int(data.split()[-1]) # get drop
-      drops.append(r)
+      #print(data)
+      tot_tx.append(int(data.split()[2]))
+      tot_rx.append( int(data.split()[3]))
+      
+      #r = int(data.split()[-1]) # get drop
+      #drops.append(r)
 
-  return sum(drops)
+  drop_percent = (1 - (sum(tot_rx) / sum(tot_tx))) * 100
+  return round(drop_percent, 2)
+
+  #return sum(drops)
 
 
 def load_in_file_name(f):
