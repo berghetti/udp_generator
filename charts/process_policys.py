@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/env python3
 
 # process policys and create metadata file with latencys to each policy and request type
 
