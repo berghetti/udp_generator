@@ -95,8 +95,9 @@ def get_drop(rate):
       #r = int(data.split()[-1]) # get drop
       #drops.append(r)
 
+  #return sum(tot_tx) - sum(tot_rx);
   drop_percent = (1 - (sum(tot_rx) / sum(tot_tx))) * 100
-  return round(drop_percent, 2)
+  return round(drop_percent, 4)
 
   #return sum(drops)
 
