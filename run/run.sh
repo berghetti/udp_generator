@@ -12,48 +12,34 @@ rand=$5
 test_i=$6
 dist='exponential'
 
-
 set_classification_time 0
 
 echo "Runing ${policy} with rate ${rate}"
 
-run_extreme()
+_run()
 {
-  set_extreme
-  load_name='extreme'
-
+  load_name=$1
+  
   test_dir="${dist}/${load_name}/${policy}/${rate}"
   run_one $test_dir $dist $rate $rand $test_i
 }
-
-run_high()
-{
-  set_high
-  load_name='high'
-
-  test_dir="${dist}/${load_name}/${policy}/${rate}"
-  run_one $test_dir $dist $rate $rand $test_i
-}
-
-run_shorts()
-{
-  set_only_shorts
-  load_name='shorts'
-
-  test_dir="${dist}/${load_name}/${policy}/${rate}"
-  run_one $test_dir $dist $rate $rand $test_i
-}
-
-
 
 if [ "$wk" = "extreme" ]; then
-  run_extreme
+  set_extreme
+  _run 'extreme'
 fi;
 
 if [ "$wk" = "high" ]; then
-  run_high
+  set_high
+  _run 'high'
 fi;
 
 if [ "$wk" = "shorts" ]; then
-  run_shorts
+  set_only_shorts
+  _run 'shorts'
+fi;
+
+if [ "$wk" = "very_shorts" ]; then
+  set_very_shorts
+  _run 'very_shorts'
 fi;
