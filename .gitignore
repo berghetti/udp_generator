@@ -11,3 +11,5 @@ dpdk-kmods/
 build/
 
 tags
+
+Shremote/*
