@@ -69,20 +69,32 @@ concat_results()
   popd
 }
 
+remove_processed_test()
+{
+  folder=$1
+  pushd $folder
+
+  #  policy/rate/test0
+  rm */*/test[0-9]
+
+  popd
+}
+
+# shorts, high, extreme
+WK="high"
+
 if [ "$1" == concat ]; then
   concat_results
 fi
 
+if [ "$1" == clean ]; then
+  remove_processed_test $BASE_DIR/tests/exponential/${WK}
+  exit 0
+fi
+
+
 for p in {p50,p99,p999}; do
   echo $p
   #$(dirname $0)/process_policys.py 'rocksdb' $p $BASE_DIR/tests/exponential/extreme/*
-  $(dirname $0)/process_policys.py "fake_high" $p $BASE_DIR/tests/exponential/high/*
+  $(dirname $0)/process_policys.py "fake_${WK}" $p $BASE_DIR/tests/exponential/${WK}/*
 done
-
-#$(dirname $0)/process_policys.py 'rocksdb' p999 $BASE_DIR/tests/exponential/extreme/*
-#$(dirname $0)/process_policys.py 'db' p999 $BASE_DIR/tests/exponential/shorts/*
-#$(dirname $0)/process_policys.py 'rocksdb' p999 $BASE_DIR/tests/exponential/extreme/*
-#$(dirname $0)/process_policys.py 'leveldb' p999 $BASE_DIR/tests/exponential/high/*
-#$(dirname $0)/process_policys.py 'leveldb' p999 $BASE_DIR/tests/exponential/extreme/*
-#$(dirname $0)/process_policys.py 'shorts_1' p999 $BASE_DIR/tests/exponential/shorts_1/afp-cfcfs
-
