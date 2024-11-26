@@ -24,14 +24,15 @@ _run()
 
 if [ "$wk" = "extreme" ]; then
   set_extreme
-  _run 'extreme'
 elif [ "$wk" = "high" ]; then
   set_high
-  _run 'high'
 elif [ "$wk" = "shorts" ]; then
   set_only_shorts
-  _run 'shorts'
 elif [ "$wk" = "very_shorts" ]; then
   set_very_shorts
-  _run 'very_shorts'
+else
+  echo "${wk} unknow"
+  exit 1
 fi;
+  
+_run $wk
