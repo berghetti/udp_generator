@@ -25,19 +25,13 @@ _run()
 if [ "$wk" = "extreme" ]; then
   set_extreme
   _run 'extreme'
-fi;
-
-if [ "$wk" = "high" ]; then
+elif [ "$wk" = "high" ]; then
   set_high
   _run 'high'
-fi;
-
-if [ "$wk" = "shorts" ]; then
+elif [ "$wk" = "shorts" ]; then
   set_only_shorts
   _run 'shorts'
-fi;
-
-if [ "$wk" = "very_shorts" ]; then
+elif [ "$wk" = "very_shorts" ]; then
   set_very_shorts
   _run 'very_shorts'
 fi;
