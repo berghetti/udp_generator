@@ -1,8 +1,6 @@
 #!/bin/bash
 
-# Script utilized to run in multiples clientes using Shremote
-
-source $(dirname $0)/../run/common.sh
+source $(dirname $0)/common.sh
 
 BASE_DIR=$1
 policy=$2

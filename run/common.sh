@@ -29,48 +29,11 @@ create_rps_array()
   done
 }
 
-RANDOMS=(7 365877 374979 853172 908081 227836 64991 493663 174817 73997)
-
 CONF_FILE="${ROOT_PATH}/config.cfg"
-run_test()
-{
-  DIR="${BASE_DIR}/tests/${1}"
-  DIST=$2
-  RATE=$3
 
-  mkdir -p $DIR
-
-  # run each rate RUNS times
-  for i in $(seq 0 $((RUNS-1))); do
-
-    RAND=${RANDOMS[$i]}
-    if [ -n "$4" ]; then
-      RAND=$((RAND+$4))
-    fi
-    echo $RAND
-
-    date +%H:%M:%S:%N > ${DIR}/start_time$i;
-    set -x;
-    sudo ${ROOT_PATH}/build/udp-generator \
-    -l ${CPUS} -- \
-    -d ${DIST} \
-    -r ${RATE} \
-    -f 256 -s 90 -t 10 -q 1 \
-    -c ${CONF_FILE} \
-    -o ${DIR}/test$i \
-    -x ${RAND} > ${DIR}/stats$i
-    set +x
-
-
-    if [ $? -ne 0 ]; then
-      echo "Error start test"
-      exit 1
-    fi
-
-    sleep 5
-  done
-
-}
+SHORT=0
+LONG=0
+SHORT_RATIO=0
 
 run_one()
 {
@@ -81,16 +44,27 @@ run_one()
   TEST_N=$5
 
   mkdir -p $DIR
+  SHORT_RATIO=$(awk -v ratio=$SHORT_RATIO 'BEGIN {print ratio / 1000}') \
 
   date +%H:%M:%S:%N > ${DIR}/start_time$TEST_N;
-  sudo ./build/udp-generator \
-  -l ${CPUS} -- \
-  -d ${DIST} \
-  -r ${RATE} \
-  -f 256 -s 90 -t 10 -q 1 \
-  -c ${CONF_FILE} \
-  -o ${DIR}/test$TEST_N \
-  -x ${RAND} > ${DIR}/stats$TEST_N
+
+  set -xe
+  ~/shinjuku/client/bimodal 192.168.10.50 6789 \
+    ${RATE} \
+    ${SHORT} \
+    ${LONG} \
+    ${SHORT_RATIO} \
+    20 \
+    ${DIR}/test${TEST_N}
+
+  #sudo ./build/udp-generator \
+  #-l ${CPUS} -- \
+  #-d ${DIST} \
+  #-r ${RATE} \
+  #-f 256 -s 90 -t 10 -q 1 \
+  #-c ${CONF_FILE} \
+  #-o ${DIR}/test$TEST_N \
+  #-x ${RAND} > ${DIR}/stats$TEST_N
 
   if [ $? -ne 0 ]; then
     echo "Error start test"
