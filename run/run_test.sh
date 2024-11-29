@@ -25,7 +25,7 @@ esac
 # create RPS[] based on TOT_WORKER and AVG_SERVICE_TIME
 create_rps_array 1 7 3
 create_rps_array 10 60 5 
-#create_rps_array 80 80 10
+create_rps_array 65 90 5
 echo ${RPS[@]}
 
 RANDOMS=(7 365877 374979 853172 908081 227836 64991 493663 174817 73997)
@@ -35,7 +35,12 @@ for rate in ${RPS[@]}; do
   RATE=$((rate / N_CLIENTS)) # per client rate
 
   for i in $(seq 0 $((N_TESTS-1))); do
-    exec $(dirname $0)/run.sh $BASE_DIR $POLICY $RATE $WK ${RANDOMS[$i]} $i
+    $(dirname $0)/run.sh $BASE_DIR $POLICY $RATE $WK ${RANDOMS[$i]} $i
+    if [ $? -ne 0 ]; then
+      echo "Error test"
+      exit 1
+    fi
+    sleep 10
   done
 done
 

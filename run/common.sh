@@ -56,6 +56,7 @@ run_one()
     ${SHORT_RATIO} \
     20 \
     ${DIR}/test${TEST_N}
+  set +xe
 
   #sudo ./build/udp-generator \
   #-l ${CPUS} -- \
@@ -65,11 +66,6 @@ run_one()
   #-c ${CONF_FILE} \
   #-o ${DIR}/test$TEST_N \
   #-x ${RAND} > ${DIR}/stats$TEST_N
-
-  if [ $? -ne 0 ]; then
-    echo "Error start test"
-    exit 1
-  fi
 }
 
 set_extreme()
