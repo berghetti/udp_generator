@@ -408,8 +408,8 @@ print_stats_output ()
       tot_tx += q_rps[i].tot_tx;
       tot_rx += q_rps[i].tot_rx;
 
-      // drop the first 50% packets for warming up
-      uint64_t j = 0.5 * incoming_idx;
+      // drop the first 10% packets for warming up
+      uint64_t j = 0.1 * incoming_idx;
 
       // print the RTT latency in (ns)
       node_t *cur;
