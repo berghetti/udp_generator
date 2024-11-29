@@ -7,9 +7,6 @@ sudo sysctl -w kernel.watchdog=0
 # set hugepages
 sudo bash -c "echo 8192 > /sys/devices/system/node/node${NUMA_ID}/hugepages/hugepages-2048kB/nr_hugepages"
 
-# load kmod_ipi
-$(dirname $0)/../kmod/load_ipi.sh
-
 # disabe turbo boost
 $(dirname $0)/turbo.sh disable
 
