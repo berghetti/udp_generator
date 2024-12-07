@@ -2,7 +2,7 @@
 
 This client is used to test AFP.
 
-Tested using DPDK 23.11 and ubuntu 20.04 and 18.04
+Tested using DPDK 23.11 with ubuntu 20.04 and 18.04
 
 ## Building
 
