@@ -49,7 +49,8 @@ extern uint64_t nr_queues;
 extern uint16_t nr_servers;
 extern uint32_t frame_size;
 extern uint32_t udp_payload_size;
-extern struct rte_mempool *pktmbuf_pool;
+extern struct rte_mempool *pktmbuf_pool_tx;
+extern struct rte_mempool *pktmbuf_pool_rx;
 extern control_block_t *control_blocks;
 
 void init_blocks();

@@ -33,7 +33,8 @@ uint64_t classification_time;
 // Heap and DPDK allocated
 node_t **incoming_array;
 uint64_t *incoming_idx_array;
-struct rte_mempool *pktmbuf_pool;
+struct rte_mempool *pktmbuf_pool_tx;
+struct rte_mempool *pktmbuf_pool_rx;
 control_block_t *control_blocks;
 
 struct queue_rps q_rps[MAX_QUEUES];
@@ -108,18 +109,6 @@ process_rx_pkt (struct rte_mbuf *pkt, node_t *incoming, uint64_t *incoming_idx)
   // node->interrupt_count = payload[INTERRUPT_COUNT];
 
   return 1;
-}
-
-// Start the client to configure the rte_flow properly
-void
-start_client (uint16_t portid)
-{
-  for (int i = 0; i < nr_flows; i++)
-    {
-      // insert the rte_flow in the NIC to retrieve the flow id for incoming
-      // packets of this flow
-      insert_flow (portid, i);
-    }
 }
 
 // RX processing
@@ -211,6 +200,7 @@ lcore_rx (void *arg)
           // fill the timestamp into packet payload
           fill_payload_pkt (pkts[i], RECV_TIME, now);
         }
+
       if (rte_ring_sp_enqueue_burst (rx_ring, (void *const *)pkts, nb_rx, NULL)
           != nb_rx)
         {
@@ -219,7 +209,7 @@ lcore_rx (void *arg)
                     rte_strerror (errno));
         }
     }
-
+  
   q_rps[qid].rps_reached
       = tot_nb_rx / ((rte_get_tsc_cycles () - start) / rte_get_timer_hz ());
 
@@ -251,21 +241,15 @@ lcore_tx (void *arg)
   uint64_t start = rte_get_tsc_cycles ();
   uint64_t tot_nb_tx = 0;
 
-  while (!quit_tx)
+  while (i < nr_elements)
     {
-      // reach the limit
-      if (unlikely (i >= nr_elements))
-        {
-          break;
-        }
-
       // choose the flow to send
       uint16_t flow_id = flow_indexes[i];
 
       // generate packets
       for (; nb_pkts < n; nb_pkts++)
         {
-          pkts[nb_pkts] = rte_pktmbuf_alloc (pktmbuf_pool);
+          pkts[nb_pkts] = rte_pktmbuf_alloc (pktmbuf_pool_tx);
           // fill the packet with the flow information
           fill_udp_packet (flow_id, pkts[nb_pkts]);
 
@@ -351,9 +335,6 @@ main (int argc, char **argv)
 
   // initialize the control blocks
   init_blocks ();
-
-  // start client (3-way handshake for each flow)
-  start_client (portid);
 
   // create the DPDK rings for RX threads
   create_dpdk_rings ();

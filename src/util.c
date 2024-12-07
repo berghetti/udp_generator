@@ -341,12 +341,11 @@ wait_timeout ()
 
   // wait for remaining
   t0 = rte_rdtsc_precise ();
-  while ((rte_rdtsc () - t0) < (10 * 1000000 * TICKS_PER_US))
+  while ((rte_rdtsc () - t0) < (5 * 1000000 * TICKS_PER_US))
     ;
 
   // set quit flag for all internal cores
   quit_rx = 1;
-  quit_tx = 1;
   quit_rx_ring = 1;
 }
 
@@ -450,13 +449,14 @@ process_config_file (char *cfg_file)
                 cfg_file);
     }
 
-  char *entry;
-  // load ethernet addresses
-  // char *entry = (char*) rte_cfgfile_get_entry(file, "ethernet", "src");
-  // if(entry) {
-  //	rte_ether_unformat_addr((const char*) entry, &src_eth_addr);
-  //}
-  rte_eth_macaddr_get (portid, &src_eth_addr);
+  //load ethernet addresses
+  char *entry = (char*) rte_cfgfile_get_entry(file, "ethernet", "src");
+  if(entry) {
+  	rte_ether_unformat_addr((const char*) entry, &src_eth_addr);
+  }
+  else
+    rte_eth_macaddr_get (portid, &src_eth_addr);
+
   entry = (char *)rte_cfgfile_get_entry (file, "ethernet", "dst");
   if (entry)
     {

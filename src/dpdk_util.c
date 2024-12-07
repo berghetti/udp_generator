@@ -20,22 +20,24 @@ void init_DPDK(uint16_t portid, uint64_t nr_queues) {
   rte_flow_flush(portid, &error);
 
   // allocate the packet pool
-  char s[64];
-  snprintf(s, sizeof(s), "mbuf_pool");
-  pktmbuf_pool =
-      rte_pktmbuf_pool_create(s, PKTMBUF_POOL_ELEMENTS, MEMPOOL_CACHE_SIZE, 0,
-                              RTE_MBUF_DEFAULT_BUF_SIZE, rte_socket_id());
+	char s[64];
+	snprintf(s, sizeof(s), "mbuf_pool_rx");
+	pktmbuf_pool_rx = rte_pktmbuf_pool_create(s, PKTMBUF_POOL_ELEMENTS, MEMPOOL_CACHE_SIZE, 0, RTE_MBUF_DEFAULT_BUF_SIZE, rte_eth_dev_socket_id(portid));
+	if(pktmbuf_pool_rx == NULL) {
+		rte_exit(EXIT_FAILURE, "Cannot init RX mbuf pool on socket %d\n", rte_eth_dev_socket_id(portid));
+	}
 
-  if (pktmbuf_pool == NULL) {
-    rte_exit(EXIT_FAILURE, "Cannot init mbuf pool on socket %d\n",
-             rte_socket_id());
-  }
+	snprintf(s, sizeof(s), "mbuf_pool_tx");
+	pktmbuf_pool_tx = rte_pktmbuf_pool_create(s, PKTMBUF_POOL_ELEMENTS, MEMPOOL_CACHE_SIZE, 0, RTE_MBUF_DEFAULT_BUF_SIZE, rte_eth_dev_socket_id(portid));
+	if(pktmbuf_pool_tx == NULL) {
+		rte_exit(EXIT_FAILURE, "Cannot init TX mbuf pool on socket %d\n", rte_eth_dev_socket_id(portid));
+	}
 
   // initialize the DPDK port
   uint16_t nb_rx_queue = nr_queues;
   uint16_t nb_tx_queue = nr_queues;
 
-  if (init_DPDK_port(portid, nb_rx_queue, nb_tx_queue, pktmbuf_pool) != 0) {
+  if (init_DPDK_port(portid, nb_rx_queue, nb_tx_queue, pktmbuf_pool_rx) != 0) {
     rte_exit(EXIT_FAILURE, "Cannot init port %" PRIu8 "\n", 0);
   }
 }
@@ -58,14 +60,14 @@ int init_DPDK_port(uint16_t portid, uint16_t nb_rx_queue, uint16_t nb_tx_queue,
               //    RTE_ETH_RX_OFFLOAD_IPV4_CKSUM |
               //    RTE_ETH_RX_OFFLOAD_UDP_CKSUM,
           },
-      .rx_adv_conf =
-          {
-              .rss_conf =
-                  {
-                      .rss_key = NULL,
-                      .rss_hf = RTE_ETH_RSS_NONFRAG_IPV4_UDP,
-                  },
-          },
+      //.rx_adv_conf =
+      //    {
+      //        .rss_conf =
+      //            {
+      //                .rss_key = NULL,
+      //                .rss_hf = RTE_ETH_RSS_NONFRAG_IPV4_UDP,
+      //            },
+      //    },
       .txmode =
           {
               .mq_mode = RTE_ETH_MQ_TX_NONE,
@@ -92,7 +94,7 @@ int init_DPDK_port(uint16_t portid, uint16_t nb_rx_queue, uint16_t nb_tx_queue,
 
   struct rte_eth_rxconf *rxconf;
   rxconf = &dev_info.default_rxconf;
-  rxconf->rx_free_thresh = 128;
+  //rxconf->rx_free_thresh = 128;
 
   // setup the RX queues
   for (int q = 0; q < nb_rx_queue; q++) {
@@ -106,7 +108,7 @@ int init_DPDK_port(uint16_t portid, uint16_t nb_rx_queue, uint16_t nb_tx_queue,
   struct rte_eth_txconf *txconf;
   txconf = &dev_info.default_txconf;
   // txconf->tx_rs_thresh = 64;
-  // txconf->tx_free_thresh = 64;
+  //txconf->tx_free_thresh = 2;
 
   // setup the TX queues
   for (int q = 0; q < nb_tx_queue; q++) {
@@ -132,11 +134,6 @@ int init_DPDK_port(uint16_t portid, uint16_t nb_rx_queue, uint16_t nb_tx_queue,
   if (retval < 0) {
     return retval;
   }
-
-  // // enable the promiscuous mode
-  // retval = rte_eth_promiscuous_enable(portid);
-  // if(retval != 0)
-  // 	return retval;
 
   return 0;
 }
@@ -208,62 +205,6 @@ void print_dpdk_stats(uint32_t portid) {
   free(xstats_names);
 }
 
-// Create and fill rte_flow to send to the NIC
-void insert_flow(uint16_t portid, uint32_t i) {
-  //int ret;
-  //int act_idx = 0;
-  //int pattern_idx = 0;
-
-  //struct rte_flow_attr attr = {};
-  //struct rte_flow_error err = {};
-  //struct rte_flow_item pattern[MAX_RTE_FLOW_PATTERN] = {};
-  //struct rte_flow_action action[MAX_RTE_FLOW_ACTIONS] = {};
-
-  //attr.egress = 0;
-  //attr.ingress = 1;
-
-  //action[act_idx].type = RTE_FLOW_ACTION_TYPE_QUEUE;
-  //action[act_idx].conf = &control_blocks[i].flow_queue_action;
-  //act_idx++;
-
-  //action[act_idx].type = RTE_FLOW_ACTION_TYPE_MARK;
-  //action[act_idx].conf = &control_blocks[i].flow_mark_action;
-  //act_idx++;
-
-  //action[act_idx].type = RTE_FLOW_ACTION_TYPE_END;
-  //action[act_idx].conf = NULL;
-  //// act_idx++;
-
-  //pattern[pattern_idx].type = RTE_FLOW_ITEM_TYPE_ETH;
-  //pattern_idx++;
-
-  //pattern[pattern_idx].type = RTE_FLOW_ITEM_TYPE_IPV4;
-  //pattern[pattern_idx].spec = &control_blocks[i].flow_ipv4;
-  //pattern[pattern_idx].mask = &control_blocks[i].flow_ipv4_mask;
-  //pattern_idx++;
-
-  //pattern[pattern_idx].type = RTE_FLOW_ITEM_TYPE_UDP;
-  //pattern[pattern_idx].spec = &control_blocks[i].flow_udp;
-  //pattern[pattern_idx].mask = &control_blocks[i].flow_udp_mask;
-  //pattern_idx++;
-
-  //pattern[pattern_idx].type = RTE_FLOW_ITEM_TYPE_END;
-  //// pattern_idx++;
-
-  //// validate the rte_flow
-  //ret = rte_flow_validate(portid, &attr, pattern, action, &err);
-  //if (ret < 0) {
-  //  RTE_LOG(ERR, UDP_GENERATOR, "Flow validation failed %s\n", err.message);
-  //  return;
-  //}
-
-  //// create the flow and insert to the NIC
-  //struct rte_flow *rule = rte_flow_create(portid, &attr, pattern, action, &err);
-  //if (rule == NULL) {
-  //  RTE_LOG(ERR, UDP_GENERATOR, "Flow creation return %s\n", err.message);
-  //}
-}
-
 // create DPDK rings for the RX threads
 void create_dpdk_rings() {
   char s[64];
@@ -284,7 +225,8 @@ void clean_hugepages() {
   for (uint32_t i = 0; i < nr_queues; i++) {
     rte_ring_free(rx_rings[i]);
   }
-
+  
   rte_free(control_blocks);
-  rte_mempool_free(pktmbuf_pool);
+	//rte_mempool_free(pktmbuf_pool_tx);
+  rte_mempool_free(pktmbuf_pool_rx);
 }
