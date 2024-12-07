@@ -375,9 +375,6 @@ get_delta_ns (uint64_t start, uint64_t end)
   return (end - start) / ticks_per_ns;
 }
 
-const char *title
-    = "ID\tTYPE\tRTT\tRX/APP\tAPP\tAPP/TX\tWID_RX\tWID_TX\tPREEMPTED";
-
 // Print stats into output file
 void
 print_stats_output ()
