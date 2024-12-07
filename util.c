@@ -402,7 +402,7 @@ print_stats_output ()
       tot_tx += q_rps[i].tot_tx;
       tot_rx += q_rps[i].tot_rx;
 
-      // drop the first 10% packets for warming up
+      // drop the first 50% packets for warming up
       uint64_t j = 0.5 * incoming_idx;
 
       node_t *cur;
@@ -411,10 +411,10 @@ print_stats_output ()
           cur = &incoming[j];
 
           uint64_t latency = get_delta_ns (cur->timestamp_tx, cur->timestamp_rx);
-          uint64_t slowdown = latency / cur->service_time;
+          double slowdown = latency / (double) cur->service_time;
 
           fprintf (
-              fp, "%u\t%lu\t%lu\n",
+              fp, "%u\t%lu\t%.2lf\n",
               cur->type,
               latency,
               slowdown
