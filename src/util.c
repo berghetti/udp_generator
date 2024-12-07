@@ -186,7 +186,7 @@ create_flow_indexes_array ()
       rte_exit (EXIT_FAILURE, "Cannot alloc the flow_indexes array.\n");
     }
 
-  for (uint64_t i = 0; i < nr_queues; i++)
+  for (unsigned i = 0; i < nr_queues; i++)
     {
       flow_indexes_array[i]
           = (uint16_t *)malloc (nr_elements_per_queue * sizeof (uint16_t));
@@ -195,7 +195,7 @@ create_flow_indexes_array ()
           rte_exit (EXIT_FAILURE, "Cannot alloc the flow_indexes array.\n");
         }
       uint16_t *flow_indexes = flow_indexes_array[i];
-      for (int j = 0; j < nr_elements_per_queue; j++)
+      for (unsigned j = 0; j < nr_elements_per_queue; j++)
         {
           // flow_indexes[j] = ((rte_rand() << nbits) | i) % nr_flows;
           flow_indexes[j] = j % nr_flows;
@@ -278,7 +278,7 @@ app_parse_args (int argc, char **argv)
         // frame size (bytes)
         case 's':
           frame_size = process_int_arg (optarg);
-          int min_frame_size
+          unsigned min_frame_size
               = MIN_PKT_SIZE + PAYLOAD_TOTAL_ITEMS * sizeof (uint64_t);
           if (frame_size < min_frame_size)
             rte_exit (EXIT_FAILURE, "size not should be less than %u.\n",

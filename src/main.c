@@ -341,7 +341,7 @@ main (int argc, char **argv)
 
   // start RX and TX threads
   uint32_t id_lcore = rte_lcore_id ();
-  for (int i = 0; i < nr_queues; i++)
+  for (unsigned i = 0; i < nr_queues; i++)
     {
       lcore_params[i].portid = portid;
       lcore_params[i].qid = i;
