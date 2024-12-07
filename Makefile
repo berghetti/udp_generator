@@ -36,7 +36,7 @@ $(error "Cannot generate statically-linked binaries with this version of pkg-con
 endif
 endif
 
-CFLAGS += -DALLOW_EXPERIMENTAL_API -Wall -O3
+CFLAGS += -Wall -Wextra -O3 -march=native
 
 build/$(APP)-shared: $(SRCS-y) Makefile $(PC_FILE) | build
 	$(CC) $(CFLAGS) $(filter %.c,$^) -o $@ $(LDFLAGS) $(LDFLAGS_SHARED) -lm
