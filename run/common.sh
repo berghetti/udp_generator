@@ -24,7 +24,7 @@ create_rps_array()
   # load percent
   for load in $(seq $start $step $end);
   do
-    r=$(awk -v st=$AVG_SERVICE_TIME -v w=$TOT_WORKER -v L=$load 'BEGIN { OFMT="%d"; print 10^6 / st * w * (L / 100)}')
+    r=$(awk -v st=$AVG_SERVICE_TIME -v w=$TOT_WORKER -v L=$load 'BEGIN { OFMT="%.0f"; print (10^6) / st * w * (L / 100)}')
     RPS+=($r)
   done
 }
@@ -49,23 +49,23 @@ run_one()
   date +%H:%M:%S:%N > ${DIR}/start_time$TEST_N;
 
   set -xe
-  ~/shinjuku/client/bimodal 192.168.10.50 6789 \
-    ${RATE} \
-    ${SHORT} \
-    ${LONG} \
-    ${SHORT_RATIO} \
-    20 \
-    ${DIR}/test${TEST_N}
-  set +xe
+  #~/shinjuku/client/bimodal 192.168.10.50 6789 \
+  #  ${RATE} \
+  #  ${SHORT} \
+  #  ${LONG} \
+  #  ${SHORT_RATIO} \
+  #  20 \
+  #  ${DIR}/test${TEST_N}
 
-  #sudo ./build/udp-generator \
-  #-l ${CPUS} -- \
-  #-d ${DIST} \
-  #-r ${RATE} \
-  #-f 256 -s 90 -t 10 -q 1 \
-  #-c ${CONF_FILE} \
-  #-o ${DIR}/test$TEST_N \
-  #-x ${RAND} > ${DIR}/stats$TEST_N
+  sudo ~/udp_generator/build/udp-generator \
+  -l ${CPUS} -- \
+  -d ${DIST} \
+  -r ${RATE} \
+  -f 256 -s 90 -t 10 -q 1 \
+  -c ${CONF_FILE} \
+  -o ${DIR}/test$TEST_N \
+  -x ${RAND} > ${DIR}/stats$TEST_N
+  set +xe
 }
 
 set_extreme()
