@@ -227,6 +227,6 @@ void clean_hugepages() {
   }
   
   rte_free(control_blocks);
-	//rte_mempool_free(pktmbuf_pool_tx);
+	rte_mempool_free(pktmbuf_pool_tx);
   rte_mempool_free(pktmbuf_pool_rx);
 }

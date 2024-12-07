@@ -63,6 +63,8 @@ sample_uniform (void)
   return rte_rand () % 1000;
 }
 
+#define member_size(type, member) (sizeof( ((type *)0)->member ))
+
 void
 create_request_types_array (void)
 {
@@ -88,6 +90,11 @@ create_request_types_array (void)
           uint32_t t = 0;
           for (; t < TOTAL_RTYPES; t++)
             {
+              if (t >= 2)
+              {
+                fprintf(stderr, "Error");
+                exit(1);
+              }
               // printf("ratio %u\n", cfg_request_types[i].ratio);
               if (random < cfg_request_types[t].ratio)
                 break;
@@ -101,7 +108,7 @@ create_request_types_array (void)
 
           // to DB server
           unsigned r = rte_rand () % 5000; // 5000 keys in server DB
-          char buff[16];
+          char buff[member_size(request_type_t, db_key)] = {0};
           snprintf (buff, sizeof buff, "k%u", r);
           memcpy (&rtype[j].db_key, buff, sizeof (buff));
         }
