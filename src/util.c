@@ -457,9 +457,11 @@ process_config_file (char *cfg_file)
     }
 
   //load ethernet addresses
-  char *entry = (char*) rte_cfgfile_get_entry(file, "ethernet", "src");
+  char *entry;
+  entry = (char*) rte_cfgfile_get_entry(file, "ethernet", "src");
   if(entry) {
   	rte_ether_unformat_addr((const char*) entry, &src_eth_addr);
+    rte_eth_dev_default_mac_addr_set(portid, &src_eth_addr);
   }
   else
     rte_eth_macaddr_get (portid, &src_eth_addr);
