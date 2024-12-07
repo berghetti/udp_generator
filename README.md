@@ -1,11 +1,13 @@
 # UDP_generator
 
-Tested using DPDK 23.11 and ubuntu 20.04
+This client is used to test AFP.
+
+Tested using DPDK 23.11 and ubuntu 20.04 and 18.04
 
 ## Building
 
 ```bash
-git clone https://github.com/carvalhof/udp_generator
+git clone -b afp_changes https://github.com/berghetti/udp_generator.git
 cd udp_generator
 ./install_requirements.sh; ./install_dpdk.sh; make
 ```
@@ -40,16 +42,26 @@ sudo ./build/udp-generator -a 41:00.0 -n 4 -c 0xff -- -d exponential -r 100000 -
 
 ```
 [ethernet]
-src = 0c:42:a1:8c:db:1c
-dst = 0c:42:a1:8c:dc:54
+src = 00:11:22:33:44:55
+dst = 3C:FD:FE:55:20:FA
 
 [ipv4]
-src = 192.168.1.2
-dst = 192.168.1.1
+src = 192.168.10.1
+dst = 192.168.10.10
 
 [udp]
-dst = 12345
+dst = 6789
 
-[server]
-nr_servers = 1
+;request service time in nanoseconds
+[requests_service_time]
+short = 1000
+long = 100000
+
+[requests_ratio]
+short = 1000
+long = 0
+
+;request classification time in nanosseconds
+[classification_time]
+time = 0
 ```
