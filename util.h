@@ -39,9 +39,6 @@ typedef struct lcore_parameters
 typedef struct timestamp_node_t
 {
   uint64_t flow_id;
-  // uint64_t thread_id;
-  // uint64_t ack_dup;
-  // uint64_t ack_empty;
   uint64_t timestamp_rx;
   uint64_t timestamp_tx;
   uint64_t nr_never_sent;
@@ -54,17 +51,12 @@ typedef struct timestamp_node_t
       worker_tx, interrupt_count;
 } node_t;
 
-enum rtype
-{
-  SHORT = 0,
-  LONG,
-
-  TOTAL_RTYPES
-};
+// max of request types
+#define TOTAL_RTYPES 5
 
 typedef struct request_type
 {
-  enum rtype type;
+  uint32_t type;
   uint32_t ratio;
   uint64_t service_time; // in nanoseconds
   uint64_t db_key;       // Database key

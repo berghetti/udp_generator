@@ -56,7 +56,7 @@ allocate_incoming_nodes ()
     }
 }
 
-// return value between 0 and 99
+// return value between 0 and 999
 static uint32_t
 sample_uniform (void)
 {
@@ -72,8 +72,6 @@ create_request_types_array (void)
   request_types = rte_malloc (NULL, nr_queues * sizeof (request_type_t *), 64);
   if (request_types == NULL)
     rte_exit (EXIT_FAILURE, "Cannot alloc the request_types array.\n");
-
-  uint32_t debug_types[2] = { 0 };
 
   for (uint64_t i = 0; i < nr_queues; i++)
     {
@@ -97,21 +95,17 @@ create_request_types_array (void)
               random -= cfg_request_types[t].ratio;
             }
 
-          // printf("t %u\n", t);
           // to fake work server
-          debug_types[t]++;
           rtype[j].type = t + 1; // psp server
           rtype[j].service_time = cfg_request_types[t].service_time;
 
           // to DB server
-          char buff[8] = { 0 };
           unsigned r = rte_rand () % 5000; // 5000 keys in server DB
+          char buff[16];
           snprintf (buff, sizeof buff, "k%u", r);
           memcpy (&rtype[j].db_key, buff, sizeof (buff));
         }
     }
-
-  printf ("shorts: %u longs: %u\n", debug_types[0], debug_types[1]);
 }
 
 // Allocate and create an array for all interarrival packets for rate
@@ -409,28 +403,21 @@ print_stats_output ()
       tot_rx += q_rps[i].tot_rx;
 
       // drop the first 10% packets for warming up
-      uint64_t j = 0.1 * incoming_idx;
+      uint64_t j = 0.5 * incoming_idx;
 
-      // print the RTT latency in (ns)
       node_t *cur;
-      // for(; j < incoming_idx; j++) {
       for (; j < incoming_idx; j++)
         {
           cur = &incoming[j];
 
-          // fprintf(fp, "%u\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\n",
-          fprintf (
-              fp, "%u\t%lu\n",
-              // cur->flow_id,
-              cur->type,
-              get_delta_ns (cur->timestamp_tx, cur->timestamp_rx) // RTT
+          uint64_t latency = get_delta_ns (cur->timestamp_tx, cur->timestamp_rx);
+          uint64_t slowdown = latency / cur->service_time;
 
-              // get_delta_ns(cur->rx_time, cur->app_recv_time), // delay afp
-              // -> app get_delta_ns(cur->app_recv_time, cur->app_send_time),
-              // // delay app get_delta_ns(cur->app_send_time, cur->tx_time),
-              // // delay app -> tx cur->worker_rx, // worker id rx
-              // cur->worker_tx,
-              // // worker id tx cur->interrupt_count // long count preempt
+          fprintf (
+              fp, "%u\t%lu\t%lu\n",
+              cur->type,
+              latency,
+              slowdown
           );
         }
     }
@@ -448,6 +435,8 @@ print_stats_output ()
       rps_offered, rps_reached, tot_tx, tot_rx, dropped);
   fclose (fp);
 }
+
+#define ASIZE(x) (sizeof(x)/sizeof(x[0]))
 
 // Process the config file
 void
@@ -499,26 +488,15 @@ process_config_file (char *cfg_file)
       dst_udp_port = port;
     }
 
-  // local server info
-  entry = (char *)rte_cfgfile_get_entry (file, "server", "nr_servers");
-  if (entry)
-    {
-      uint16_t n;
-      sscanf (entry, "%hu", &n);
-      nr_servers = n;
-    }
-
   int i, ret;
-  struct rte_cfgfile_entry entrys[TOTAL_RTYPES];
-  ret = rte_cfgfile_section_entries (file, "requests_service_time", entrys, 2);
-  assert (ret == 2);
+  struct rte_cfgfile_entry entries[TOTAL_RTYPES];
+  ret = rte_cfgfile_section_entries (file, "requests_service_time", entries, ASIZE(entries));
   for (i = 0; i < ret; i++)
-    cfg_request_types[i].service_time = atoi (entrys[i].value);
+    cfg_request_types[i].service_time = atoi (entries[i].value);
 
-  ret = rte_cfgfile_section_entries (file, "requests_ratio", entrys, 2);
-  assert (ret == 2);
+  ret = rte_cfgfile_section_entries (file, "requests_ratio", entries, ASIZE(entries));
   for (i = 0; i < ret; i++)
-    cfg_request_types[i].ratio = atoi (entrys[i].value);
+    cfg_request_types[i].ratio = atoi (entries[i].value);
 
   entry = (char *)rte_cfgfile_get_entry (file, "classification_time", "time");
   if (!entry)

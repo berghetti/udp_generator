@@ -22,32 +22,21 @@ void init_blocks() {
 
 	// choose UDP source port for all flows
 	uint16_t src_udp_port;
-	uint32_t src_ip;
 	uint16_t ports[nr_flows];
-	uint32_t ips[nr_flows];
 	for(uint32_t i = 0; i < nr_flows; i++) {
-		//ports[i] = rte_cpu_to_be_16((i % (nr_flows/nr_servers)) + 1);
-        ports[i] = rte_cpu_to_be_16(rte_rand() % 65535);
-				//uint8_t a = (rte_rand() + 10) % 255;
-				//uint8_t b = (rte_rand() + 10) % 255;
-				//uint8_t c = (rte_rand() + 10) % 255;
-				//uint8_t d = (rte_rand() + 10) % 255;
-				//ips[i] = IPV4_ADDR( a, b, c, d );
+        //ports[i] = rte_cpu_to_be_16(rte_rand() % 0xFFFF);
+        ports[i] = rte_cpu_to_be_16((1024 + i) % 0xFFFF);
 	}
 
-	// shuffle port array
-	//shuffle(ports, nr_flows);
-
 	for(uint32_t i = 0; i < nr_flows; i++) {
+		// each flow change only src port
 		src_udp_port = ports[i];
-		src_ip = ips[i];
 
 		control_blocks[i].src_addr = src_ipv4_addr;
-		//control_blocks[i].src_addr = src_ip;
 		control_blocks[i].dst_addr = dst_ipv4_addr;
 
 		control_blocks[i].src_port = src_udp_port;
-		control_blocks[i].dst_port = rte_cpu_to_be_16(dst_udp_port + (i % nr_servers));
+		control_blocks[i].dst_port = rte_cpu_to_be_16(dst_udp_port);
 
 		control_blocks[i].flow_mark_action.id = i;
 		control_blocks[i].flow_queue_action.index = i % nr_queues;
