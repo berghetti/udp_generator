@@ -19,7 +19,7 @@ sudo apt update
 sudo apt install -y ${PACKS}
 
 # Check if the major version is below 20
-if [[ $VERSION -lt 20 ]]; then
+if [[ $VERSION -le 20 ]]; then
   sudo pip3 install meson ninja
 else
   sudo apt install meson ninja-build
