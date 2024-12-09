@@ -63,7 +63,7 @@ sample_uniform (void)
   return rte_rand () % 1000;
 }
 
-#define member_size(type, member) (sizeof( ((type *)0)->member ))
+#define member_size(type, member) (sizeof (((type *)0)->member))
 
 void
 create_request_types_array (void)
@@ -91,10 +91,10 @@ create_request_types_array (void)
           for (; t < TOTAL_RTYPES; t++)
             {
               if (t >= 2)
-              {
-                fprintf(stderr, "Error");
-                exit(1);
-              }
+                {
+                  fprintf (stderr, "Error");
+                  exit (1);
+                }
               // printf("ratio %u\n", cfg_request_types[i].ratio);
               if (random < cfg_request_types[t].ratio)
                 break;
@@ -108,7 +108,7 @@ create_request_types_array (void)
 
           // to DB server
           unsigned r = rte_rand () % 5000; // 5000 keys in server DB
-          char buff[member_size(request_type_t, db_key)] = {0};
+          char buff[member_size (request_type_t, db_key)] = { 0 };
           snprintf (buff, sizeof buff, "k%u", r);
           memcpy (&rtype[j].db_key, buff, sizeof (buff));
         }
@@ -405,23 +405,19 @@ print_stats_output ()
       tot_tx += q_rps[i].tot_tx;
       tot_rx += q_rps[i].tot_rx;
 
-      // drop the first 50% packets for warming up
-      uint64_t j = 0.5 * incoming_idx;
+      // drop the first 10% packets for warming up
+      uint64_t j = 0.1 * incoming_idx;
 
       node_t *cur;
       for (; j < incoming_idx; j++)
         {
           cur = &incoming[j];
 
-          uint64_t latency = get_delta_ns (cur->timestamp_tx, cur->timestamp_rx);
-          double slowdown = latency / (double) cur->service_time;
+          uint64_t latency
+              = get_delta_ns (cur->timestamp_tx, cur->timestamp_rx);
+          double slowdown = latency / (double)cur->service_time;
 
-          fprintf (
-              fp, "%u\t%lu\t%.2lf\n",
-              cur->type,
-              latency,
-              slowdown
-          );
+          fprintf (fp, "%u\t%lu\t%.2lf\n", cur->type, latency, slowdown);
         }
     }
 
@@ -439,7 +435,7 @@ print_stats_output ()
   fclose (fp);
 }
 
-#define ASIZE(x) (sizeof(x)/sizeof(x[0]))
+#define ASIZE(x) (sizeof (x) / sizeof (x[0]))
 
 // Process the config file
 void
@@ -453,13 +449,14 @@ process_config_file (char *cfg_file)
                 cfg_file);
     }
 
-  //load ethernet addresses
+  // load ethernet addresses
   char *entry;
-  entry = (char*) rte_cfgfile_get_entry(file, "ethernet", "src");
-  if(entry) {
-  	rte_ether_unformat_addr((const char*) entry, &src_eth_addr);
-    rte_eth_dev_default_mac_addr_set(portid, &src_eth_addr);
-  }
+  entry = (char *)rte_cfgfile_get_entry (file, "ethernet", "src");
+  if (entry)
+    {
+      rte_ether_unformat_addr ((const char *)entry, &src_eth_addr);
+      rte_eth_dev_default_mac_addr_set (portid, &src_eth_addr);
+    }
   else
     rte_eth_macaddr_get (portid, &src_eth_addr);
 
@@ -496,11 +493,13 @@ process_config_file (char *cfg_file)
 
   int i, ret;
   struct rte_cfgfile_entry entries[TOTAL_RTYPES];
-  ret = rte_cfgfile_section_entries (file, "requests_service_time", entries, ASIZE(entries));
+  ret = rte_cfgfile_section_entries (file, "requests_service_time", entries,
+                                     ASIZE (entries));
   for (i = 0; i < ret; i++)
     cfg_request_types[i].service_time = atoi (entries[i].value);
 
-  ret = rte_cfgfile_section_entries (file, "requests_ratio", entries, ASIZE(entries));
+  ret = rte_cfgfile_section_entries (file, "requests_ratio", entries,
+                                     ASIZE (entries));
   for (i = 0; i < ret; i++)
     cfg_request_types[i].ratio = atoi (entries[i].value);
 

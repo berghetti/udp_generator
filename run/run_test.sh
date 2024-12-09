@@ -11,6 +11,8 @@ stop_server()
 {
   if [[ $1 == *"afp"* ]]; then
     ssh fabricio@$SV_IP 'sudo pkill -9 fake-app;'
+  elif [[ $1 == *"concord"* || $1 == *"shinjuku"* ]]; then
+    ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku;' > /dev/null
   fi
 
 }
@@ -21,8 +23,9 @@ restart_server()
 
   if [[ $1 == *"afp"* ]]; then
     ssh fabricio@$SV_IP 'sudo pkill -9 fake-app; make run -C afp/apps/fake/' &
+  elif [[ $1 == *"concord"* || $1 == *"shinjuku"* ]]; then
+    ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku; cd concord/concord-shinjuku/; sudo ./build_and_run.sh' 2&1> /dev/null &
   fi
-
 }
 
 N_CLIENTS=1
@@ -44,7 +47,7 @@ esac
 
 # create RPS[] based on TOT_WORKER and AVG_SERVICE_TIME
 create_rps_array 1 6 5
-#create_rps_array 10 90 10
+create_rps_array 10 90 10
 #create_rps_array 65 90 5
 echo ${RPS[@]}
 
@@ -55,8 +58,7 @@ for rate in ${RPS[@]}; do
   RATE=$((rate / N_CLIENTS)) # per client rate
 
   for i in $(seq 0 $((N_TESTS-1))); do
-    #restart_server $POLICY
-    #sleep 20
+    restart_server $POLICY; sleep 20
 
     echo "Starting client"
     $(dirname $0)/run.sh $BASE_DIR $POLICY $RATE $WK ${RANDOMS[$i]} $i
