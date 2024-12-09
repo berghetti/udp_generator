@@ -1,5 +1,5 @@
 #!/bin/bash
-source $(dirname $0)/../MACHINE_CONFIG
+source $(dirname $0)/MACHINE_CONFIG
 
 # disable whatchdog
 sudo sysctl -w kernel.watchdog=0
@@ -8,7 +8,7 @@ sudo sysctl -w kernel.watchdog=0
 sudo bash -c "echo 8192 > /sys/devices/system/node/node${NUMA_ID}/hugepages/hugepages-2048kB/nr_hugepages"
 
 # disabe turbo boost
-$(dirname $0)/../misc/turbo.sh disable
+$(dirname $0)/misc/turbo.sh disable
 
 # bind NIC
 if [[ "$NIC_BIND" != "false" ]]; then
