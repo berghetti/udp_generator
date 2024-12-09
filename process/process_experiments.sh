@@ -92,7 +92,6 @@ if [ "$1" == clean ]; then
   exit 0
 fi
 
-
 for p in {p50,p99,p999}; do
   echo $p
   #$(dirname $0)/process_policys.py 'rocksdb' $p $BASE_DIR/tests/exponential/extreme/*

@@ -54,7 +54,7 @@ def process(policys, prefix, percentil):
 
   # calc latency for each policy
   for policy in policys:
-    process_policy(policy, force=False)
+    process_policy(policy, force=True)
 
   # write metadata file with policys and latencys.
   # This file is used to chart plot after.
