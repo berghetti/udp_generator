@@ -36,6 +36,8 @@ stop_server()
     ssh fabricio@$SV_IP 'sudo pkill -9 fake-app;'
   elif [[ $1 == *"concord"* || $1 == *"shinjuku"* ]]; then
     ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku;' > /dev/null
+  elif [[ $1 == *"psp"* ]]; then
+    ssh fabricio@$SV_IP 'sudo pkill -9 psp-app;' > /dev/null
   fi
 }
 
@@ -46,9 +48,11 @@ restart_server()
   if [[ $1 == *"afp"* ]]; then
     ssh fabricio@$SV_IP 'sudo pkill -9 fake-app; make run -C afp/apps/fake/' &
   elif [[ $1 == *"concord"* ]]; then
-    ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku; cd concord/concord-shinjuku/; sudo ./dp/shinjuku' 2&1> /dev/null &
+    ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku; cd concord/concord-shinjuku/; sudo ./dp/shinjuku' &
   elif [[ $1 == *"shinjuku"* ]]; then
-    ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku; cd shinjuku/; sudo ./dp/shinjuku' 2&1> /dev/null &
+    ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku; cd shinjuku/; sudo ./dp/shinjuku' &
+  elif [[ $1 == *"psp"* ]]; then
+    ssh fabricio@$SV_IP 'sudo pkill -9 psp-app; cd psp/; ./run.sh' &
   fi
 }
 
