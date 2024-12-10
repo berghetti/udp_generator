@@ -3,30 +3,7 @@ set -e
 #
 # Usage: ./run_clients.sh afp|psp
 
-source $(dirname $0)/../run/common.sh
-
-SV_IP=130.127.134.16
-
-stop_server()
-{
-  if [[ $1 == *"afp"* ]]; then
-    ssh fabricio@$SV_IP 'sudo pkill -9 fake-app;'
-  elif [[ $1 == *"concord"* || $1 == *"shinjuku"* ]]; then
-    ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku;' > /dev/null
-  fi
-
-}
-
-restart_server()
-{
-  echo Restating server
-
-  if [[ $1 == *"afp"* ]]; then
-    ssh fabricio@$SV_IP 'sudo pkill -9 fake-app; make run -C afp/apps/fake/' &
-  elif [[ $1 == *"concord"* || $1 == *"shinjuku"* ]]; then
-    ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku; cd concord/concord-shinjuku/; sudo ./build_and_run.sh' 2&1> /dev/null &
-  fi
-}
+source $(dirname $0)/common.sh
 
 N_CLIENTS=1
 N_TESTS=1
@@ -46,29 +23,59 @@ case $WK in
 esac
 
 # create RPS[] based on TOT_WORKER and AVG_SERVICE_TIME
-create_rps_array 1 6 5
-create_rps_array 10 90 10
-#create_rps_array 65 90 5
+create_rps_array 1 1 1
+create_rps_array 10 100 10
+#create_rps_array 10 100 10
 echo ${RPS[@]}
 
+SV_IP=130.127.134.16
+
+stop_server()
+{
+  if [[ $1 == *"afp"* ]]; then
+    ssh fabricio@$SV_IP 'sudo pkill -9 fake-app;'
+  elif [[ $1 == *"concord"* || $1 == *"shinjuku"* ]]; then
+    ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku;' > /dev/null
+  fi
+}
+
+restart_server()
+{
+  echo Restating server
+
+  if [[ $1 == *"afp"* ]]; then
+    ssh fabricio@$SV_IP 'sudo pkill -9 fake-app; make run -C afp/apps/fake/' &
+  elif [[ $1 == *"concord"* ]]; then
+    ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku; cd concord/concord-shinjuku/; sudo ./dp/shinjuku' 2&1> /dev/null &
+  elif [[ $1 == *"shinjuku"* ]]; then
+    ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku; cd shinjuku/; sudo ./dp/shinjuku' 2&1> /dev/null &
+  fi
+}
+
 RANDOMS=(7 365877 374979 853172 908081 227836 64991 493663 174817 73997)
+run_test()
+{
+  for rate in ${RPS[@]}; do
+    echo "Rate: ${rate}"
+    RATE=$((rate / N_CLIENTS)) # per client rate
 
-for rate in ${RPS[@]}; do
-  echo "Rate: ${rate}"
-  RATE=$((rate / N_CLIENTS)) # per client rate
+    for i in $(seq 0 $((N_TESTS-1))); do
+      restart_server $POLICY; sleep 20
 
-  for i in $(seq 0 $((N_TESTS-1))); do
-    restart_server $POLICY; sleep 20
+      echo "Starting client"
+      $(dirname $0)/run.sh $BASE_DIR $POLICY $RATE $WK ${RANDOMS[$i]} $i
 
-    echo "Starting client"
-    $(dirname $0)/run.sh $BASE_DIR $POLICY $RATE $WK ${RANDOMS[$i]} $i
+      sleep 10
 
-    if [ $? -ne 0 ]; then
-      echo "Error test"
-      exit 1
-    fi
+      if [ $? -ne 0 ]; then
+        echo "Error test"
+        exit 1
+      fi
+    done
   done
-done
 
-stop_server $POLICY
+  stop_server $POLICY
+}
+
+run_test
 
