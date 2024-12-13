@@ -39,7 +39,7 @@ def interval_confidence( data: list ):
   margin_error = round(margin_error, 4)
   return avg, margin_error
 
-def get_latency(rate):
+def get_latency(rate, slowdown=False):
   shorts = []
   longs = []
   alls = []
@@ -50,14 +50,17 @@ def get_latency(rate):
   }
 
   for t in p.keys():
-    files = glob.glob(f'{rate}/test[0-9]*{t}_{percentile}_result')
+    if slowdown == False:
+      files = glob.glob(f'{rate}/test[0-9]*{t}_{percentile}_result')
+    else:
+      files = glob.glob(f'{rate}/test[0-9]*{t}_{percentile}_result_slowdown')
+
     for file in files:
       with open(file, 'r') as f:
         v = float(f.read())
         p[t].append(v)
 
 
-  print(shorts, longs, alls)
   return interval_confidence(shorts), \
     interval_confidence(longs), \
     interval_confidence(alls)
@@ -105,7 +108,7 @@ def get_drop(rate):
 def load_in_file_name(f):
   return float(f.split('_')[-1])
 
-def process_get_latencys(pol):
+def process_get_latencys(pol, slowdown=False):
   x = []
 
   s_y = []
@@ -137,8 +140,7 @@ def process_get_latencys(pol):
     #  print(f'Dropped {drop} pkts in rate {rps} MRPS: Stoping')
     #  break
 
-    ((s, serr), (l, lerr), (a, aerr)) = get_latency(folder)
-    print(s, l, a)
+    ((s, serr), (l, lerr), (a, aerr)) = get_latency(folder, slowdown)
 
     x.append(rps)
 

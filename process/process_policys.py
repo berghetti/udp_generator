@@ -15,24 +15,28 @@ def remove_if_present(name, data):
 
 def write_metadata(policys, file, concat=True):
 
-  data = []
+  latencys = []
+  slowdowns = []
   if (concat):
     try:
       f = open(file, 'r')
+      f2 = open(f'{file}.slowdown', 'r')
     except:
       pass
     else:
       with f:
-       data = json.load(f)
+       latencys = json.load(f)
+       slowdowns = json.load(f2)
 
   for policy in policys:
     name = process_get_policy_name(policy)
 
     #update data if already present in file
-    remove_if_present(name, data)
+    remove_if_present(name, latencys)
+    remove_if_present(name, slowdowns)
 
-    x, s, serr, l, lerr, a, aerr, drop = process_get_latencys(policy)
-    d = {
+    x, s, serr, l, lerr, a, aerr, drop = process_get_latencys(policy, slowdown=False)
+    pol = {
         name : {
           'x' : x,
           's': s,
@@ -45,16 +49,34 @@ def write_metadata(policys, file, concat=True):
           }
         }
 
-    data.append(d)
+    latencys.append(pol)
+    x, s, serr, l, lerr, a, aerr, drop = process_get_latencys(policy, slowdown=True)
+    pol = {
+        name : {
+          'x' : x,
+          's': s,
+          'serr': serr,
+          'l': l,
+          'lerr': lerr,
+          'a': a,
+          'aerr': aerr,
+          'drop': drop
+          }
+        }
+
+    slowdowns.append(pol)
   with open(file, 'w') as f:
-    json.dump(data, f)
+    json.dump(latencys, f)
+
+  with open(f'{file}.slowdown', 'w') as f:
+    json.dump(slowdowns, f)
 
 def process(policys, prefix, percentil):
   p = process_get_and_set_percentile(percentil)
 
   # calc latency for each policy
   for policy in policys:
-    process_policy(policy, force=True)
+    process_policy(policy, force=False)
 
   # write metadata file with policys and latencys.
   # This file is used to chart plot after.
