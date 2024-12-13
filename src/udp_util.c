@@ -16,7 +16,7 @@ init_blocks ()
   for (uint32_t i = 0; i < nr_flows; i++)
     {
       // ports[i] = rte_cpu_to_be_16(rte_rand() % 0xFFFF);
-      ports[i] = rte_cpu_to_be_16 ((1024 + i) % 0xFFFF);
+      ports[i] = (1024 + i) % 0xFFFF;
     }
 
   for (uint32_t i = 0; i < nr_flows; i++)
@@ -68,8 +68,8 @@ fill_udp_packet (uint16_t i, struct rte_mbuf *pkt, uint16_t dst_port)
   struct rte_udp_hdr *udp_hdr = rte_pktmbuf_mtod_offset (
       pkt, struct rte_udp_hdr *,
       sizeof (struct rte_ether_hdr) + sizeof (struct rte_ipv4_hdr));
-  udp_hdr->dst_port = dst_port;
-  udp_hdr->src_port = block->src_port;
+  udp_hdr->dst_port = rte_cpu_to_be_16 (dst_port);
+  udp_hdr->src_port = rte_cpu_to_be_16 (block->src_port);
   udp_hdr->dgram_len
       = rte_cpu_to_be_16 (sizeof (struct rte_udp_hdr) + udp_payload_size);
   udp_hdr->dgram_cksum = 0;
