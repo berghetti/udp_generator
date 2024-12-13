@@ -23,9 +23,9 @@ case $WK in
 esac
 
 # create RPS[] based on TOT_WORKER and AVG_SERVICE_TIME
-create_rps_array 1 1 1
-create_rps_array 10 100 10
-#create_rps_array 10 100 10
+create_rps_array 2 2 1
+create_rps_array 10 60 10
+create_rps_array 65 100 5
 echo ${RPS[@]}
 
 SV_IP=130.127.134.16
@@ -36,7 +36,7 @@ stop_server()
     ssh fabricio@$SV_IP 'sudo pkill -9 fake-app;'
   elif [[ $1 == *"concord"* || $1 == *"shinjuku"* ]]; then
     ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku;' > /dev/null
-  elif [[ $1 == *"psp"* ]]; then
+  elif [[ $1 == *"psp"* || $1 == *"cfcfs"* ]]; then
     ssh fabricio@$SV_IP 'sudo pkill -9 psp-app;' > /dev/null
   fi
 }
@@ -51,8 +51,8 @@ restart_server()
     ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku; cd concord/concord-shinjuku/; sudo ./dp/shinjuku' &
   elif [[ $1 == *"shinjuku"* ]]; then
     ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku; cd shinjuku/; sudo ./dp/shinjuku' &
-  elif [[ $1 == *"psp"* ]]; then
-    ssh fabricio@$SV_IP 'sudo pkill -9 psp-app; cd psp/; ./run.sh' &
+  elif [[ $1 == *"psp"* || $1 == *"cfcfs"* ]]; then
+    ssh fabricio@$SV_IP 'sudo pkill -9 psp-app; pushd psp/ && ./run.sh' &
   fi
 }
 

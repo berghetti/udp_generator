@@ -47,8 +47,8 @@ typedef struct timestamp_node_t
   uint32_t service_time;
 
   // server times
-  uint64_t rx_time, app_recv_time, app_send_time, tx_time, worker_rx,
-      worker_tx, interrupt_count;
+  // uint64_t rx_time, app_recv_time, app_send_time, tx_time, worker_rx,
+  //    worker_tx, interrupt_count;
 } node_t;
 
 // max of request types
@@ -60,6 +60,7 @@ typedef struct request_type
   uint32_t ratio;
   uint64_t service_time; // in nanoseconds
   uint64_t db_key;       // Database key
+  uint16_t dst_port;
 } request_type_t;
 
 #define MAX_QUEUES 16

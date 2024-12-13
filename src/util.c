@@ -102,6 +102,8 @@ create_request_types_array (void)
               random -= cfg_request_types[t].ratio;
             }
 
+          rtype[j].dst_port = cfg_request_types[t].dst_port;
+
           // to fake work server
           rtype[j].type = t + 1; // psp server
           rtype[j].service_time = cfg_request_types[t].service_time;
@@ -392,6 +394,9 @@ print_stats_output ()
   uint64_t tot_rx = 0;
   uint64_t dropped = 0;
 
+// rtt latency only in ns
+#define RTT 0
+
   // fprintf(fp, "%s\n", title);
 
   for (uint32_t i = 0; i < nr_queues; i++)
@@ -415,7 +420,7 @@ print_stats_output ()
 
           uint64_t latency
               = get_delta_ns (cur->timestamp_tx, cur->timestamp_rx);
-          double slowdown = latency / (double)cur->service_time;
+          double slowdown = (latency - RTT) / (double)cur->service_time;
 
           fprintf (fp, "%u\t%lu\t%.2lf\n", cur->type, latency, slowdown);
         }
@@ -483,13 +488,13 @@ process_config_file (char *cfg_file)
     }
 
   // load UDP destination port
-  entry = (char *)rte_cfgfile_get_entry (file, "udp", "dst");
-  if (entry)
-    {
-      uint16_t port;
-      sscanf (entry, "%hu", &port);
-      dst_udp_port = port;
-    }
+  // entry = (char *)rte_cfgfile_get_entry (file, "udp", "dst");
+  // if (entry)
+  //  {
+  //    uint16_t port;
+  //    sscanf (entry, "%hu", &port);
+  //    dst_udp_port = port;
+  //  }
 
   int i, ret;
   struct rte_cfgfile_entry entries[TOTAL_RTYPES];
@@ -502,6 +507,11 @@ process_config_file (char *cfg_file)
                                      ASIZE (entries));
   for (i = 0; i < ret; i++)
     cfg_request_types[i].ratio = atoi (entries[i].value);
+
+  ret = rte_cfgfile_section_entries (file, "requests_dst_ports", entries,
+                                     ASIZE (entries));
+  for (i = 0; i < ret; i++)
+    cfg_request_types[i].dst_port = atoi (entries[i].value);
 
   entry = (char *)rte_cfgfile_get_entry (file, "classification_time", "time");
   if (!entry)

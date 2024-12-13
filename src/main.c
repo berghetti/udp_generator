@@ -209,7 +209,7 @@ lcore_rx (void *arg)
                     rte_strerror (errno));
         }
     }
-  
+
   q_rps[qid].rps_reached
       = tot_nb_rx / ((rte_get_tsc_cycles () - start) / rte_get_timer_hz ());
 
@@ -251,7 +251,7 @@ lcore_tx (void *arg)
         {
           pkts[nb_pkts] = rte_pktmbuf_alloc (pktmbuf_pool_tx);
           // fill the packet with the flow information
-          fill_udp_packet (flow_id, pkts[nb_pkts]);
+          fill_udp_packet (flow_id, pkts[nb_pkts], rtype[i].dst_port);
 
           // fill the payload to gather server information
           // fill_payload_pkt(pkts[nb_pkts], FLOW_ID, flow_id);
