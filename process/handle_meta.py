@@ -51,18 +51,18 @@ def concat_meta(file1, file2):
   with open(file2, 'r') as f:
     data2 = json.load(f)
 
-    with open(file1, 'w') as f:
+  with open(file1, 'w') as f:
     json.dump(data + data2, f)
 
 if __name__ == "__main__":
     # Argument parser setup
     parser = argparse.ArgumentParser(description="Manage group policys in a JSON file.")
-    subparsers = parser.add_subparsers(dest="action", required=True, help="Action to perform.")
+    subparsers = parser.add_subparsers(dest="action", help="Action to perform.")
 
     # Remove action
     remove_parser = subparsers.add_parser("remove", help="Remove a policy.")
-    remove_parser.add_argument("file", help="Path to the meta file.")
     remove_parser.add_argument("policy", help="The policy to remove.")
+    remove_parser.add_argument("file", help="Path to the meta file.")
 
     # Rename action
     rename_parser = subparsers.add_parser("rename", help="Rename a policy.")
