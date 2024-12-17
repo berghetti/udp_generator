@@ -18,6 +18,9 @@ set -xe
 sudo apt update
 sudo apt install -y ${PACKS}
 
+# to process results
+pip3 install json5 pandas
+
 # Check if the major version is below 20
 if [[ $VERSION -le 20 ]]; then
   sudo pip3 install meson ninja
