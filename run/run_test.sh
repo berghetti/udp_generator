@@ -7,7 +7,7 @@ source $(dirname $0)/common.sh
 
 N_CLIENTS=1
 N_TESTS=1
-BASE_DIR='/proj/demeter-PG0/users/fabricio/afp_tests'
+BASE_DIR='/home/mayco/udp_generator'
 
 WK="high"
 
@@ -28,16 +28,16 @@ create_rps_array 10 60 10
 create_rps_array 65 100 5
 echo ${RPS[@]}
 
-SV_IP=130.127.134.16
+SSH="ssh mayco@10.90.0.26"
 
 stop_server()
 {
   if [[ $1 == *"afp"* ]]; then
-    ssh fabricio@$SV_IP 'sudo pkill -9 fake-app;'
+    $SS 'sudo pkill -9 fake-app;'
   elif [[ $1 == *"concord"* || $1 == *"shinjuku"* ]]; then
-    ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku;' > /dev/null
+    $SS 'sudo pkill -9 shinjuku;' > /dev/null
   elif [[ $1 == *"psp"* || $1 == *"cfcfs"* ]]; then
-    ssh fabricio@$SV_IP 'sudo pkill -9 psp-app;' > /dev/null
+    $SS 'sudo pkill -9 psp-app;' > /dev/null
   fi
 }
 
@@ -46,13 +46,13 @@ restart_server()
   echo Restating server
 
   if [[ $1 == *"afp"* ]]; then
-    ssh fabricio@$SV_IP 'sudo pkill -9 fake-app; make run -C afp/apps/fake/' &
+    $SS 'sudo pkill -9 fake-app; make run -C afp/apps/fake/' &
   elif [[ $1 == *"concord"* ]]; then
-    ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku; cd concord/concord-shinjuku/; sudo ./dp/shinjuku' &
+    $SS 'sudo pkill -9 shinjuku; cd concord/concord-shinjuku/; sudo ./dp/shinjuku' &
   elif [[ $1 == *"shinjuku"* ]]; then
-    ssh fabricio@$SV_IP 'sudo pkill -9 shinjuku; cd shinjuku/; sudo ./dp/shinjuku' &
+    $SS 'sudo pkill -9 shinjuku; cd shinjuku/; sudo ./dp/shinjuku' &
   elif [[ $1 == *"psp"* || $1 == *"cfcfs"* ]]; then
-    ssh fabricio@$SV_IP 'sudo pkill -9 psp-app; pushd psp/ && ./run.sh' &
+    $SS 'sudo pkill -9 psp-app; pushd psp/ && ./run.sh' &
   fi
 }
 
