@@ -2,8 +2,11 @@
 import os
 import glob
 import math
+
+#try:
 import pandas as pd
-#import polars as pl
+#except ImportError:
+#  import polars as pd
 
 #default
 percentile = 99.9
@@ -161,9 +164,9 @@ def process_get_latencys(pol, slowdown=False):
     drops
 # Function to read the 'test' file in a given rate folder
 def read_test_file(test_file: str) -> pd.DataFrame:
-    return pd.read_csv(test_file, 
-                       sep='\t', 
-                       header=None, 
+    return pd.read_csv(test_file,
+                       sep='\t',
+                       header=None,
                        names=['type', 'latency', 'slowdown'])
 
 # Function to calculate tail statistics for a given DataFrame
