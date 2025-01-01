@@ -19,7 +19,11 @@ sudo apt update
 sudo apt install -y ${PACKS}
 
 # to process results
-pip3 install json5 pandas
+if [[ $VERSION -le 20 ]]; then
+  pip3 install json5 pandas
+else
+  sudo apt install python3-json5 python3-pandas
+fi
 
 # Check if the major version is below 20
 if [[ $VERSION -le 20 ]]; then
