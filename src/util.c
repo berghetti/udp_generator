@@ -75,6 +75,9 @@ create_request_types_array (void)
   if (request_types == NULL)
     rte_exit (EXIT_FAILURE, "Cannot alloc the request_types array.\n");
 
+  // only debug
+  uint64_t types_count[TOTAL_RTYPES] = {0};
+
   for (uint64_t i = 0; i < nr_queues; i++)
     {
       request_type_t *rtype
@@ -90,11 +93,6 @@ create_request_types_array (void)
           uint32_t t = 0;
           for (; t < TOTAL_RTYPES; t++)
             {
-              if (t >= 2)
-                {
-                  fprintf (stderr, "Error");
-                  exit (1);
-                }
               // printf("ratio %u\n", cfg_request_types[i].ratio);
               if (random < cfg_request_types[t].ratio)
                 break;
@@ -113,8 +111,15 @@ create_request_types_array (void)
           char buff[member_size (request_type_t, db_key)] = { 0 };
           snprintf (buff, sizeof buff, "k%u", r);
           memcpy (&rtype[j].db_key, buff, sizeof (buff));
+
+          // debug
+          types_count[t]++;
         }
     }
+
+  // debug
+  for (int i = 0; i < TOTAL_RTYPES; i++)
+    printf("Type: %u requests: %lu\n", i, types_count[i]);
 }
 
 // Allocate and create an array for all interarrival packets for rate

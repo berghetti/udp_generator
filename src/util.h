@@ -52,7 +52,7 @@ typedef struct timestamp_node_t
 } node_t;
 
 // max of request types
-#define TOTAL_RTYPES 5
+#define TOTAL_RTYPES 2
 
 typedef struct request_type
 {
