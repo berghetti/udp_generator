@@ -58,6 +58,7 @@ run_one()
   #  ${DIR}/test${TEST_N}
 
   sudo ~/udp_generator/build/udp-generator \
+  -a ${NIC_PCI} \
   -l ${CPUS} -- \
   -d ${DIST} \
   -r ${RATE} \
