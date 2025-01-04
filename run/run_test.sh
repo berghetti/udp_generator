@@ -7,7 +7,7 @@ source $(dirname $0)/common.sh
 
 N_CLIENTS=1
 N_TESTS=1
-BASE_DIR='/home/mayco/udp_generator'
+BASE_DIR=/proj/demeter-PG0/users/fabricio/afp_tests/
 
 WK="high"
 
@@ -24,20 +24,20 @@ esac
 
 # create RPS[] based on TOT_WORKER and AVG_SERVICE_TIME
 create_rps_array 2 2 1
-create_rps_array 10 60 10
-create_rps_array 65 100 5
+create_rps_array 10 50 10
+create_rps_array 55 100 5
 echo ${RPS[@]}
 
-SSH="ssh mayco@10.90.0.26"
+SSH="ssh fabricio@130.127.133.237"
 
 stop_server()
 {
   if [[ $1 == *"afp"* ]]; then
-    $SS 'sudo pkill -9 fake-app;'
+    $SSH 'sudo pkill -9 fake-app*;'
   elif [[ $1 == *"concord"* || $1 == *"shinjuku"* ]]; then
-    $SS 'sudo pkill -9 shinjuku;' > /dev/null
+    $SSH 'sudo pkill -9 shinjuku;' > /dev/null
   elif [[ $1 == *"psp"* || $1 == *"cfcfs"* ]]; then
-    $SS 'sudo pkill -9 psp-app;' > /dev/null
+    $SSH 'sudo pkill -9 psp-app;' > /dev/null
   fi
 }
 
@@ -45,14 +45,16 @@ restart_server()
 {
   echo Restating server
 
-  if [[ $1 == *"afp"* ]]; then
-    $SS 'sudo pkill -9 fake-app; make run -C afp/apps/fake/' &
+  if [[ $1 == "afp"*"ci" ]]; then
+    $SSH 'sudo pkill -9 fake-app*; sudo afp/deps/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; make run -C afp/apps/fake/ APP=fake-app-ci' &
+  elif [[ $1 == "afp"*"ipi" ]]; then
+    $SSH 'sudo pkill -9 fake-app*; sudo afp/deps/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; make run -C afp/apps/fake/ APP=fake-app-kmod-ipi' &
   elif [[ $1 == *"concord"* ]]; then
-    $SS 'sudo pkill -9 shinjuku; cd concord/concord-shinjuku/; sudo ./dp/shinjuku' &
+    $SSH 'sudo pkill -9 shinjuku; cd concord/concord-shinjuku/; sudo ./deps/dpdk/tools/dpdk_nic_bind.py --force -u 18:00.1; sudo ./dp/shinjuku' &
   elif [[ $1 == *"shinjuku"* ]]; then
-    $SS 'sudo pkill -9 shinjuku; cd shinjuku/; sudo ./dp/shinjuku' &
+    $SSH 'sudo pkill -9 shinjuku; cd shinjuku/; sudo ./deps/dpdk/tools/dpdk_nic_bind.py --force -u 18:00.1; sudo ./dp/shinjuku' &
   elif [[ $1 == *"psp"* || $1 == *"cfcfs"* ]]; then
-    $SS 'sudo pkill -9 psp-app; pushd psp/ && ./run.sh' &
+    $SSH 'sudo pkill -9 psp-app; pushd psp/; sudo submodules/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1 ./run.sh' &
   fi
 }
 
@@ -69,12 +71,11 @@ run_test()
       echo "Starting client"
       $(dirname $0)/run.sh $BASE_DIR $POLICY $RATE $WK ${RANDOMS[$i]} $i
 
-      sleep 10
-
       if [ $? -ne 0 ]; then
         echo "Error test"
         exit 1
       fi
+      sleep 5
     done
   done
 
