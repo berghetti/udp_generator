@@ -20,7 +20,12 @@ sudo apt install -y ${PACKS}
 
 # to process results
 if [[ $VERSION -le 20 ]]; then
-  pip3 install json5 pandas
+  # install python 3.8 to ubuntu 18 to usage new pandas (1.5)
+  sudo apt-get install python3.8 python3.8-dev python3.8-distutils python3.8-venv
+  curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+  python3.8 get-pip.py
+  rm get-pip.py
+  python3.8 -m pip install json5 modin[ray]
 else
   sudo apt install python3-json5 python3-pandas
 fi
