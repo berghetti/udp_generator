@@ -9,7 +9,7 @@ N_CLIENTS=1
 N_TESTS=1
 BASE_DIR=/proj/demeter-PG0/users/fabricio/afp_tests/
 
-WK="high"
+WK="extreme"
 
 TOT_WORKER=14
 
@@ -24,11 +24,10 @@ esac
 
 # create RPS[] based on TOT_WORKER and AVG_SERVICE_TIME
 create_rps_array 2 2 1
-create_rps_array 10 50 10
-create_rps_array 55 100 5
+#create_rps_array 10 85 5
 echo ${RPS[@]}
 
-SSH="ssh fabricio@130.127.133.237"
+SSH="ssh 130.127.133.237"
 
 stop_server()
 {
@@ -54,7 +53,7 @@ restart_server()
   elif [[ $1 == *"shinjuku"* ]]; then
     $SSH 'sudo pkill -9 shinjuku; cd shinjuku/; sudo ./deps/dpdk/tools/dpdk_nic_bind.py --force -u 18:00.1; sudo ./dp/shinjuku' &
   elif [[ $1 == *"psp"* || $1 == *"cfcfs"* ]]; then
-    $SSH 'sudo pkill -9 psp-app; pushd psp/; sudo submodules/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1 ./run.sh' &
+    $SSH 'sudo pkill -9 psp-app; pushd psp/; sudo submodules/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; ./run.sh' &
   fi
 }
 
