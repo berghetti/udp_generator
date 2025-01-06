@@ -83,8 +83,20 @@ remove_processed_test()
 # shorts, high, extreme
 WK="extreme"
 
+process()
+{
+  echo "Processing ${WK}"
+  for p in {p50,p99,p999}; do
+    echo $p
+    #$(dirname $0)/process_policys.py 'rocksdb' $p $BASE_DIR/tests/exponential/extreme/*
+    $(dirname $0)/process_policys.py "fake_${WK}" $p $BASE_DIR/tests/exponential/${WK}/*
+  done
+}
+
 if [ "$1" == concat ]; then
   concat_results
+  process
+  exit 0
 fi
 
 if [ "$1" == clean ]; then
@@ -92,8 +104,7 @@ if [ "$1" == clean ]; then
   exit 0
 fi
 
-for p in {p50,p99,p999}; do
-  echo $p
-  #$(dirname $0)/process_policys.py 'rocksdb' $p $BASE_DIR/tests/exponential/extreme/*
-  $(dirname $0)/process_policys.py "fake_${WK}" $p $BASE_DIR/tests/exponential/${WK}/*
-done
+WK=$1
+process
+
+

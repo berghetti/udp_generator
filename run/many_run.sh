@@ -2,21 +2,15 @@
 process_test()
 {
   pushd ../process
-  ./process_experiments.sh && sudo ./process_experiments.sh clean
+  ./process_experiments.sh $1 && sudo ./process_experiments.sh clean
   popd
 }
 
-./run_test.sh afp-kmod-ipi
-process_test
+for wk in {shorts,high,extreme}; do
+  for pol in {afp-ipi,afp-ci,psp,concord,shinjuku}; do
+    echo $wk $pol
+    ./run_test.sh $pol $wk
+    process_test $wk
+  done
+done
 
-./run_test.sh afp-ci
-process_test
-
-./run_test.sh psp
-process_test
-
-./run_test.sh concord
-process_test
-
-./run_test.sh shinjuku
-process_test
