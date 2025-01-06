@@ -31,7 +31,7 @@
 
 extern uint32_t min_lcores;
 extern uint64_t TICKS_PER_US;
-extern struct rte_ring *rx_rings[RTE_MAX_LCORE];
+extern struct rte_ring *rx_ring;
 extern struct rte_mempool *pktmbuf_pool_tx;
 extern control_block_t *control_blocks;
 

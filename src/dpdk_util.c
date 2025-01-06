@@ -120,14 +120,14 @@ int init_DPDK_port(uint16_t portid, uint16_t nb_rx_queue, uint16_t nb_tx_queue,
   }
 
   // disable flow control
-  struct rte_eth_fc_conf fc_conf;
-  retval = rte_eth_dev_flow_ctrl_get(portid, &fc_conf);
-  if (retval == 0) {
-    fc_conf.mode = RTE_ETH_FC_NONE;
-    rte_eth_dev_flow_ctrl_set(portid, &fc_conf);
-  } else {
-    return retval;
-  }
+  //struct rte_eth_fc_conf fc_conf;
+  //retval = rte_eth_dev_flow_ctrl_get(portid, &fc_conf);
+  //if (retval == 0) {
+  //  fc_conf.mode = RTE_ETH_FC_NONE;
+  //  rte_eth_dev_flow_ctrl_set(portid, &fc_conf);
+  //} else {
+  //  return retval;
+  //}
 
   // start the Ethernet port
   retval = rte_eth_dev_start(portid);
@@ -208,23 +208,19 @@ void print_dpdk_stats(uint32_t portid) {
 // create DPDK rings for the RX threads
 void create_dpdk_rings() {
   char s[64];
-  for (uint32_t i = 0; i < nr_queues; i++) {
-    snprintf(s, sizeof(s), "ring_rx%u", i);
-    rx_rings[i] = rte_ring_create(s, RING_ELEMENTS, rte_socket_id(),
+    snprintf(s, sizeof(s), "ring_rx%u", 0);
+    rx_ring = rte_ring_create(s, RING_ELEMENTS, rte_socket_id(),
                                   RING_F_SP_ENQ | RING_F_SC_DEQ);
 
-    if (rx_rings[i] == NULL) {
+    if (rx_ring == NULL) {
       rte_exit(EXIT_FAILURE, "Cannot create the rings on socket %d\n",
                rte_socket_id());
     }
-  }
 }
 
 // clear all DPDK structures allocated
 void clean_hugepages() {
-  for (uint32_t i = 0; i < nr_queues; i++) {
-    rte_ring_free(rx_rings[i]);
-  }
+  rte_ring_free(rx_ring);
   
   rte_free(control_blocks);
 	rte_mempool_free(pktmbuf_pool_tx);

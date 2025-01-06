@@ -62,7 +62,7 @@ run_one()
   -l ${CPUS} -- \
   -d ${DIST} \
   -r ${RATE} \
-  -f 256 -s 90 -t 30 -q 1 \
+  -f 256 -s 128 -t 60 \
   -c ${CONF_FILE} \
   -o ${DIR}/test$TEST_N \
   -x ${RAND} > ${DIR}/stats$TEST_N

@@ -22,10 +22,15 @@
 #include <rte_udp.h>
 
 // Constants
-#define EPSILON 0.00001
-#define MAXSTRLEN 128
-#define UNIFORM_VALUE 0
-#define EXPONENTIAL_VALUE 1
+#define EPSILON						0.00001
+#define MAXSTRLEN					128
+#define CONSTANT_VALUE				0
+#define UNIFORM_VALUE				1
+#define EXPONENTIAL_VALUE			2
+#define BIMODAL_VALUE				3
+#define LOGNORMAL_VALUE				4
+#define PARETO_VALUE				5
+
 #define IPV4_ADDR(a, b, c, d)                                                 \
   (((d & 0xff) << 24) | ((c & 0xff) << 16) | ((b & 0xff) << 8) | (a & 0xff))
 
@@ -33,7 +38,6 @@ typedef struct lcore_parameters
 {
   uint8_t qid;
   uint16_t portid;
-  uint64_t nr_elements;
 } __rte_cache_aligned lcore_param;
 
 typedef struct timestamp_node_t
@@ -78,18 +82,17 @@ extern uint64_t rate;
 extern uint16_t portid;
 extern uint64_t duration;
 extern uint64_t nr_flows;
-extern uint64_t nr_queues;
 extern uint16_t nr_servers;
 extern uint32_t frame_size;
 extern uint32_t min_lcores;
 extern uint32_t udp_payload_size;
 
 extern request_type_t cfg_request_types[TOTAL_RTYPES];
-extern request_type_t **request_types;
+extern request_type_t *request_types;
 
 extern uint64_t TICKS_PER_US;
-extern uint16_t **flow_indexes_array;
-extern uint64_t **interarrival_array;
+extern uint16_t *flow_indexes_array;
+extern uint64_t *interarrival_array;
 extern uint64_t classification_time;
 
 extern uint16_t dst_udp_port;
@@ -102,8 +105,8 @@ extern volatile uint8_t quit_rx;
 extern volatile uint8_t quit_tx;
 extern volatile uint8_t quit_rx_ring;
 
-extern node_t **incoming_array;
-extern uint64_t *incoming_idx_array;
+extern node_t *incoming_array;
+extern uint64_t incoming_idx;
 
 extern uint64_t seed;
 
@@ -113,7 +116,7 @@ void print_dpdk_stats ();
 void print_stats_output ();
 void process_config_file ();
 double sample (double lambda);
-void allocate_incoming_nodes ();
+void create_incoming_array(); 
 void create_interarrival_array ();
 void create_flow_indexes_array ();
 void create_request_types_array ();

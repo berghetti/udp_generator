@@ -15,7 +15,6 @@ init_blocks ()
   uint16_t ports[nr_flows];
   for (uint32_t i = 0; i < nr_flows; i++)
     {
-      // ports[i] = rte_cpu_to_be_16(rte_rand() % 0xFFFF);
       ports[i] = (1024 + i) % 0xFFFF;
     }
 
@@ -28,7 +27,7 @@ init_blocks ()
       control_blocks[i].dst_addr = dst_ipv4_addr;
 
       control_blocks[i].src_port = src_udp_port;
-      // control_blocks[i].dst_port = rte_cpu_to_be_16 (dst_udp_port);
+      // control_blocks[i].dst_port = dst_udp_port;
     }
 }
 
