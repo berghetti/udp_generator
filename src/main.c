@@ -216,20 +216,22 @@ lcore_tx (void *arg)
 
   uint16_t nb_tx;
   struct rte_mbuf *pkt;
+  uint64_t next_tsc;
+  uint64_t start;
 
-  uint64_t next_tsc = rte_rdtsc () + interarrival_array[0];
-
-  uint64_t start = rte_rdtsc ();
   uint64_t tot_nb_tx = 0;
 
-  for (uint64_t i = 0; i < nr_elements; i++)
+  start = next_tsc = rte_rdtsc ();
+  for (uint64_t i = 0; i < nr_elements && !quit_tx; i++)
     {
+      // update the counter
+      next_tsc += interarrival_array[i];
       // unable to keep up with the requested rate
       if (unlikely (rte_rdtsc () > (next_tsc + 5 * TICKS_PER_US)))
         {
           // count this batch as dropped
           nr_never_sent++;
-          next_tsc += (interarrival_array[i] + TICKS_PER_US);
+          // next_tsc += (interarrival_array[i] + TICKS_PER_US);
           continue;
         }
 
@@ -262,9 +264,6 @@ lcore_tx (void *arg)
         }
 
       tot_nb_tx++;
-
-      // update the counter
-      next_tsc += interarrival_array[i];
     }
 
   q_rps[qid].rps_offered
