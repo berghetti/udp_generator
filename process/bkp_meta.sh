@@ -14,6 +14,7 @@ for meta in $(ls *meta.dat*); do
 done
 
 pushd $BASE_DST
+git pull
 git add .
 git commit -m "added new test"
 git push
