@@ -22,14 +22,14 @@
 #include <rte_udp.h>
 
 // Constants
-#define EPSILON						0.00001
-#define MAXSTRLEN					128
-#define CONSTANT_VALUE				0
-#define UNIFORM_VALUE				1
-#define EXPONENTIAL_VALUE			2
-#define BIMODAL_VALUE				3
-#define LOGNORMAL_VALUE				4
-#define PARETO_VALUE				5
+#define EPSILON 0.00001
+#define MAXSTRLEN 128
+#define CONSTANT_VALUE 0
+#define UNIFORM_VALUE 1
+#define EXPONENTIAL_VALUE 2
+#define BIMODAL_VALUE 3
+#define LOGNORMAL_VALUE 4
+#define PARETO_VALUE 5
 
 #define IPV4_ADDR(a, b, c, d)                                                 \
   (((d & 0xff) << 24) | ((c & 0xff) << 16) | ((b & 0xff) << 8) | (a & 0xff))
@@ -116,7 +116,7 @@ void print_dpdk_stats ();
 void print_stats_output ();
 void process_config_file ();
 double sample (double lambda);
-void create_incoming_array(); 
+void create_incoming_array ();
 void create_interarrival_array ();
 void create_flow_indexes_array ();
 void create_request_types_array ();

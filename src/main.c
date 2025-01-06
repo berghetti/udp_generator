@@ -77,14 +77,15 @@ process_rx_pkt (struct rte_mbuf *pkt, node_t *incoming, uint64_t *incoming_idx)
       sizeof (struct rte_ether_hdr) + (ipv4_hdr->version_ihl & 0x0f) * 4);
 
   // get UDP payload size
-   uint32_t packet_data_size = rte_be_to_cpu_16(ipv4_hdr->total_length) -
-                              ((ipv4_hdr->version_ihl & 0x0f) * 4) -
-                              sizeof(struct rte_udp_hdr);
+  uint32_t packet_data_size = rte_be_to_cpu_16 (ipv4_hdr->total_length)
+                              - ((ipv4_hdr->version_ihl & 0x0f) * 4)
+                              - sizeof (struct rte_udp_hdr);
 
   // do not process empty packets
-   if (unlikely(packet_data_size == 0)) {
-    return 0;
-  }
+  if (unlikely (packet_data_size == 0))
+    {
+      return 0;
+    }
 
   node_t *node = &incoming[(*incoming_idx)++];
 
@@ -221,16 +222,16 @@ lcore_tx (void *arg)
   uint64_t start = rte_rdtsc ();
   uint64_t tot_nb_tx = 0;
 
-  for(uint64_t i = 0; i < nr_elements; i++)
+  for (uint64_t i = 0; i < nr_elements; i++)
     {
       // unable to keep up with the requested rate
       if (unlikely (rte_rdtsc () > (next_tsc + 5 * TICKS_PER_US)))
-      {
-        // count this batch as dropped
-        nr_never_sent++;
-        next_tsc += (interarrival_array[i] + TICKS_PER_US);
-        continue;
-      }
+        {
+          // count this batch as dropped
+          nr_never_sent++;
+          next_tsc += (interarrival_array[i] + TICKS_PER_US);
+          continue;
+        }
 
       // choose the flow to send
       uint16_t flow_id = flow_indexes_array[i];
@@ -276,14 +277,14 @@ lcore_tx (void *arg)
 
 // main function
 int
-main (int argc, char **argv )
+main (int argc, char **argv)
 {
   // init EAL
   int ret = rte_eal_init (argc, argv);
   if (ret < 0)
-  {
-    rte_exit (EXIT_FAILURE, "Invalid EAL parameters\n");
-  }
+    {
+      rte_exit (EXIT_FAILURE, "Invalid EAL parameters\n");
+    }
 
   argc -= ret;
   argv += ret;
@@ -291,15 +292,15 @@ main (int argc, char **argv )
   // parse application arguments (after the EAL ones)
   ret = app_parse_args (argc, argv);
   if (ret < 0)
-  {
-    rte_exit (EXIT_FAILURE, "Invalid arguments\n");
-  }
+    {
+      rte_exit (EXIT_FAILURE, "Invalid arguments\n");
+    }
 
   // initialize DPDK
   init_DPDK (portid, 1);
 
   //// allocate nodes for incoming packets
-  create_incoming_array();
+  create_incoming_array ();
 
   //// create flow indexes array
   create_flow_indexes_array ();
@@ -318,20 +319,20 @@ main (int argc, char **argv )
   // start RX and TX threads
   uint32_t id_lcore = rte_lcore_id ();
   for (unsigned i = 0; i < 1; i++)
-  {
-    lcore_params[i].portid = portid;
-    lcore_params[i].qid = i;
+    {
+      lcore_params[i].portid = portid;
+      lcore_params[i].qid = i;
 
-    id_lcore = rte_get_next_lcore (id_lcore, 1, 1);
-    rte_eal_remote_launch (lcore_rx_ring, (void *)&lcore_params[i],
-        id_lcore);
+      id_lcore = rte_get_next_lcore (id_lcore, 1, 1);
+      rte_eal_remote_launch (lcore_rx_ring, (void *)&lcore_params[i],
+                             id_lcore);
 
-    id_lcore = rte_get_next_lcore (id_lcore, 1, 1);
-    rte_eal_remote_launch (lcore_rx, (void *)&lcore_params[i], id_lcore);
+      id_lcore = rte_get_next_lcore (id_lcore, 1, 1);
+      rte_eal_remote_launch (lcore_rx, (void *)&lcore_params[i], id_lcore);
 
-    id_lcore = rte_get_next_lcore (id_lcore, 1, 1);
-    rte_eal_remote_launch (lcore_tx, (void *)&lcore_params[i], id_lcore);
-  }
+      id_lcore = rte_get_next_lcore (id_lcore, 1, 1);
+      rte_eal_remote_launch (lcore_tx, (void *)&lcore_params[i], id_lcore);
+    }
 
   // wait for duration parameter
   wait_timeout ();
