@@ -12,3 +12,9 @@ for meta in $(ls *meta.dat*); do
   mkdir -p $DIR
   cp $meta $DIR
 done
+
+pushd $BASE_DST
+git add .
+git commit -m "added new test"
+git push
+popd
