@@ -81,7 +81,7 @@ remove_processed_test()
 }
 
 # shorts, high, extreme
-WK="high"
+WK="extreme"
 
 if [ "$1" == concat ]; then
   concat_results
