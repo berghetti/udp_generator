@@ -93,13 +93,12 @@ process()
   done
 }
 
-if [ "$1" == concat ]; then
+if [ "$2" == concat ]; then
   concat_results
-  process
   exit 0
 fi
 
-if [ "$1" == clean ]; then
+if [ "$2" == clean ]; then
   remove_processed_test $BASE_DIR/tests/exponential/${WK}
   exit 0
 fi
