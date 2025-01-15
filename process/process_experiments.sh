@@ -75,13 +75,16 @@ remove_processed_test()
   pushd $folder
 
   #  policy/rate/test0
-  rm */*/test[0-9]
+  rm */test[0-9]
 
   popd
 }
 
 # shorts, high, extreme
-WK="extreme"
+#WK="extreme"
+#POL="rss"
+WK=$1
+POL=$2
 
 process()
 {
@@ -89,7 +92,7 @@ process()
   for p in {p50,p99,p999}; do
     echo $p
     #$(dirname $0)/process_policys.py 'rocksdb' $p $BASE_DIR/tests/exponential/extreme/*
-    $(dirname $0)/process_policys.py "fake_${WK}" $p $BASE_DIR/tests/exponential/${WK}/*
+    $(dirname $0)/process_policys.py "fake_${WK}" $p $BASE_DIR/tests/exponential/${WK}/${POL}/
   done
 }
 
@@ -98,12 +101,11 @@ if [ "$2" == concat ]; then
   exit 0
 fi
 
-if [ "$2" == clean ]; then
-  remove_processed_test $BASE_DIR/tests/exponential/${WK}
+if [ "$3" == clean ]; then
+  remove_processed_test $BASE_DIR/tests/exponential/${WK}/${POL}
   exit 0
 fi
 
-WK=$1
 process
 
 
