@@ -15,7 +15,7 @@ init_blocks ()
   uint16_t ports[nr_flows];
   for (uint32_t i = 0; i < nr_flows; i++)
     {
-      ports[i] = (1024 + i) % 0xFFFF;
+      ports[i] = ((1024 + i) * 0xBEEF) & 0xFFFF;
     }
 
   for (uint32_t i = 0; i < nr_flows; i++)
