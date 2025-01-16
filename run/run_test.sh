@@ -1,102 +1,104 @@
 #!/bin/bash
-set -e
-#
-# Usage: ./run_clients.sh afp|psp
 
-source $(dirname $0)/common.sh
+# Usage: ./run_clients.sh afp|psp [workload]
+
+#set -euo pipefail
+
+source $(dirname "$0")/common.sh
 
 N_CLIENTS=1
 N_TESTS=1
-BASE_DIR=/proj/demeter-PG0/users/fabricio/afp_tests/
+BASE_DIR="/proj/demeter-PG0/users/fabricio/afp_tests/"
 TOT_WORKER=14
 
-POLICY=$1
-
-if [[ $# -eq 2 ]]; then
-  WK=$2
-else
-  WK="extreme"
+if [[ $# -lt 1 ]]; then
+  echo "Usage: $0 <policy> [workload]"
+  exit 1
 fi
 
-echo $WK
+POLICY=$1
+WK=${2:-"extreme"}
 
+echo "Workload: $WK"
+
+# Calculate average service time based on the workload
 case $WK in
-  "shorts") AVG_SERVICE_TIME=$(awk 'BEGIN {print 1.0*1.0 }')  ;; # 100% 1us
-  "very_shorts") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5.0*1.0 }')  ;; # 100% 0.5us
-  "extreme") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.995 + 500*0.005 }') ;; #extreme 99.5%/0.5%
-  "high") AVG_SERVICE_TIME=$(awk 'BEGIN {print 1*0.5 + 100*0.5 }') ;;   #high 50%/50%
+  "shorts") AVG_SERVICE_TIME=$(awk 'BEGIN {print 1.0*1.0}')  ;;
+  "very_shorts") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*1.0}')  ;;
+  "extreme") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.995 + 500*0.005}') ;;
+  "high") AVG_SERVICE_TIME=$(awk 'BEGIN {print 1*0.5 + 100*0.5}') ;;
+  *) echo "Invalid workload: $WK"; exit 1 ;;
 esac
 
-# create RPS[] based on TOT_WORKER and AVG_SERVICE_TIME
+echo "Average Service Time: $AVG_SERVICE_TIME"
 
-if [[ $WK == "shorts" ]]; then
-  create_rps_array 1 50 3
-elif [[ $WK == "high" ]]; then
-  create_rps_array 5 50 10
-  create_rps_array 50 100 5
-elif [[ $WK == "extreme" ]]; then
-  create_rps_array 5 85 5
-else
-  create_rps_array 5 100 5
-fi
+# Define RPS array based on workload and TOT_WORKER
+case $WK in
+  "shorts") create_rps_array 1 50 3 ;;
+  "high")
+    create_rps_array 5 50 10
+    create_rps_array 50 100 5
+    ;;
+  "extreme")
+    create_rps_array 5 30 10
+    create_rps_array 30 85 5
+    ;;
+  *) create_rps_array 5 100 5 ;;
+esac
 
-#create_rps_array 90 90 5
-echo ${RPS[@]}
+echo "RPS Array: ${RPS[*]}"
 
 SSH="ssh 130.127.133.237"
 
-stop_server()
-{
-  echo "Stoping ${1}"
-  $SSH "sudo pkill -2 ${1}; sleep 2; sudo pkill -9 ${1};" &
-
-  wait $!
+# Function to stop the server
+stop_server() {
+  local server=$1
+  echo "Stopping server: $server"
+  $SSH "sudo killall -2 -w $server"
 }
 
-start_server()
-{
-  echo "Starting ${1}"
+# Function to start the server and ensure it runs in the background
+start_server() {
+  local server=$1
+  echo "Starting server: $server"
 
-  if [[ $1 == "rss"* ]]; then
-    $SSH "make run -C afp/apps/fake/ APP=${1}" &
-  elif [[ $1 == "afp"*"ci" ]]; then
-    $SSH 'sudo afp/deps/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; make run -C afp/apps/fake/ APP=fake-app-ci' &
-  elif [[ $1 == "afp"*"ipi" ]]; then
-    $SSH 'sudo afp/deps/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; make run -C afp/apps/fake/ APP=fake-app-kmod-ipi' &
-  elif [[ $1 == *"concord"* ]]; then
-    $SSH 'cd concord/concord-shinjuku/; sudo ./deps/dpdk/tools/dpdk_nic_bind.py --force -u 18:00.1; sudo ./dp/shinjuku' &
-  elif [[ $1 == *"shinjuku"* ]]; then
-    $SSH 'cd shinjuku/; sudo ./deps/dpdk/tools/dpdk_nic_bind.py --force -u 18:00.1; sudo ./dp/shinjuku' &
-  elif [[ $1 == *"psp"* ]]; then
-    $SSH 'pushd psp/; sudo submodules/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; ./run.sh' &
-  elif [[ $1 == *"cfcfs"* ]]; then
-    $SSH 'pushd psp/; sudo submodules/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; ./run_cfcfs.sh' &
-  fi
+  local command=""
+  case $server in
+    "rss"*) command="make run -C afp/apps/fake/ APP=$server" ;;
+    "afp"*"ci") command="sudo afp/deps/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; make run -C afp/apps/fake/ APP=fake-app-ci" ;;
+    "afp"*"ipi") command="sudo afp/deps/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; make run -C afp/apps/fake/ APP=fake-app-kmod-ipi" ;;
+    *"concord"*) command="cd concord/concord-shinjuku/; sudo ./deps/dpdk/tools/dpdk_nic_bind.py --force -u 18:00.1; sudo ./dp/shinjuku" ;;
+    *"shinjuku"*) command="cd shinjuku/; sudo ./deps/dpdk/tools/dpdk_nic_bind.py --force -u 18:00.1; sudo ./dp/shinjuku" ;;
+    *"psp"*) command="pushd psp/; sudo submodules/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; ./run.sh" ;;
+    *"cfcfs"*) command="pushd psp/; sudo submodules/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; ./run_cfcfs.sh" ;;
+    *) echo "Unknown server type: $server"; exit 1 ;;
+  esac
+
+  $SSH "$command" &
+
 }
 
 RANDOMS=(7 365877 374979 853172 908081 227836 64991 493663 174817 73997)
-run_test()
-{
-  for rate in ${RPS[@]}; do
-    echo "Rate: ${rate}"
-    RATE=$((rate / N_CLIENTS)) # per client rate
+
+# Function to run tests
+run_test() {
+  for rate in "${RPS[@]}"; do
+    echo "Rate: $rate"
+    local per_client_rate=$((rate / N_CLIENTS))
 
     for i in $(seq 0 $((N_TESTS-1))); do
-      start_server $POLICY; sleep 20
+      stop_server "$POLICY"
+      start_server "$POLICY"
+      sleep 20
 
-      echo "Starting client"
-      $(dirname $0)/run.sh $BASE_DIR $POLICY $RATE $WK ${RANDOMS[$i]} $i
+      echo "Starting client with rate: $per_client_rate"
+      $(dirname "$0")/run.sh "$BASE_DIR" "$POLICY" "$per_client_rate" "$WK" "${RANDOMS[$i]}" "$i"
 
-      stop_server $POLICY
-
-      #if [ $? -ne 0 ]; then
-      #  echo "Error test"
-      #  exit 1
-      #fi
+      stop_server "$POLICY"
     done
   done
 
-  stop_server $POLICY
+  stop_server "$POLICY"
 }
 
 run_test
