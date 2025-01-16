@@ -13,7 +13,6 @@ cd udp_generator
 edit MACHINE_CONFIG
 ./misc/set_boot_params.sh
 reboot
-:x
 ```
 
 ## Running
