@@ -10,6 +10,10 @@ Tested using DPDK 23.11 with ubuntu 20.04 and 18.04
 git clone -b afp_changes https://github.com/berghetti/udp_generator.git
 cd udp_generator
 ./install_requirements.sh; ./install_dpdk.sh; make
+edit MACHINE_CONFIG
+./misc/set_boot_params.sh
+reboot
+:x
 ```
 
 ## Running
