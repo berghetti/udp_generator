@@ -1,64 +1,65 @@
 #!/bin/bash
 
-# Usage: ./run_clients.sh afp|psp [workload]
+# Usage: ./run_clients.sh afp|psp <workload>
 
 #set -euo pipefail
 
 source $(dirname "$0")/common.sh
 
 N_CLIENTS=1
-N_TESTS=1
+N_TESTS=5
 BASE_DIR="/proj/demeter-PG0/users/fabricio/afp_tests/"
 TOT_WORKER=14
 
-if [[ $# -lt 1 ]]; then
-  echo "Usage: $0 <policy> [workload]"
-  exit 1
-fi
+#if [[ $# -lt 1 ]]; then
+#  echo "Usage: $0 <policy> <workload>"
+#  exit 1
+#fi
 
-POLICY=$1
-WK=${2:-"extreme"}
+generate_rates()
+{
+  local workload=$1
+  echo "Workload: ${workload}"
 
-echo "Workload: $WK"
+  # Calculate average service time based on the workload
+  case $workload in
+    "shorts") AVG_SERVICE_TIME=$(awk 'BEGIN {print 1.0*1.0}')  ;;
+    "very_shorts") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*1.0}')  ;;
+    "extreme") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.995 + 500*0.005}') ;;
+    "high") AVG_SERVICE_TIME=$(awk 'BEGIN {print 1*0.5 + 100*0.5}') ;;
+    "zippydb") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.6*0.78 + 2.3*0.19 + 500*0.03}') ;;
+    *) echo "Invalid workload: $workload"; exit 1 ;;
+  esac
 
-# Calculate average service time based on the workload
-case $WK in
-  "shorts") AVG_SERVICE_TIME=$(awk 'BEGIN {print 1.0*1.0}')  ;;
-  "very_shorts") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*1.0}')  ;;
-  "extreme") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.995 + 500*0.005}') ;;
-  "high") AVG_SERVICE_TIME=$(awk 'BEGIN {print 1*0.5 + 100*0.5}') ;;
-  "zippydb") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.6*0.78 + 2.3*0.19 + 500*0.03}') ;;
-  *) echo "Invalid workload: $WK"; exit 1 ;;
-esac
+  echo "Average Service Time: $AVG_SERVICE_TIME"
 
-echo "Average Service Time: $AVG_SERVICE_TIME"
+  # Define RPS array based on workload and TOT_WORKER
+  case $workload in
+    "shorts") create_rps_array 1 50 3 ;;
+    "high")
+      create_rps_array 5 50 10
+      create_rps_array 50 100 5
+      ;;
+    "extreme")
+      #create_rps_array 5 85 5
+      create_rps_array 60 85 5
+      ;;
+    "zippydb")
+      create_rps_array 5 100 5
+      ;;
+    *) create_rps_array 5 100 5 ;;
+  esac
 
-# Define RPS array based on workload and TOT_WORKER
-case $WK in
-  "shorts") create_rps_array 1 50 3 ;;
-  "high")
-    create_rps_array 5 50 10
-    create_rps_array 50 100 5
-    ;;
-  "extreme")
-    create_rps_array 5 30 10
-    create_rps_array 30 85 5
-    ;;
-  "zippydb")
-    create_rps_array 5 100 5
-    ;;
-  *) create_rps_array 5 100 5 ;;
-esac
+  echo "RPS Array: ${RPS[*]}"
+}
 
-echo "RPS Array: ${RPS[*]}"
-
-SSH="ssh 130.127.133.237"
+SSH="ssh 130.127.133.223"
 
 # Function to stop the server
 stop_server() {
   local server=$1
   echo "Stopping server: $server"
-  $SSH "sudo killall -2 -w $server"
+  $SSH "sudo killall -2 -r $server*; sleep 1;"
 }
 
 # Function to start the server and ensure it runs in the background
@@ -69,8 +70,8 @@ start_server() {
   local command=""
   case $server in
     "rss"*) command="make run -C afp-all/afp/apps/fake/ APP=$server" ;;
-    "afp"*"ci") command="sudo afp/deps/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; make run -C afp/apps/fake/ APP=fake-app-ci" ;;
-    "afp"*"ipi") command="sudo afp/deps/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; make run -C afp/apps/fake/ APP=fake-app-kmod-ipi" ;;
+    "afp"*"ci") command="sudo afp-all/afp/deps/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; make run -C afp-all/afp/apps/fake/ APP=fake-app-ci" ;;
+    "afp"*"ipi") command="sudo afp-all/afp/deps/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; make run -C afp-all/afp/apps/fake/ APP=fake-app-kmod-ipi" ;;
     *"concord"*) command="cd concord/concord-shinjuku/; sudo ./deps/dpdk/tools/dpdk_nic_bind.py --force -u 18:00.1; sudo ./dp/shinjuku" ;;
     *"shinjuku"*) command="cd shinjuku/; sudo ./deps/dpdk/tools/dpdk_nic_bind.py --force -u 18:00.1; sudo ./dp/shinjuku" ;;
     *"psp"*) command="pushd psp/; sudo submodules/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; ./run.sh" ;;
@@ -79,31 +80,63 @@ start_server() {
   esac
 
   $SSH "$command" &
-
 }
 
 RANDOMS=(7 365877 374979 853172 908081 227836 64991 493663 174817 73997)
 
+process_test()
+{
+  pushd ../process
+  ./process_experiments.sh $1 $2 && sudo ./process_experiments.sh $1 $2 clean
+  popd
+}
+
 # Function to run tests
 run_test() {
+  local workload=$1
+  local policy=$2
+
+  stop_server $policy
+
   for rate in "${RPS[@]}"; do
     echo "Rate: $rate"
     local per_client_rate=$((rate / N_CLIENTS))
 
     for i in $(seq 0 $((N_TESTS-1))); do
-      stop_server "$POLICY"
-      start_server "$POLICY"
-      sleep 20
+      start_server $policy
+      sleep 5
 
       echo "Starting client with rate: $per_client_rate"
-      $(dirname "$0")/run.sh "$BASE_DIR" "$POLICY" "$per_client_rate" "$WK" "${RANDOMS[$i]}" "$i"
+      $(dirname "$0")/run.sh "$BASE_DIR" "$policy" "$per_client_rate" "$workload" "${RANDOMS[$i]}" "$i"
 
-      stop_server "$POLICY"
+      stop_server $policy
     done
+
+    process_test $wk $pol
   done
 
   stop_server "$POLICY"
 }
 
-run_test
+#run_test
 
+POLICYS=(
+#  "rss"
+  "rss-ci"
+#  "rss-ws"
+  "rss-ws-ci"
+  "rss-ws-ci-wq"
+  "rss-ws-ci-wq-cp"
+  "rss-ws-ci-wq-cp-feed-qa"
+  "rss-ws-ci-wq-cp-feed-qa-tw"
+)
+
+for wk in extreme; do
+  generate_rates $wk
+
+  for pol in ${POLICYS[@]}; do
+    echo $wk $pol
+    run_test $wk $pol
+    #process_test $wk $pol
+  done
+done

@@ -103,6 +103,9 @@ def get_drop(rate):
       #drops.append(r)
 
   #return sum(tot_tx) - sum(tot_rx);
+  if sum(tot_rx) == 0:
+    return 100
+
   drop_percent = (1 - (sum(tot_rx) / sum(tot_tx))) * 100
   return round(drop_percent, 4)
 
@@ -136,6 +139,9 @@ def process_get_latencys(pol, slowdown=False):
     print('Reading \'{}\''.format(folder))
 
     rps = get_rps(folder) / 1e6
+    if rps == 0:
+      print('Skipping ', rps)
+      continue
 
     d = get_drop(folder)
     drops.append(d)
