@@ -58,7 +58,11 @@ typedef struct timestamp_node_t
 // max of request types
 #define TOTAL_RTYPES 2
 
-/* keep this struct small because num of requests generated can be very large ...*/
+/* keep this struct small because num of requests generated can be very large ...
+ *
+ * [3]   [2][1][0]
+ * MSB     LSB 
+ * type    service_time*/
 typedef struct request_type
 {
   union
