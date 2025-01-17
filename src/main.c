@@ -25,7 +25,7 @@ uint32_t udp_payload_size;
 uint64_t TICKS_PER_US;
 uint16_t *flow_indexes_array;
 uint64_t *interarrival_array;
-request_type_t cfg_request_types[TOTAL_RTYPES];
+config_request_type_t cfg_request_types[TOTAL_RTYPES];
 request_type_t *request_types;
 uint64_t classification_time;
 
@@ -241,16 +241,16 @@ lcore_tx (void *arg)
       // generate packets
       pkt = rte_pktmbuf_alloc (pktmbuf_pool_tx);
       // fill the packet with the flow information
-      fill_udp_packet (flow_id, pkt, rtype[i].dst_port);
+      fill_udp_packet (flow_id, pkt);
 
       // fill the payload to gather server information
       // fill_payload_pkt(pkts[nb_pkts], FLOW_ID, flow_id);
 
       fill_payload_pkt (pkt, SEND_TIME, next_tsc);
 
-      fill_payload_pkt (pkt, TYPE, rtype[i].type);
+      fill_payload_pkt (pkt, TYPE, get_type(rtype[i]));
       fill_payload_pkt (pkt, SERVICE_TIME, rtype[i].service_time);
-      fill_payload_pkt (pkt, DB_KEY, rtype[i].db_key);
+      //fill_payload_pkt (pkt, DB_KEY, rtype[i].db_key);
 
       // sleep for while
       while (rte_rdtsc () < next_tsc)

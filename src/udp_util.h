@@ -43,7 +43,7 @@ extern struct rte_mempool *pktmbuf_pool_rx;
 extern control_block_t *control_blocks;
 
 void init_blocks ();
-void fill_udp_packet (uint16_t i, struct rte_mbuf *pkt, uint16_t dst_port);
+void fill_udp_packet (uint16_t i, struct rte_mbuf *pkt);
 void fill_udp_payload (uint8_t *payload, uint32_t length);
 
 #endif // __UDP_UTIL_H__

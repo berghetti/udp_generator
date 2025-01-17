@@ -85,17 +85,18 @@ create_request_types_array (void)
           random -= cfg_request_types[t].ratio;
         }
 
-      request_types[j].dst_port = cfg_request_types[t].dst_port;
+      //request_types[j].dst_port = cfg_request_types[t].dst_port;
 
       // to fake work server
-      request_types[j].type = t + 1; // psp server
+      //request_types[j].type = t + 1; // psp server
+      set_type(request_types[j], t+1);
       request_types[j].service_time = cfg_request_types[t].service_time;
 
       // to DB server
-      unsigned r = rte_rand () % 5000; // 5000 keys in server DB
-      char buff[member_size (request_type_t, db_key)] = { 0 };
-      snprintf (buff, sizeof buff, "k%u", r);
-      memcpy (&request_types[j].db_key, buff, sizeof (buff));
+      //unsigned r = rte_rand () % 5000; // 5000 keys in server DB
+      //char buff[member_size (request_type_t, db_key)] = { 0 };
+      //snprintf (buff, sizeof buff, "k%u", r);
+      //memcpy (&request_types[j].db_key, buff, sizeof (buff));
 
       // debug
       types_count[t]++;
@@ -436,13 +437,13 @@ process_config_file (char *cfg_file)
     }
 
   // load UDP destination port
-  // entry = (char *)rte_cfgfile_get_entry (file, "udp", "dst");
-  // if (entry)
-  //  {
-  //    uint16_t port;
-  //    sscanf (entry, "%hu", &port);
-  //    dst_udp_port = port;
-  //  }
+  entry = (char *)rte_cfgfile_get_entry (file, "udp", "dst");
+  if (entry)
+   {
+     uint16_t port;
+     sscanf (entry, "%hu", &port);
+     dst_udp_port = port;
+   }
 
   int i, ret;
   struct rte_cfgfile_entry entries[TOTAL_RTYPES];
@@ -456,10 +457,10 @@ process_config_file (char *cfg_file)
   for (i = 0; i < ret; i++)
     cfg_request_types[i].ratio = atoi (entries[i].value);
 
-  ret = rte_cfgfile_section_entries (file, "requests_dst_ports", entries,
-                                     ASIZE (entries));
-  for (i = 0; i < ret; i++)
-    cfg_request_types[i].dst_port = atoi (entries[i].value);
+  //ret = rte_cfgfile_section_entries (file, "requests_dst_ports", entries,
+  //                                   ASIZE (entries));
+  //for (i = 0; i < ret; i++)
+  //  cfg_request_types[i].dst_port = atoi (entries[i].value);
 
   entry = (char *)rte_cfgfile_get_entry (file, "classification_time", "time");
   if (!entry)

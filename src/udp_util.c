@@ -27,13 +27,13 @@ init_blocks ()
       control_blocks[i].dst_addr = dst_ipv4_addr;
 
       control_blocks[i].src_port = src_udp_port;
-      // control_blocks[i].dst_port = dst_udp_port;
+      //control_blocks[i].dst_port = dst_udp_port;
     }
 }
 
 // Fill the UDP packets from Control Block data
 void
-fill_udp_packet (uint16_t i, struct rte_mbuf *pkt, uint16_t dst_port)
+fill_udp_packet (uint16_t i, struct rte_mbuf *pkt)
 {
   // get control block for the flow
   control_block_t *block = &control_blocks[i];
@@ -67,7 +67,7 @@ fill_udp_packet (uint16_t i, struct rte_mbuf *pkt, uint16_t dst_port)
   struct rte_udp_hdr *udp_hdr = rte_pktmbuf_mtod_offset (
       pkt, struct rte_udp_hdr *,
       sizeof (struct rte_ether_hdr) + sizeof (struct rte_ipv4_hdr));
-  udp_hdr->dst_port = rte_cpu_to_be_16 (dst_port);
+  udp_hdr->dst_port = rte_cpu_to_be_16 (dst_udp_port);
   udp_hdr->src_port = rte_cpu_to_be_16 (block->src_port);
   udp_hdr->dgram_len
       = rte_cpu_to_be_16 (sizeof (struct rte_udp_hdr) + udp_payload_size);

@@ -47,7 +47,7 @@ typedef struct timestamp_node_t
   uint64_t timestamp_tx;
   uint64_t nr_never_sent;
 
-  uint32_t type;
+  uint8_t type;
   uint32_t service_time;
 
   // server times
@@ -58,14 +58,25 @@ typedef struct timestamp_node_t
 // max of request types
 #define TOTAL_RTYPES 2
 
+/* keep this struct small because num of requests generated can be very large ...*/
 typedef struct request_type
 {
-  uint32_t type;
+  union
+  {
+    uint8_t type[4];
+    uint32_t service_time: 24; // in nanoseconds. This is enough to store until 16 milisseconds 
+  };
+
+#define set_type(t, v) (t.type[3] = (v))
+#define get_type(t) (t.type[3])
+
+} request_type_t;
+
+typedef struct config_request_type
+{
   uint32_t ratio;
   uint64_t service_time; // in nanoseconds
-  uint64_t db_key;       // Database key
-  uint16_t dst_port;
-} request_type_t;
+} config_request_type_t;
 
 #define MAX_QUEUES 16
 struct queue_rps
@@ -87,7 +98,7 @@ extern uint32_t frame_size;
 extern uint32_t min_lcores;
 extern uint32_t udp_payload_size;
 
-extern request_type_t cfg_request_types[TOTAL_RTYPES];
+extern config_request_type_t cfg_request_types[TOTAL_RTYPES];
 extern request_type_t *request_types;
 
 extern uint64_t TICKS_PER_US;
