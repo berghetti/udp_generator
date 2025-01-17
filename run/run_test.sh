@@ -27,6 +27,7 @@ case $WK in
   "very_shorts") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*1.0}')  ;;
   "extreme") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.995 + 500*0.005}') ;;
   "high") AVG_SERVICE_TIME=$(awk 'BEGIN {print 1*0.5 + 100*0.5}') ;;
+  "zippydb") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.6*0.78 + 2.3*0.19 + 500*0.03}') ;;
   *) echo "Invalid workload: $WK"; exit 1 ;;
 esac
 
@@ -42,6 +43,9 @@ case $WK in
   "extreme")
     create_rps_array 5 30 10
     create_rps_array 30 85 5
+    ;;
+  "zippydb")
+    create_rps_array 5 100 5
     ;;
   *) create_rps_array 5 100 5 ;;
 esac
@@ -64,7 +68,7 @@ start_server() {
 
   local command=""
   case $server in
-    "rss"*) command="make run -C afp/apps/fake/ APP=$server" ;;
+    "rss"*) command="make run -C afp-all/afp/apps/fake/ APP=$server" ;;
     "afp"*"ci") command="sudo afp/deps/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; make run -C afp/apps/fake/ APP=fake-app-ci" ;;
     "afp"*"ipi") command="sudo afp/deps/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; make run -C afp/apps/fake/ APP=fake-app-kmod-ipi" ;;
     *"concord"*) command="cd concord/concord-shinjuku/; sudo ./deps/dpdk/tools/dpdk_nic_bind.py --force -u 18:00.1; sudo ./dp/shinjuku" ;;

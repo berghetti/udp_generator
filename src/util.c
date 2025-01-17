@@ -88,7 +88,7 @@ create_request_types_array (void)
       //request_types[j].dst_port = cfg_request_types[t].dst_port;
 
       // to fake work server
-      //request_types[j].type = t + 1; // psp server
+      //request_types[j].type = t + 1;
       set_type(request_types[j], t+1);
       request_types[j].service_time = cfg_request_types[t].service_time;
 
@@ -104,7 +104,7 @@ create_request_types_array (void)
 
   // debug
   for (int i = 0; i < TOTAL_RTYPES; i++)
-    printf ("Type: %u requests: %lu\n", i, types_count[i]);
+    printf ("Type: %u requests: %lu (sv: %u ns)\n", i, types_count[i], cfg_request_types[i].service_time);
 }
 
 // Allocate and create an array for all interarrival packets for rate

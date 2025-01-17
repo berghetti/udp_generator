@@ -17,7 +17,7 @@ echo "Runing ${policy} with rate ${rate}"
 _run()
 {
   load_name=$1
-  
+
   test_dir="${dist}/${load_name}/${policy}/${rate}"
   run_one $test_dir $dist $rate $rand $test_i
 }
@@ -34,5 +34,6 @@ else
   echo "${wk} unknow"
   exit 1
 fi;
-  
+
+
 _run $wk

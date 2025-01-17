@@ -56,7 +56,7 @@ typedef struct timestamp_node_t
 } node_t;
 
 // max of request types
-#define TOTAL_RTYPES 2
+#define TOTAL_RTYPES 4
 
 /* keep this struct small because num of requests generated can be very large ...
  *
@@ -79,7 +79,7 @@ typedef struct request_type
 typedef struct config_request_type
 {
   uint32_t ratio;
-  uint64_t service_time; // in nanoseconds
+  uint32_t service_time; // in nanoseconds
 } config_request_type_t;
 
 #define MAX_QUEUES 16
