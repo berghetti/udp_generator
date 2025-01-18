@@ -5,26 +5,16 @@ import sys
 import json5 as json
 
 if __name__ == '__main__':
-  data = []
+  pols = []
   with open(sys.argv[1], 'r') as f:
-    data = json.load(f)
+    pols = json.load(f)
 
-  for pol in data:
+  skip = ['type1err','type2err','type3err','type4err']
+
+  for pol in pols:
     name = list(pol.keys())[0]
-    x = pol[name]['x']
-    s = pol[name]['s']
-    serr = pol[name]['serr']
-    l = pol[name]['l']
-    lerr = pol[name]['lerr']
-    a = pol[name]['a']
-    drop = pol[name]['drop']
-
     print(name)
-    print(f'  x: {x}')
-    print(f'  shorts: {s}')
-    #print(f'  shorts err: {serr}')
-    print(f'  longs: {l}')
-    #print(f'  longs err: {lerr}')
-    print(f'  alls: {a}')
-    print(f'  drop: {drop}\n')
+    for attr in pol[name].keys():
+      if str(attr) not in skip:
+        print(f'  {attr}: {pol[name][attr]}')
 
