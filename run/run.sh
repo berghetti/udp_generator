@@ -26,6 +26,8 @@ if [ "$wk" = "extreme" ]; then
   set_extreme
 elif [ "$wk" = "high" ]; then
   set_high
+elif [ "$wk" = "zippydb" ]; then
+  set_zippydb
 elif [ "$wk" = "shorts" ]; then
   set_only_shorts
 elif [ "$wk" = "very_shorts" ]; then
