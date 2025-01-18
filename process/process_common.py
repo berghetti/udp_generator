@@ -43,31 +43,69 @@ def interval_confidence( data: list ):
   margin_error = round(margin_error, 4)
   return avg, margin_error
 
-def get_latency(rate, slowdown=False):
-  shorts = []
-  longs = []
-  alls = []
-  p = {
-    'shorts': shorts,
-    'longs': longs,
-    'all': alls,
-  }
+class latencys:
+  def __init__(self, percentile):
+    self.percentile = percentile
+    self.type1_latencys = []
+    self.type2_latencys = []
+    self.type3_latencys = []
+    self.type4_latencys = []
+    self.alls_latencys = []
 
-  for t in p.keys():
-    if slowdown == False:
-      files = glob.glob(f'{rate}/test[0-9]*{t}_{percentile}_result')
-    else:
-      files = glob.glob(f'{rate}/test[0-9]*{t}_{percentile}_result_slowdown')
+    self.type1_errors = []
+    self.type2_errors = []
+    self.type3_errors = []
+    self.type4_errors = []
+    self.alls_errors = []
 
-    for file in files:
-      with open(file, 'r') as f:
-        v = float(f.read())
-        p[t].append(v)
+    # x axie
+    self.x = []
+    self.drop = []
 
+    self.type_names = [ 'type1', 'type2', 'type3', 'type4', 'all' ]
+    self.type_names_err = [ 'type1err', 'type2err', 'type3err', 'type4err', 'allerr' ]
+    self.type_latencys = [self.type1_latencys,
+                          self.type2_latencys,
+                          self.type3_latencys,
+                          self.type4_latencys,
+                          self.alls_latencys]
 
-  return interval_confidence(shorts), \
-    interval_confidence(longs), \
-    interval_confidence(alls)
+    self.type_errors = [self.type1_errors,
+                        self.type2_errors,
+                        self.type3_errors,
+                        self.type4_errors,
+                        self.alls_errors]
+
+  def update(self, rate_folder, rps, drop, slowdown):
+    self.x.append(rps)
+    self.drop.append(drop)
+
+    for idx, type_name in enumerate(self.type_names):
+      tn = type_name
+      if slowdown == False:
+        files = glob.glob(f'{rate_folder}/test[0-9]*{tn}_{self.percentile}_result')
+      else:
+        files = glob.glob(f'{rate_folder}/test[0-9]*{tn}_{self.percentile}_result_slowdown')
+
+      temp = []
+      for file in files:
+        with open(file, 'r') as f:
+          v = float(f.read())
+          temp.append(v)
+
+      if sum(temp) == 0:
+        continue
+
+      latency, error = interval_confidence(temp)
+      self.type_latencys[idx].append(latency)
+      self.type_errors[idx].append(error)
+
+  def get_dict(self):
+    dict_ = {'x': self.x, 'drop': self.drop}
+    dict_latencys = dict(zip(self.type_names, self.type_latencys))
+    dict_errors = dict(zip(self.type_names_err, self.type_errors))
+    # merge dicts
+    return {**dict_, **dict_latencys, **dict_errors}
 
 def get_rps(rate):
   files = glob.glob(f'{rate}/test[0-9]_rate')
@@ -85,24 +123,17 @@ def get_rps(rate):
 
   return sum(rps)/len(rps)
 
-
 def get_drop(rate):
   files = glob.glob(f'{rate}/test[0-9]_rate')
-  #drops = []
   tot_tx = []
   tot_rx = []
   for file in files:
     with open(file, 'r') as f:
       next(f) # skip header line
       data = f.read()
-      #print(data)
       tot_tx.append(int(data.split()[2]))
       tot_rx.append( int(data.split()[3]))
 
-      #r = int(data.split()[-1]) # get drop
-      #drops.append(r)
-
-  #return sum(tot_tx) - sum(tot_rx);
   if sum(tot_rx) == 0:
     return 100
 
@@ -115,59 +146,29 @@ def get_drop(rate):
 def load_in_file_name(f):
   return float(f.split('_')[-1])
 
-def process_get_latencys(pol, slowdown=False):
-  x = []
-
-  s_y = []
-  l_y = []
-  a_y = []
-
-  s_err = []
-  l_err = []
-  a_err = []
-
-  drops = []
-
+# return all information as dict from a policy test processing
+# rate, drop, latency or slowdown, error
+def process_get_policy_data(pol, slowdown=False):
   rates = os.listdir(pol)
   rates = sorted(rates, key=load_in_file_name)
 
+  latencys_data = latencys(percentile)
+
   # get latency to each load
   for rate in rates:
-    #tr = int(rate) / 1e6 # Load
-
     folder = os.path.join(pol, rate)
     print('Reading \'{}\''.format(folder))
 
-    rps = get_rps(folder) / 1e6
+    rps = get_rps(folder)
     if rps == 0:
       print('Skipping ', rps)
       continue
 
-    d = get_drop(folder)
-    drops.append(d)
+    drop = get_drop(folder)
+    latencys_data.update(folder, rps, drop, slowdown)
 
-    #if d:
-    #  print(f'Dropped {drop} pkts in rate {rps} MRPS: Stoping')
-    #  break
+  return latencys_data.get_dict()
 
-    ((s, serr), (l, lerr), (a, aerr)) = get_latency(folder, slowdown)
-
-    x.append(rps)
-
-    s_y.append(s)
-    s_err.append(serr)
-
-    l_y.append(l)
-    l_err.append(lerr)
-
-    a_y.append(a)
-    a_err.append(aerr)
-
-  return x,\
-    s_y, s_err, \
-    l_y, l_err, \
-    a_y, a_err, \
-    drops
 # Function to read the 'test' file in a given rate folder
 def read_test_file(test_file: str) -> pd.DataFrame:
     return pd.read_csv(test_file,
@@ -204,7 +205,6 @@ def process_test(rate_folder_path: str, test: str, percentile: float) -> None:
     overall_result_filename = f"{test}_all_{percentile}_result"
     overall_result_path = os.path.join(rate_folder_path, overall_result_filename)
     overall_result_df = pd.DataFrame({'latency': [overall_percentile]})
-    #overall_result_df[['latency']].to_csv(overall_result_path, index=False, header=False)
     overall_result_df[['latency']].write_csv(overall_result_path, include_header=False)
 
     # Save slowdown
@@ -213,13 +213,12 @@ def process_test(rate_folder_path: str, test: str, percentile: float) -> None:
     overall_result_filename = f"{test}_all_{percentile}_result_slowdown"
     overall_result_path = os.path.join(rate_folder_path, overall_result_filename)
     overall_result_df = pd.DataFrame({'slowdown': [overall_slowdown]})
-    #overall_result_df[['slowdown']].to_csv(overall_result_path, index=False, header=False)
     overall_result_df[['slowdown']].write_csv(overall_result_path, include_header=False)
 
     per_type_latency = calculate_per_type_latency(df, percentile)
     per_type_slowdown = calculate_per_type_slowdown(df, percentile)
 
-    TYPES = {1: 'shorts', 2: 'longs'}
+    TYPES = {1: 'type1', 2: 'type2', 3: 'type3', 4: 'type4'}
     # Save latency by request type
     for Type in per_type_latency['type'].to_list():
         # Get the 99th percentile value for the current group
@@ -233,27 +232,6 @@ def process_test(rate_folder_path: str, test: str, percentile: float) -> None:
         result_filename = f"{test}_{TYPES[Type]}_{percentile}_result_slowdown"
         result_path = os.path.join(rate_folder_path, result_filename)
         group_df_slowdown.select('slowdown').write_csv(result_path, include_header=False)
-    # Save latency by request type
-    #for _, row in per_type_latency.iterrows():
-    #for row in per_type_latency.iter_rows():
-    #    print(row)
-    #    Type = int(row['type'])
-    #    latency_value = row['latency']
-
-    #    result_filename = f"{test}_{TYPES[Type]}_{percentile}_result"
-    #    result_path = os.path.join(rate_folder_path, result_filename)
-    #    #pd.DataFrame({'latency': [latency_value]}).to_csv(result_path, index=False, header=False)
-    #    pd.DataFrame({'latency': [latency_value]}).write_csv(result_path, include_header=False)
-
-    ## Save slowdown by request type
-    #for _, row in per_type_slowdown.iterrows():
-    #    Type = int(row['type'])
-    #    slowdown_value = row['slowdown']
-
-    #    result_filename = f"{test}_{TYPES[Type]}_{percentile}_result_slowdown"
-    #    result_path = os.path.join(rate_folder_path, result_filename)
-    #    #pd.DataFrame({'slowdown': [slowdown_value]}).to_csv(result_path, index=False, header=False)
-    #    pd.DataFrame({'slowdown': [slowdown_value]}).write_csv(result_path, include_header=False)
 
 def process_policy(base_folder: str, force: bool = False) -> None:
   rate_folders = [f for f in os.listdir(base_folder) if os.path.isdir(os.path.join(base_folder, f))]

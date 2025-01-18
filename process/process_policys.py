@@ -6,7 +6,7 @@ import os
 import sys
 import json5 as json
 
-from process_common import process_get_policy_name, process_get_metadata_name, process_get_and_set_percentile, process_policy, process_get_latencys
+from process_common import process_get_policy_name, process_get_metadata_name, process_get_and_set_percentile, process_policy, process_get_policy_data
 
 def remove_if_present(name, data):
   for i, pol in enumerate(data):
@@ -35,36 +35,14 @@ def write_metadata(policys, file, concat=True):
     remove_if_present(name, latencys)
     remove_if_present(name, slowdowns)
 
-    x, s, serr, l, lerr, a, aerr, drop = process_get_latencys(policy, slowdown=False)
-    pol = {
-        name : {
-          'x' : x,
-          's': s,
-          'serr': serr,
-          'l': l,
-          'lerr': lerr,
-          'a': a,
-          'aerr': aerr,
-          'drop': drop
-          }
-        }
-
+    data = process_get_policy_data(policy, slowdown=False)
+    pol = { name : data }
     latencys.append(pol)
-    x, s, serr, l, lerr, a, aerr, drop = process_get_latencys(policy, slowdown=True)
-    pol = {
-        name : {
-          'x' : x,
-          's': s,
-          'serr': serr,
-          'l': l,
-          'lerr': lerr,
-          'a': a,
-          'aerr': aerr,
-          'drop': drop
-          }
-        }
 
+    data = process_get_policy_data(policy, slowdown=True)
+    pol = { name : data }
     slowdowns.append(pol)
+
   with open(file, 'w') as f:
     json.dump(latencys, f)
 
@@ -76,7 +54,7 @@ def process(policys, prefix, percentil):
 
   # calc latency for each policy
   for policy in policys:
-    process_policy(policy, force=False)
+    process_policy(policy, force=True)
 
   # write metadata file with policys and latencys.
   # This file is used to chart plot after.
