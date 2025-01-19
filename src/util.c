@@ -104,7 +104,8 @@ create_request_types_array (void)
 
   // debug
   for (int i = 0; i < TOTAL_RTYPES; i++)
-    printf ("Type: %u requests: %lu (sv: %u ns)\n", i, types_count[i], cfg_request_types[i].service_time);
+    printf ("Type%u: requests: %lu (sv: %u ns)\n",
+        i + 1, types_count[i], cfg_request_types[i].service_time);
 }
 
 // Allocate and create an array for all interarrival packets for rate
