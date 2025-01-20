@@ -17,4 +17,4 @@ if __name__ == '__main__':
     for attr in pol[name].keys():
       if str(attr) not in skip:
         print(f'  {attr}: {pol[name][attr]}')
-
+    print()
