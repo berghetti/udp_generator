@@ -45,7 +45,9 @@ generate_rates()
       create_rps_array 60 85 5
       ;;
     "zippydb")
-      create_rps_array 5 100 5
+      #create_rps_array 5 50 10
+      #create_rps_array 55 100 5
+      create_rps_array 95 100 5
       ;;
     *) create_rps_array 5 100 5 ;;
   esac
@@ -53,7 +55,7 @@ generate_rates()
   echo "RPS Array: ${RPS[*]}"
 }
 
-SSH="ssh 130.127.133.223"
+SSH="ssh 130.127.133.226"
 
 # Function to stop the server
 stop_server() {
@@ -70,12 +72,10 @@ start_server() {
   local command=""
   case $server in
     "rss"*) command="make run -C afp-all/afp/apps/fake/ APP=$server" ;;
-    "afp"*"ci") command="sudo afp-all/afp/deps/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; make run -C afp-all/afp/apps/fake/ APP=fake-app-ci" ;;
-    "afp"*"ipi") command="sudo afp-all/afp/deps/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; make run -C afp-all/afp/apps/fake/ APP=fake-app-kmod-ipi" ;;
-    *"concord"*) command="cd concord/concord-shinjuku/; sudo ./deps/dpdk/tools/dpdk_nic_bind.py --force -u 18:00.1; sudo ./dp/shinjuku" ;;
-    *"shinjuku"*) command="cd shinjuku/; sudo ./deps/dpdk/tools/dpdk_nic_bind.py --force -u 18:00.1; sudo ./dp/shinjuku" ;;
-    *"psp"*) command="pushd psp/; sudo submodules/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; ./run.sh" ;;
-    *"cfcfs"*) command="pushd psp/; sudo submodules/dpdk/usertools/dpdk-devbind.py -b igb_uio 18:00.1; ./run_cfcfs.sh" ;;
+    "afp") command="afp-all/scripts/afp_run.sh" ;;
+    "psp") command="afp-all/scripts/psp_run.sh" ;;
+    "shinjuku") command="afp-all/scripts/shinjuku_run.sh" ;;
+    "concord") command="afp-all/scripts/concord_run.sh" ;;
     *) echo "Unknown server type: $server"; exit 1 ;;
   esac
 
@@ -96,15 +96,13 @@ run_test() {
   local workload=$1
   local policy=$2
 
-  stop_server $policy
-
   for rate in "${RPS[@]}"; do
     echo "Rate: $rate"
     local per_client_rate=$((rate / N_CLIENTS))
 
     for i in $(seq 0 $((N_TESTS-1))); do
       start_server $policy
-      sleep 5
+      sleep 20
 
       echo "Starting client with rate: $per_client_rate"
       $(dirname "$0")/run.sh "$BASE_DIR" "$policy" "$per_client_rate" "$workload" "${RANDOMS[$i]}" "$i"
@@ -112,7 +110,7 @@ run_test() {
       stop_server $policy
     done
 
-    process_test $wk $pol
+    #process_test $wk $pol
   done
 
   stop_server "$POLICY"
@@ -120,23 +118,30 @@ run_test() {
 
 #run_test
 
-POLICYS=(
+#POLICYS=(
 #  "rss"
-  "rss-ci"
+#  "rss-ci"
 #  "rss-ws"
-  "rss-ws-ci"
-  "rss-ws-ci-wq"
-  "rss-ws-ci-wq-cp"
-  "rss-ws-ci-wq-cp-feed-qa"
-  "rss-ws-ci-wq-cp-feed-qa-tw"
+#  "rss-ws-ci"
+#  "rss-ws-ci-wq"
+#  "rss-ws-ci-wq-cp"
+#  "rss-ws-ci-wq-cp-feed-qa"
+#  "rss-ws-ci-wq-cp-feed-qa-tw"
+#)
+
+POLICYS=(
+#  "shinjuku"
+  "afp"
+  "psp"
+  "concord"
 )
 
-for wk in extreme; do
+for wk in high; do
   generate_rates $wk
 
   for pol in ${POLICYS[@]}; do
     echo $wk $pol
     run_test $wk $pol
-    #process_test $wk $pol
+    process_test $wk $pol
   done
 done
