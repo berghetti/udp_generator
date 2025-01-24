@@ -8,7 +8,7 @@ sudo sysctl -w kernel.watchdog=0
 sudo bash -c "echo 8192 > /sys/devices/system/node/node${NUMA_ID}/hugepages/hugepages-2048kB/nr_hugepages"
 
 # disabe turbo boost
-$(dirname $0)/misc/turbo.sh disable 2&>1 /dev/null
+#$(dirname $0)/misc/turbo.sh disable 2&>1 /dev/null
 
 # bind NIC
 if [[ "$NIC_BIND" != "false" ]]; then
