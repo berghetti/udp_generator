@@ -21,18 +21,18 @@ sudo apt install -y ${PACKS}
 # to process results
 if [[ $VERSION -le 20 ]]; then
   # install python 3.8
-  sudo apt-get install python3.8 python3.8-dev python3.8-distutils python3.8-venv
+  sudo apt-get install -y python3.8 python3.8-dev python3.8-distutils python3.8-venv
   curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
   python3.8 get-pip.py
   rm get-pip.py
   python3.8 -m pip install json5 polars
 else
-  sudo apt install python3-json5 python3-polars
+  sudo apt install -y python3-json5 python3-polars
 fi
 
 # Check if the major version is below 20
 if [[ $VERSION -le 20 ]]; then
   sudo pip3 install meson ninja
 else
-  sudo apt install meson ninja-build
+  sudo apt install -y meson ninja-build
 fi
