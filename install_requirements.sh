@@ -27,7 +27,8 @@ if [[ $VERSION -le 20 ]]; then
   rm get-pip.py
   python3.8 -m pip install json5 polars
 else
-  sudo apt install -y python3-json5 python3-polars
+  sudo apt install -y python3-json5
+  pip3 install polars
 fi
 
 # Check if the major version is below 20
