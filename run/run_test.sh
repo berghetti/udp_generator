@@ -7,7 +7,7 @@
 source $(dirname "$0")/common.sh
 
 N_CLIENTS=1
-N_TESTS=5
+N_TESTS=1
 BASE_DIR="/proj/demeter-PG0/users/fabricio/afp_tests/"
 TOT_WORKER=14
 
@@ -37,12 +37,14 @@ generate_rates()
   case $workload in
     "shorts") create_rps_array 1 50 3 ;;
     "high")
-      create_rps_array 5 50 10
-      create_rps_array 50 100 5
+      create_rps_array 80 80 10
+      #create_rps_array 5 45 10
+      #create_rps_array 55 100 5
       ;;
     "extreme")
-      #create_rps_array 5 85 5
-      create_rps_array 60 85 5
+      create_rps_array 80 80 10
+      #create_rps_array 5 45 10
+      #create_rps_array 55 85 5
       ;;
     "zippydb")
       #create_rps_array 5 50 10
@@ -55,13 +57,13 @@ generate_rates()
   echo "RPS Array: ${RPS[*]}"
 }
 
-SSH="ssh 130.127.133.226"
+SSH="ssh 130.127.133.198"
 
 # Function to stop the server
 stop_server() {
   local server=$1
   echo "Stopping server: $server"
-  $SSH "sudo killall -2 -r $server*; sleep 1;"
+  $SSH "sudo killall -2 -r $server; sleep 1;"
 }
 
 # Function to start the server and ensure it runs in the background
@@ -102,18 +104,16 @@ run_test() {
 
     for i in $(seq 0 $((N_TESTS-1))); do
       start_server $policy
-      sleep 20
+      sleep 5
 
       echo "Starting client with rate: $per_client_rate"
       $(dirname "$0")/run.sh "$BASE_DIR" "$policy" "$per_client_rate" "$workload" "${RANDOMS[$i]}" "$i"
 
       stop_server $policy
+      process_test $wk $pol
     done
 
-    #process_test $wk $pol
   done
-
-  stop_server "$POLICY"
 }
 
 #run_test
@@ -133,7 +133,7 @@ POLICYS=(
 #  "shinjuku"
   "afp"
   "psp"
-  "concord"
+#  "concord"
 )
 
 for wk in high; do
@@ -142,6 +142,5 @@ for wk in high; do
   for pol in ${POLICYS[@]}; do
     echo $wk $pol
     run_test $wk $pol
-    process_test $wk $pol
   done
 done
