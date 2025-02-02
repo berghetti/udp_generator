@@ -31,25 +31,25 @@ generate_rates()
     *) echo "Invalid workload: $workload"; exit 1 ;;
   esac
 
+  # clear RPS array
+  RPS=()
   echo "Average Service Time: $AVG_SERVICE_TIME"
 
   # Define RPS array based on workload and TOT_WORKER
   case $workload in
     "shorts") create_rps_array 1 50 3 ;;
     "high")
-      create_rps_array 80 80 10
-      #create_rps_array 5 45 10
-      #create_rps_array 55 100 5
+      create_rps_array 10 50 10
+      create_rps_array 55 100 5
       ;;
     "extreme")
-      create_rps_array 80 80 10
-      #create_rps_array 5 45 10
-      #create_rps_array 55 85 5
+      #create_rps_array 50 50 10
+      create_rps_array 10 50 10
+      create_rps_array 55 85 5
       ;;
     "zippydb")
-      #create_rps_array 5 50 10
-      #create_rps_array 55 100 5
-      create_rps_array 95 100 5
+      create_rps_array 10 50 10
+      create_rps_array 55 100 5
       ;;
     *) create_rps_array 5 100 5 ;;
   esac
@@ -104,7 +104,7 @@ run_test() {
 
     for i in $(seq 0 $((N_TESTS-1))); do
       start_server $policy
-      sleep 5
+      sleep 20
 
       echo "Starting client with rate: $per_client_rate"
       $(dirname "$0")/run.sh "$BASE_DIR" "$policy" "$per_client_rate" "$workload" "${RANDOMS[$i]}" "$i"
@@ -130,13 +130,13 @@ run_test() {
 #)
 
 POLICYS=(
-#  "shinjuku"
   "afp"
   "psp"
-#  "concord"
+  "shinjuku"
+  "concord"
 )
 
-for wk in high; do
+for wk in {extreme,high,zippydb}; do
   generate_rates $wk
 
   for pol in ${POLICYS[@]}; do
