@@ -27,7 +27,7 @@ generate_rates()
     "very_shorts") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*1.0}')  ;;
     "extreme") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.995 + 500*0.005}') ;;
     "high") AVG_SERVICE_TIME=$(awk 'BEGIN {print 1*0.5 + 100*0.5}') ;;
-    "zippydb") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.6*0.78 + 2.3*0.19 + 500*0.03}') ;;
+    "zippydb") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.78 + 2.5*0.19 + 100*0.03}') ;;
     *) echo "Invalid workload: $workload"; exit 1 ;;
   esac
 
@@ -43,13 +43,16 @@ generate_rates()
       create_rps_array 55 100 5
       ;;
     "extreme")
-      #create_rps_array 50 50 10
-      create_rps_array 10 50 10
-      create_rps_array 55 85 5
+      create_rps_array 10 40 10
+      create_rps_array 45 85 5
       ;;
     "zippydb")
       create_rps_array 10 50 10
       create_rps_array 55 100 5
+      ;;
+    "up2x")
+      create_rps_array 10 40 10
+      create_rps_array 45 85 5
       ;;
     *) create_rps_array 5 100 5 ;;
   esac
@@ -69,12 +72,14 @@ stop_server() {
 # Function to start the server and ensure it runs in the background
 start_server() {
   local server=$1
+  local workload=$2
+  local rate=$3
   echo "Starting server: $server"
 
   local command=""
   case $server in
     "rss"*) command="make run -C afp-all/afp/apps/fake/ APP=$server" ;;
-    "afp") command="afp-all/scripts/afp_run.sh" ;;
+    "afp"*) command="afp-all/scripts/afp_run.sh $workload $rate" ;;
     "psp") command="afp-all/scripts/psp_run.sh" ;;
     "shinjuku") command="afp-all/scripts/shinjuku_run.sh" ;;
     "concord") command="afp-all/scripts/concord_run.sh" ;;
@@ -103,7 +108,7 @@ run_test() {
     local per_client_rate=$((rate / N_CLIENTS))
 
     for i in $(seq 0 $((N_TESTS-1))); do
-      start_server $policy
+      start_server $policy $workload $rate
       sleep 20
 
       echo "Starting client with rate: $per_client_rate"
@@ -130,13 +135,15 @@ run_test() {
 #)
 
 POLICYS=(
+#  "afp-wsi"
   "afp"
-  "psp"
-  "shinjuku"
-  "concord"
+#  "psp"
+#  "shinjuku"
+#  "concord"
 )
 
-for wk in {extreme,high,zippydb}; do
+#for wk in {extreme,high,zippydb}; do
+for wk in extreme; do
   generate_rates $wk
 
   for pol in ${POLICYS[@]}; do
