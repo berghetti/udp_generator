@@ -132,8 +132,8 @@ set_up2x()
 {
   ZERO=0
 
-  GET=1000
-  MERGE_PUT=10000
+  GET=500
+  MERGE_PUT=5000
   sed -i '/\[requests_service_time\]/{n;s/\(type1\s*=\s*\)[0-9]\+/\1'${GET}'/;}' $CONF_FILE
   sed -i '/\[requests_service_time\]/{n;n;s/\(type2\s*=\s*\)[0-9]\+/\1'${MERGE_PUT}'/;}' $CONF_FILE
   sed -i '/\[requests_service_time\]/{n;n;n;s/\(type3\s*=\s*\)[0-9]\+/\1'${ZERO}'/;}' $CONF_FILE
