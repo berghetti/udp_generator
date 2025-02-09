@@ -120,6 +120,7 @@ create_request_types_array (void)
 
       // resp encode
       set_type (request_types[j], t + 1);
+      // request_types[j].service_time = cfg_request_types[t].service_time;
 
       char buff_service_time[11];
       uint_to_str (cfg_request_types[t].service_time, buff_service_time);
@@ -134,7 +135,8 @@ create_request_types_array (void)
         }
 
       request_types[j].resp_buff[ret] = '\0';
-      // printf ("%s\n", request_types[j].resp_buff);
+      // if (t + 1 == 2)
+      //  printf ("%s\n", request_types[j].resp_buff);
 
       // to fake work server
       // request_types[j].type = t + 1;

@@ -149,8 +149,8 @@ enum payload_item
   SEND_TIME,
   RECV_TIME,
   TYPE, // 3
-  DB_KEY,
   SERVICE_TIME,
+  RESP_REQUEST,
 
   /* server times */
   // RX_TIME, // 6

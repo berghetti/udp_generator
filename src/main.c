@@ -248,13 +248,14 @@ lcore_tx (void *arg)
 
       fill_payload_pkt (pkt, SEND_TIME, next_tsc);
 
-      fill_payload_pkt (pkt, TYPE, get_type (rtype[i]));
+      uint8_t type = get_type (rtype[i]);
 
-      fill_payload_resp_request (pkt, SERVICE_TIME, rtype[i].resp_buff,
+      fill_payload_pkt (pkt, TYPE, type);
+      fill_payload_pkt (pkt, SERVICE_TIME,
+                        cfg_request_types[type - 1].service_time);
+
+      fill_payload_resp_request (pkt, RESP_REQUEST, rtype[i].resp_buff,
                                  strlen (rtype[i].resp_buff) + 1);
-
-      // fill_payload_pkt (pkt, SERVICE_TIME, rtype[i].service_time);
-      // fill_payload_pkt (pkt, DB_KEY, rtype[i].db_key);
 
       // sleep for while
       while (rte_rdtsc () < next_tsc)
