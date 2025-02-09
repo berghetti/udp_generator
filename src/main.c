@@ -251,7 +251,7 @@ lcore_tx (void *arg)
       fill_payload_pkt (pkt, TYPE, get_type (rtype[i]));
 
       fill_payload_resp_request (pkt, SERVICE_TIME, rtype[i].resp_buff,
-                                 strlen (rtype[i].resp_buff));
+                                 strlen (rtype[i].resp_buff) + 1);
 
       // fill_payload_pkt (pkt, SERVICE_TIME, rtype[i].service_time);
       // fill_payload_pkt (pkt, DB_KEY, rtype[i].db_key);

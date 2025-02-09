@@ -538,8 +538,8 @@ void
 fill_payload_resp_request (struct rte_mbuf *pkt, enum payload_item item,
                            char *buff, size_t buff_size)
 {
-  uint8_t *payload = (uint8_t *)rte_pktmbuf_mtod_offset (
-      pkt, uint8_t *,
+  uint64_t *payload = rte_pktmbuf_mtod_offset (
+      pkt, uint64_t *,
       sizeof (struct rte_ether_hdr) + sizeof (struct rte_ipv4_hdr)
           + sizeof (struct rte_udp_hdr));
 
