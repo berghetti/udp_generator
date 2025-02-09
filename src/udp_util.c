@@ -15,7 +15,8 @@ init_blocks ()
   uint16_t ports[nr_flows];
   for (uint32_t i = 0; i < nr_flows; i++)
     {
-      ports[i] = ((1024 + i) * 0xBEEF) & 0xFFFF;
+      // ports[i] = ((1024 + i) * 0xBEEF) & 0xFFFF;
+      ports[i] = (1024 + i) & 0xFFFF;
     }
 
   for (uint32_t i = 0; i < nr_flows; i++)
@@ -27,7 +28,7 @@ init_blocks ()
       control_blocks[i].dst_addr = dst_ipv4_addr;
 
       control_blocks[i].src_port = src_udp_port;
-      //control_blocks[i].dst_port = dst_udp_port;
+      // control_blocks[i].dst_port = dst_udp_port;
     }
 }
 

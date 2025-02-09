@@ -58,21 +58,27 @@ typedef struct timestamp_node_t
 // max of request types
 #define TOTAL_RTYPES 4
 
-/* keep this struct small because num of requests generated can be very large ...
+/* keep this struct small because num of requests generated can be very large
+ * ...
  *
  * [3]   [2][1][0]
- * MSB     LSB 
+ * MSB     LSB
  * type    service_time*/
 typedef struct request_type
 {
-  union
-  {
-    uint8_t type[4];
-    uint32_t service_time: 24; // in nanoseconds. This is enough to store until 16 milisseconds 
-  };
+  uint8_t type; // only to client processing
+  char resp_buff[32];
+// union
+//{
+//  uint8_t type[4];
+//  uint32_t service_time: 24; // in nanoseconds. This is enough to store
+//  until 16 milisseconds
+//};
 
-#define set_type(t, v) (t.type[3] = (v))
-#define get_type(t) (t.type[3])
+//#define set_type(t, v) (t.type[3] = (v))
+//#define get_type(t) (t.type[3])
+#define get_type(t) ((t).type)
+#define set_type(t, v) ((t).type = (v))
 
 } request_type_t;
 
@@ -160,5 +166,8 @@ enum payload_item
 
 void fill_payload_pkt (struct rte_mbuf *pkt, enum payload_item item,
                        uint64_t value);
+
+void fill_payload_resp_request (struct rte_mbuf *pkt, enum payload_item item,
+                                char *buff, size_t buff_size);
 
 #endif // __UTIL_H__

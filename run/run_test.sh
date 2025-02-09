@@ -28,6 +28,7 @@ generate_rates()
     "extreme") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.995 + 500*0.005}') ;;
     "high") AVG_SERVICE_TIME=$(awk 'BEGIN {print 1*0.5 + 100*0.5}') ;;
     "zippydb") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.78 + 2.5*0.19 + 100*0.03}') ;;
+    "up2x") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.075 + 5*0.925}') ;;
     *) echo "Invalid workload: $workload"; exit 1 ;;
   esac
 
@@ -43,8 +44,9 @@ generate_rates()
       create_rps_array 55 100 5
       ;;
     "extreme")
-      create_rps_array 10 40 10
-      create_rps_array 45 85 5
+      create_rps_array 10 30 10
+      create_rps_array 35 80 5
+      create_rps_array 10 10 5
       ;;
     "zippydb")
       create_rps_array 10 50 10
@@ -52,7 +54,7 @@ generate_rates()
       ;;
     "up2x")
       create_rps_array 10 40 10
-      create_rps_array 45 85 5
+      create_rps_array 45 90 5
       ;;
     *) create_rps_array 5 100 5 ;;
   esac
@@ -78,8 +80,8 @@ start_server() {
 
   local command=""
   case $server in
-    "rss"*) command="make run -C afp-all/afp/apps/fake/ APP=$server" ;;
-    "afp"*) command="afp-all/scripts/afp_run.sh $workload $rate" ;;
+    "rss"*) command="afp-all/scripts/afp_run.sh $workload $rate $server" ;;
+    "afp"*) command="afp-all/scripts/afp_run.sh $workload $rate $server" ;;
     "psp") command="afp-all/scripts/psp_run.sh" ;;
     "shinjuku") command="afp-all/scripts/shinjuku_run.sh" ;;
     "concord") command="afp-all/scripts/concord_run.sh" ;;
@@ -121,28 +123,22 @@ run_test() {
   done
 }
 
-#run_test
-
-#POLICYS=(
-#  "rss"
-#  "rss-ci"
-#  "rss-ws"
-#  "rss-ws-ci"
-#  "rss-ws-ci-wq"
-#  "rss-ws-ci-wq-cp"
-#  "rss-ws-ci-wq-cp-feed-qa"
-#  "rss-ws-ci-wq-cp-feed-qa-tw"
-#)
-
 POLICYS=(
-#  "afp-wsi"
-  "afp"
+  "afp-flow"
 #  "psp"
 #  "shinjuku"
 #  "concord"
 )
 
-#for wk in {extreme,high,zippydb}; do
+for wk in high; do
+  generate_rates $wk
+
+  for pol in ${POLICYS[@]}; do
+    echo $wk $pol
+    run_test $wk $pol
+  done
+done
+
 for wk in extreme; do
   generate_rates $wk
 
@@ -151,3 +147,12 @@ for wk in extreme; do
     run_test $wk $pol
   done
 done
+
+#for wk in up2x; do
+#  generate_rates $wk
+#
+#  for pol in ${POLICYS[@]}; do
+#    echo $wk $pol
+#    run_test $wk $pol
+#  done
+#done

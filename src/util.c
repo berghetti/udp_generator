@@ -1,5 +1,7 @@
 #include "util.h"
 
+#include "resp.h"
+
 int distribution;
 char output_file[MAXSTRLEN];
 
@@ -60,6 +62,35 @@ sample_uniform (void)
 
 #define member_size(type, member) (sizeof (((type *)0)->member))
 
+static void
+uint_to_str (unsigned int value, char *str)
+{
+  char buffer[11]; // Enough for 32-bit unsigned int (max 10 digits + null
+                   // terminator)
+  int i = 0;
+
+  if (value == 0)
+    {
+      str[i++] = '0';
+    }
+  else
+    {
+      while (value > 0)
+        {
+          buffer[i++] = '0' + (value % 10);
+          value /= 10;
+        }
+    }
+
+  // Reverse the string into str
+  int j = 0;
+  while (i > 0)
+    {
+      str[j++] = buffer[--i];
+    }
+  str[j] = '\0'; // Null-terminate
+}
+
 void
 create_request_types_array (void)
 {
@@ -85,18 +116,36 @@ create_request_types_array (void)
           random -= cfg_request_types[t].ratio;
         }
 
-      //request_types[j].dst_port = cfg_request_types[t].dst_port;
+      // request_types[j].dst_port = cfg_request_types[t].dst_port;
+
+      // resp encode
+      set_type (request_types[j], t + 1);
+
+      char buff_service_time[11];
+      uint_to_str (cfg_request_types[t].service_time, buff_service_time);
+
+      char *cmd[2];
+      cmd[0] = (t + 1) == 1 ? "SHORT" : "LONG";
+      cmd[1] = buff_service_time;
+      int ret = resp_encode (request_types[j].resp_buff, 32, cmd, 2);
+      if (ret == -1)
+        {
+          rte_exit (EXIT_FAILURE, "Error to encode resp request\n");
+        }
+
+      request_types[j].resp_buff[ret] = '\0';
+      // printf ("%s\n", request_types[j].resp_buff);
 
       // to fake work server
-      //request_types[j].type = t + 1;
-      set_type(request_types[j], t+1);
-      request_types[j].service_time = cfg_request_types[t].service_time;
+      // request_types[j].type = t + 1;
+      // set_type(request_types[j], t+1);
+      // request_types[j].service_time = cfg_request_types[t].service_time;
 
       // to DB server
-      //unsigned r = rte_rand () % 5000; // 5000 keys in server DB
-      //char buff[member_size (request_type_t, db_key)] = { 0 };
-      //snprintf (buff, sizeof buff, "k%u", r);
-      //memcpy (&request_types[j].db_key, buff, sizeof (buff));
+      // unsigned r = rte_rand () % 5000; // 5000 keys in server DB
+      // char buff[member_size (request_type_t, db_key)] = { 0 };
+      // snprintf (buff, sizeof buff, "k%u", r);
+      // memcpy (&request_types[j].db_key, buff, sizeof (buff));
 
       // debug
       types_count[t]++;
@@ -104,8 +153,8 @@ create_request_types_array (void)
 
   // debug
   for (int i = 0; i < TOTAL_RTYPES; i++)
-    printf ("Type%u: requests: %lu (sv: %u ns)\n",
-        i + 1, types_count[i], cfg_request_types[i].service_time);
+    printf ("Type%u: requests: %lu (sv: %u ns)\n", i + 1, types_count[i],
+            cfg_request_types[i].service_time);
 }
 
 // Allocate and create an array for all interarrival packets for rate
@@ -440,11 +489,11 @@ process_config_file (char *cfg_file)
   // load UDP destination port
   entry = (char *)rte_cfgfile_get_entry (file, "udp", "dst");
   if (entry)
-   {
-     uint16_t port;
-     sscanf (entry, "%hu", &port);
-     dst_udp_port = port;
-   }
+    {
+      uint16_t port;
+      sscanf (entry, "%hu", &port);
+      dst_udp_port = port;
+    }
 
   int i, ret;
   struct rte_cfgfile_entry entries[TOTAL_RTYPES];
@@ -458,9 +507,9 @@ process_config_file (char *cfg_file)
   for (i = 0; i < ret; i++)
     cfg_request_types[i].ratio = atoi (entries[i].value);
 
-  //ret = rte_cfgfile_section_entries (file, "requests_dst_ports", entries,
+  // ret = rte_cfgfile_section_entries (file, "requests_dst_ports", entries,
   //                                   ASIZE (entries));
-  //for (i = 0; i < ret; i++)
+  // for (i = 0; i < ret; i++)
   //  cfg_request_types[i].dst_port = atoi (entries[i].value);
 
   entry = (char *)rte_cfgfile_get_entry (file, "classification_time", "time");
@@ -474,7 +523,7 @@ process_config_file (char *cfg_file)
 }
 
 // Fill the data into packet payload properly
-inline void
+void
 fill_payload_pkt (struct rte_mbuf *pkt, enum payload_item item, uint64_t value)
 {
   uint8_t *payload = (uint8_t *)rte_pktmbuf_mtod_offset (
@@ -483,4 +532,16 @@ fill_payload_pkt (struct rte_mbuf *pkt, enum payload_item item, uint64_t value)
           + sizeof (struct rte_udp_hdr));
 
   ((uint64_t *)payload)[item] = value;
+}
+
+void
+fill_payload_resp_request (struct rte_mbuf *pkt, enum payload_item item,
+                           char *buff, size_t buff_size)
+{
+  uint8_t *payload = (uint8_t *)rte_pktmbuf_mtod_offset (
+      pkt, uint8_t *,
+      sizeof (struct rte_ether_hdr) + sizeof (struct rte_ipv4_hdr)
+          + sizeof (struct rte_udp_hdr));
+
+  rte_memcpy (&payload[item], buff, buff_size);
 }
