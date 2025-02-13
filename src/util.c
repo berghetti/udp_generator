@@ -118,10 +118,11 @@ create_request_types_array (void)
 
       // request_types[j].dst_port = cfg_request_types[t].dst_port;
 
-      // resp encode
       set_type (request_types[j], t + 1);
-      // request_types[j].service_time = cfg_request_types[t].service_time;
+      request_types[j].service_time = cfg_request_types[t].service_time;
 
+#ifdef RESP
+      // resp encode
       char buff_service_time[11];
       uint_to_str (cfg_request_types[t].service_time, buff_service_time);
 
@@ -130,13 +131,13 @@ create_request_types_array (void)
       cmd[1] = buff_service_time;
       int ret = resp_encode (request_types[j].resp_buff, 32, cmd, 2);
       if (ret == -1)
-        {
           rte_exit (EXIT_FAILURE, "Error to encode resp request\n");
-        }
 
       request_types[j].resp_buff[ret] = '\0';
       // if (t + 1 == 2)
       //  printf ("%s\n", request_types[j].resp_buff);
+
+#endif
 
       // to fake work server
       // request_types[j].type = t + 1;

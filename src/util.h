@@ -66,19 +66,19 @@ typedef struct timestamp_node_t
  * type    service_time*/
 typedef struct request_type
 {
-  uint8_t type; // only to client processing
-  char resp_buff[32];
-// union
-//{
-//  uint8_t type[4];
-//  uint32_t service_time: 24; // in nanoseconds. This is enough to store
-//  until 16 milisseconds
-//};
+ union
+{
+  uint8_t type[4];
+  uint32_t service_time: 24; // in nanoseconds. This is enough to store
+  //until 16 milisseconds
+};
 
-//#define set_type(t, v) (t.type[3] = (v))
-//#define get_type(t) (t.type[3])
-#define get_type(t) ((t).type)
-#define set_type(t, v) ((t).type = (v))
+#ifdef RESP
+  char resp_buff[32];
+#endif
+
+#define set_type(t, v) (t.type[3] = (v))
+#define get_type(t) (t.type[3])
 
 } request_type_t;
 
@@ -150,7 +150,9 @@ enum payload_item
   RECV_TIME,
   TYPE, // 3
   SERVICE_TIME,
+#ifdef RESP
   RESP_REQUEST,
+#endif
 
   /* server times */
   // RX_TIME, // 6

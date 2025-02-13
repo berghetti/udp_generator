@@ -254,8 +254,12 @@ lcore_tx (void *arg)
       fill_payload_pkt (pkt, SERVICE_TIME,
                         cfg_request_types[type - 1].service_time);
 
+#ifdef RESP
+
       fill_payload_resp_request (pkt, RESP_REQUEST, rtype[i].resp_buff,
-                                 strlen (rtype[i].resp_buff) + 1);
+                           strlen (rtype[i].resp_buff) + 1);
+
+#endif
 
       // sleep for while
       while (rte_rdtsc () < next_tsc)
