@@ -127,11 +127,24 @@ create_request_types_array (void)
       uint_to_str (cfg_request_types[t].service_time, buff_service_time);
 
       char *cmd[2];
-      cmd[0] = (t + 1) == 1 ? "SHORT" : "LONG";
+
+      switch (t + 1)
+        {
+        case 1:
+          cmd[0] = "SHORT";
+          break;
+        case 2:
+          cmd[0] = "LONG";
+          break;
+        default:
+          cmd[0] = "OTHER";
+          break;
+        }
+
       cmd[1] = buff_service_time;
       int ret = resp_encode (request_types[j].resp_buff, 32, cmd, 2);
       if (ret == -1)
-          rte_exit (EXIT_FAILURE, "Error to encode resp request\n");
+        rte_exit (EXIT_FAILURE, "Error to encode resp request\n");
 
       request_types[j].resp_buff[ret] = '\0';
       // if (t + 1 == 2)
