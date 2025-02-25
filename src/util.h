@@ -31,17 +31,15 @@
 #define LOGNORMAL_VALUE 4
 #define PARETO_VALUE 5
 
-#define IPV4_ADDR(a, b, c, d)                                                 \
+#define IPV4_ADDR(a, b, c, d)                                                  \
   (((d & 0xff) << 24) | ((c & 0xff) << 16) | ((b & 0xff) << 8) | (a & 0xff))
 
-typedef struct lcore_parameters
-{
+typedef struct lcore_parameters {
   uint8_t qid;
   uint16_t portid;
 } __rte_cache_aligned lcore_param;
 
-typedef struct timestamp_node_t
-{
+typedef struct timestamp_node_t {
   uint64_t flow_id;
   uint64_t timestamp_rx;
   uint64_t timestamp_tx;
@@ -64,33 +62,27 @@ typedef struct timestamp_node_t
  * [3]   [2][1][0]
  * MSB     LSB
  * type    service_time*/
-typedef struct request_type
-{
- union
-{
-  uint8_t type[4];
-  uint32_t service_time: 24; // in nanoseconds. This is enough to store
-  //until 16 milisseconds
-};
+typedef struct request_type {
+
+#ifdef DB
+  uint64_t key;
+#endif
+  uint8_t type;
 
 #ifdef RESP
   char resp_buff[32];
 #endif
-
-#define set_type(t, v) (t.type[3] = (v))
-#define get_type(t) (t.type[3])
-
+#define set_type(t, v) (t.type = (v))
+#define get_type(t) (t.type)
 } request_type_t;
 
-typedef struct config_request_type
-{
+typedef struct config_request_type {
   uint32_t ratio;
   uint32_t service_time; // in nanoseconds
 } config_request_type_t;
 
 #define MAX_QUEUES 16
-struct queue_rps
-{
+struct queue_rps {
   uint64_t rps_offered;
   uint64_t rps_reached;
   uint64_t tot_tx;
@@ -131,25 +123,25 @@ extern uint64_t incoming_idx;
 
 extern uint64_t seed;
 
-void clean_heap ();
-void wait_timeout ();
-void print_dpdk_stats ();
-void print_stats_output ();
-void process_config_file ();
-double sample (double lambda);
-void create_incoming_array ();
-void create_interarrival_array ();
-void create_flow_indexes_array ();
-void create_request_types_array ();
-int app_parse_args (int argc, char **argv);
+void clean_heap();
+void wait_timeout();
+void print_dpdk_stats();
+void print_stats_output();
+void process_config_file();
+double sample(double lambda);
+void create_incoming_array();
+void create_interarrival_array();
+void create_flow_indexes_array();
+void create_request_types_array();
+int app_parse_args(int argc, char **argv);
 
-enum payload_item
-{
+enum payload_item {
   FLOW_ID = 0,
   SEND_TIME,
   RECV_TIME,
   TYPE, // 3
   SERVICE_TIME,
+  DB_KEY, // 5
 #ifdef RESP
   RESP_REQUEST,
 #endif
@@ -166,10 +158,10 @@ enum payload_item
   PAYLOAD_TOTAL_ITEMS
 };
 
-void fill_payload_pkt (struct rte_mbuf *pkt, enum payload_item item,
-                       uint64_t value);
+void fill_payload_pkt(struct rte_mbuf *pkt, enum payload_item item,
+                      uint64_t value);
 
-void fill_payload_resp_request (struct rte_mbuf *pkt, enum payload_item item,
-                                char *buff, size_t buff_size);
+void fill_payload_resp_request(struct rte_mbuf *pkt, enum payload_item item,
+                               char *buff, size_t buff_size);
 
 #endif // __UTIL_H__
