@@ -11,7 +11,7 @@ git clone -b afp_changes https://github.com/berghetti/udp_generator.git
 cd udp_generator
 ./install_requirements.sh; ./install_dpdk.sh; make
 edit MACHINE_CONFIG
-./misc/set_boot_params.sh
+./misc/set_boot_params.sh; ./misc/install_kernel.sh
 reboot
 ```
 
