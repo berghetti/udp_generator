@@ -24,12 +24,18 @@ _run()
 
 if [ "$wk" = "extreme" ]; then
   set_extreme
+elif [ "$wk" = "leveldb_extreme" ]; then
+  set_leveldb_extreme
+elif [ "$wk" = "leveldb_high" ]; then
+  set_leveldb_high
 elif [ "$wk" = "high" ]; then
   set_high
 elif [ "$wk" = "up2x" ]; then
   set_up2x
 elif [ "$wk" = "zippydb" ]; then
   set_zippydb
+elif [ "$wk" = "zippydb2" ]; then
+  set_zippydb2
 elif [ "$wk" = "shorts" ]; then
   set_only_shorts
 elif [ "$wk" = "very_shorts" ]; then

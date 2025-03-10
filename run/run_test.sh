@@ -26,8 +26,11 @@ generate_rates()
     "shorts") AVG_SERVICE_TIME=$(awk 'BEGIN {print 1.0*1.0}')  ;;
     "very_shorts") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*1.0}')  ;;
     "extreme") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.995 + 500*0.005}') ;;
+    "leveldb_extreme") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.85*0.97 + 95*0.03}') ;;
+    "leveldb_high") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.85*0.5 + 95*0.5}') ;;
     "high") AVG_SERVICE_TIME=$(awk 'BEGIN {print 1*0.5 + 100*0.5}') ;;
     "zippydb") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.78 + 2.5*0.19 + 100*0.03}') ;;
+    "zippydb2") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.78 + 2.5*0.19 + 500*0.03}') ;;
     "up2x") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.075 + 5*0.925}') ;;
     *) echo "Invalid workload: $workload"; exit 1 ;;
   esac
@@ -41,16 +44,30 @@ generate_rates()
     "shorts") create_rps_array 1 50 3 ;;
     "high")
       create_rps_array 10 50 10
-      create_rps_array 55 100 5
+      create_rps_array 55 95 5
+      create_rps_array 96 100 1
       ;;
     "extreme")
       create_rps_array 10 30 10
       create_rps_array 35 80 5
-      create_rps_array 10 10 5
+      create_rps_array 82 90 2
+      ;;
+    "leveldb_extreme")
+      #create_rps_array 10 30 5
+      create_rps_array 20 20 5
+      ;;
+    "leveldb_high")
+      #create_rps_array 10 120 10
+      create_rps_array 102 110 2
       ;;
     "zippydb")
       create_rps_array 10 50 10
       create_rps_array 55 100 5
+      ;;
+    "zippydb2")
+      create_rps_array 10 50 10
+      create_rps_array 55 90 5
+      create_rps_array 92 100 2
       ;;
     "up2x")
       create_rps_array 10 40 10
@@ -62,7 +79,7 @@ generate_rates()
   echo "RPS Array: ${RPS[*]}"
 }
 
-SSH="ssh 130.127.133.198"
+SSH="ssh 130.127.133.190"
 
 # Function to stop the server
 stop_server() {
@@ -70,6 +87,8 @@ stop_server() {
   echo "Stopping server: $server"
   $SSH "sudo killall -2 -r $server; sleep 1;"
 }
+
+DB_SIZE=1000
 
 # Function to start the server and ensure it runs in the background
 start_server() {
@@ -81,10 +100,11 @@ start_server() {
   local command=""
   case $server in
     "rss"*) command="afp-all/scripts/afp_run.sh $workload $rate $server" ;;
-    "afp"*) command="afp-all/scripts/afp_run.sh $workload $rate $server" ;;
-    "psp") command="afp-all/scripts/psp_run.sh" ;;
-    "shinjuku") command="afp-all/scripts/shinjuku_run.sh" ;;
-    "concord") command="afp-all/scripts/concord_run.sh" ;;
+    "afp"*) command="afp-all/scripts/afp_run.sh $server $DB_SIZE" ;;
+    "psp") command="afp-all/scripts/psp_run.sh $DB_SIZE";;
+    "tq") command="afp-all/scripts/tq_run.sh" ;;
+    "shinjuku"*) command="afp-all/scripts/shinjuku_run.sh $server $DB_SIZE" ;;
+    "concord") command="afp-all/scripts/concord_run.sh $DB_SIZE" ;;
     *) echo "Unknown server type: $server"; exit 1 ;;
   esac
 
@@ -124,13 +144,17 @@ run_test() {
 }
 
 POLICYS=(
-  "afp-flow"
+  "afp"
+#  "afp-f4"
+#  "tq"
 #  "psp"
+#  "shinjuku-ci"
 #  "shinjuku"
 #  "concord"
 )
 
-for wk in high; do
+#for wk in {high,extreme}; do
+for wk in leveldb_extreme; do
   generate_rates $wk
 
   for pol in ${POLICYS[@]}; do
@@ -139,20 +163,3 @@ for wk in high; do
   done
 done
 
-for wk in extreme; do
-  generate_rates $wk
-
-  for pol in ${POLICYS[@]}; do
-    echo $wk $pol
-    run_test $wk $pol
-  done
-done
-
-#for wk in up2x; do
-#  generate_rates $wk
-#
-#  for pol in ${POLICYS[@]}; do
-#    echo $wk $pol
-#    run_test $wk $pol
-#  done
-#done

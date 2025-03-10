@@ -88,12 +88,50 @@ set_extreme()
   sed -i '/\[requests_ratio\]/{n;n;n;n;s/\(type4\s*=\s*\)[0-9]\+/\1'${ZERO}'/;}' $CONF_FILE
 }
 
+set_leveldb_extreme()
+{
+  ZERO=0
+
+  SHORT=850
+  LONG=95000
+  sed -i '/\[requests_service_time\]/{n;s/\(type1\s*=\s*\)[0-9]\+/\1'${SHORT}'/;}' $CONF_FILE
+  sed -i '/\[requests_service_time\]/{n;n;s/\(type2\s*=\s*\)[0-9]\+/\1'${LONG}'/;}' $CONF_FILE
+  sed -i '/\[requests_service_time\]/{n;n;n;s/\(type3\s*=\s*\)[0-9]\+/\1'${ZERO}'/;}' $CONF_FILE
+  sed -i '/\[requests_service_time\]/{n;n;n;n;s/\(type4\s*=\s*\)[0-9]\+/\1'${ZERO}'/;}' $CONF_FILE
+
+  SHORT_RATIO=970
+  LONG_RATIO=030
+  sed -i '/\[requests_ratio\]/{n;s/\(type1\s*=\s*\)[0-9]\+/\1'${SHORT_RATIO}'/;}' $CONF_FILE
+  sed -i '/\[requests_ratio\]/{n;n;s/\(type2\s*=\s*\)[0-9]\+/\1'${LONG_RATIO}'/;}' $CONF_FILE
+  sed -i '/\[requests_ratio\]/{n;n;n;s/\(type3\s*=\s*\)[0-9]\+/\1'${ZERO}'/;}' $CONF_FILE
+  sed -i '/\[requests_ratio\]/{n;n;n;n;s/\(type4\s*=\s*\)[0-9]\+/\1'${ZERO}'/;}' $CONF_FILE
+}
+
 set_high()
 {
   ZERO=0
 
   SHORT=1000
   LONG=100000
+  sed -i '/\[requests_service_time\]/{n;s/\(type1\s*=\s*\)[0-9]\+/\1'${SHORT}'/;}' $CONF_FILE
+  sed -i '/\[requests_service_time\]/{n;n;s/\(type2\s*=\s*\)[0-9]\+/\1'${LONG}'/;}' $CONF_FILE
+  sed -i '/\[requests_service_time\]/{n;n;n;s/\(type3\s*=\s*\)[0-9]\+/\1'${ZERO}'/;}' $CONF_FILE
+  sed -i '/\[requests_service_time\]/{n;n;n;n;s/\(type4\s*=\s*\)[0-9]\+/\1'${ZERO}'/;}' $CONF_FILE
+
+  SHORT_RATIO=500
+  LONG_RATIO=500
+  sed -i '/\[requests_ratio\]/{n;s/\(type1\s*=\s*\)[0-9]\+/\1'${SHORT_RATIO}'/;}' $CONF_FILE
+  sed -i '/\[requests_ratio\]/{n;n;s/\(type2\s*=\s*\)[0-9]\+/\1'${LONG_RATIO}'/;}' $CONF_FILE
+  sed -i '/\[requests_ratio\]/{n;n;n;s/\(type3\s*=\s*\)[0-9]\+/\1'${ZERO}'/;}' $CONF_FILE
+  sed -i '/\[requests_ratio\]/{n;n;n;n;s/\(type4\s*=\s*\)[0-9]\+/\1'${ZERO}'/;}' $CONF_FILE
+}
+
+set_leveldb_high()
+{
+  ZERO=0
+
+  SHORT=850
+  LONG=95000
   sed -i '/\[requests_service_time\]/{n;s/\(type1\s*=\s*\)[0-9]\+/\1'${SHORT}'/;}' $CONF_FILE
   sed -i '/\[requests_service_time\]/{n;n;s/\(type2\s*=\s*\)[0-9]\+/\1'${LONG}'/;}' $CONF_FILE
   sed -i '/\[requests_service_time\]/{n;n;n;s/\(type3\s*=\s*\)[0-9]\+/\1'${ZERO}'/;}' $CONF_FILE
@@ -114,6 +152,27 @@ set_zippydb()
   GET=500
   PUT_DELETE=2500
   SCAN=100000
+  sed -i '/\[requests_service_time\]/{n;s/\(type1\s*=\s*\)[0-9]\+/\1'${GET}'/;}' $CONF_FILE
+  sed -i '/\[requests_service_time\]/{n;n;s/\(type2\s*=\s*\)[0-9]\+/\1'${PUT_DELETE}'/;}' $CONF_FILE
+  sed -i '/\[requests_service_time\]/{n;n;n;s/\(type3\s*=\s*\)[0-9]\+/\1'${SCAN}'/;}' $CONF_FILE
+  sed -i '/\[requests_service_time\]/{n;n;n;n;s/\(type4\s*=\s*\)[0-9]\+/\1'${ZERO}'/;}' $CONF_FILE
+
+  GET_RATIO=780
+  PUT_DELETE_RATIO=190
+  SCAN_RATIO=030
+  sed -i '/\[requests_ratio\]/{n;s/\(type1\s*=\s*\)[0-9]\+/\1'${GET_RATIO}'/;}' $CONF_FILE
+  sed -i '/\[requests_ratio\]/{n;n;s/\(type2\s*=\s*\)[0-9]\+/\1'${PUT_DELETE_RATIO}'/;}' $CONF_FILE
+  sed -i '/\[requests_ratio\]/{n;n;n;s/\(type3\s*=\s*\)[0-9]\+/\1'${SCAN_RATIO}'/;}' $CONF_FILE
+  sed -i '/\[requests_ratio\]/{n;n;n;n;s/\(type4\s*=\s*\)[0-9]\+/\1'${ZERO}'/;}' $CONF_FILE
+}
+
+set_zippydb2()
+{
+  ZERO=0
+
+  GET=500
+  PUT_DELETE=2500
+  SCAN=500000
   sed -i '/\[requests_service_time\]/{n;s/\(type1\s*=\s*\)[0-9]\+/\1'${GET}'/;}' $CONF_FILE
   sed -i '/\[requests_service_time\]/{n;n;s/\(type2\s*=\s*\)[0-9]\+/\1'${PUT_DELETE}'/;}' $CONF_FILE
   sed -i '/\[requests_service_time\]/{n;n;n;s/\(type3\s*=\s*\)[0-9]\+/\1'${SCAN}'/;}' $CONF_FILE
