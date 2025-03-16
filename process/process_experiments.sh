@@ -85,14 +85,16 @@ remove_processed_test()
 #POL="rss"
 WK=$1
 POL=$2
+TAG=$3
 
 process()
 {
   echo "Processing ${WK}"
   for p in {p50,p99,p999}; do
     echo $p
-    #$(dirname $0)/process_policys.py 'rocksdb' $p $BASE_DIR/tests/exponential/extreme/*
-    $(dirname $0)/process_policys.py "fake_${WK}" $p $BASE_DIR/tests/exponential/${WK}/${POL}/
+    #$(dirname $0)/process_policys.py "fake_${WK}" $p $BASE_DIR/tests/exponential/${WK}/${POL}/
+    #$(dirname $0)/process_policys.py "leveldb_${WK}" $p $BASE_DIR/tests/exponential/${WK}/${POL}/
+    $(dirname $0)/process_policys.py "${TAG}_${WK}" $p $BASE_DIR/tests/exponential/${WK}/${POL}/
   done
 }
 

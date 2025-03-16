@@ -76,6 +76,40 @@ class latencys:
                         self.type4_errors,
                         self.alls_errors]
 
+
+    self.interrupts_saved = []
+    self.cpu_avg = []
+    self.cpu_max = []
+    self.cpu_min = []
+
+  def process_cpu_usage(self, rate_folder: str):
+     with open(f'{rate_folder}/afp.txt') as f:
+       for line in f:
+         if line.startswith('CPU:'):
+           self.cpu_avg.append(line.split()[1])
+           self.cpu_min.append(line.split()[2])
+           self.cpu_max.append(line.split()[3])
+           break
+
+
+  def process_interupts_saving(self, rate_folder: str):
+    interrupts_targed = 0
+    interrupts_fired = 0
+    interrupts_saved = 0
+
+    with open(f'{rate_folder}/afp.txt') as f:
+      for line in f:
+        if 'Interrupts targed:' in line:
+          interrupts_targed = int(line.split()[2])
+        elif 'Interrupts fired:' in line:
+          interrupts_fired = int(line.split()[2])
+
+
+    if interrupts_targed != 0:
+      interrupts_saved = round(1 - (interrupts_fired / interrupts_targed), 4)
+
+    self.interrupts_saved.append(interrupts_saved)
+
   def update(self, rate_folder, rps, drop, slowdown):
     self.x.append(rps)
     self.drop.append(drop)
@@ -101,7 +135,11 @@ class latencys:
       self.type_errors[idx].append(error)
 
   def get_dict(self):
-    dict_ = {'x': self.x, 'drop': self.drop}
+    dict_ = {'x': self.x, 'drop': self.drop,
+             'interrupts_saved': self.interrupts_saved,
+             'cpu_avg': self.cpu_avg,
+             'cpu_min': self.cpu_min,
+             'cpu_max': self.cpu_max}
     dict_latencys = dict(zip(self.type_names, self.type_latencys))
     dict_errors = dict(zip(self.type_names_err, self.type_errors))
     # merge dicts
@@ -140,7 +178,7 @@ def get_drop(rate):
   drop_percent = (1 - (sum(tot_rx) / sum(tot_tx))) * 100
   return round(drop_percent, 4)
 
-  #return sum(drops)
+#return sum(drops)
 
 
 def load_in_file_name(f):
@@ -167,71 +205,77 @@ def process_get_policy_data(pol, slowdown=False):
     drop = get_drop(folder)
     latencys_data.update(folder, rps, drop, slowdown)
 
+    latencys_data.process_interupts_saving(folder)
+    latencys_data.process_cpu_usage(folder)
+
   return latencys_data.get_dict()
 
 # Function to read the 'test' file in a given rate folder
 def read_test_file(test_file: str) -> pd.DataFrame:
-    return pd.read_csv(test_file,
-                       separator='\t',
-                       has_header=False,
-                       new_columns=['type', 'latency', 'slowdown'])
+  return pd.read_csv(test_file,
+                     separator='\t',
+                     has_header=False,
+                     new_columns=['type', 'latency', 'slowdown'])
 
 # Function to calculate tail statistics for a given DataFrame
 def calculate_per_type_latency(df: pd.DataFrame, percentile: float) -> pd.DataFrame:
-    #return df.groupby('type', as_index=False)['latency'].quantile(percentile / 100)
-    return df.group_by('type').agg(pd.col('latency').quantile(float(percentile/100)))
+  #return df.groupby('type', as_index=False)['latency'].quantile(percentile / 100)
+  return df.group_by('type').agg(pd.col('latency').quantile(float(percentile/100)))
 
 def calculate_per_type_slowdown(df: pd.DataFrame, percentile: float) -> pd.DataFrame:
-    #return df.groupby('type', as_index=False)['slowdown'].quantile(percentile / 100)
-    return df.group_by('type').agg(pd.col('slowdown').quantile(float(percentile/100)))
+  #return df.groupby('type', as_index=False)['slowdown'].quantile(percentile / 100)
+  return df.group_by('type').agg(pd.col('slowdown').quantile(float(percentile/100)))
 
 # Function to calculate the overall 99th percentile
 def calculate_overall_latency(df: pd.DataFrame, percentile: float) -> float:
-    return df['latency'].quantile(percentile / 100)
+  return df['latency'].quantile(percentile / 100)
 
 def calculate_overall_slowdown(df: pd.DataFrame, percentile: float) -> float:
-    return df['slowdown'].quantile(percentile / 100)
+  return df['slowdown'].quantile(percentile / 100)
 
 # Process a file with requests latencies
 def process_test(rate_folder_path: str, test: str, percentile: float) -> None:
-    print(f'Processing {test}')
+  print(f'Processing {test}')
 
-    # Read the data from the 'test' file
-    df = read_test_file(test)
+  # Read the data from the 'test' file
+  df = read_test_file(test)
 
-    # Save the overall latency
-    overall_percentile = calculate_overall_latency(df, percentile)
+  # Save the overall latency
+  overall_percentile = calculate_overall_latency(df, percentile)
 
-    overall_result_filename = f"{test}_all_{percentile}_result"
-    overall_result_path = os.path.join(rate_folder_path, overall_result_filename)
-    overall_result_df = pd.DataFrame({'latency': [overall_percentile]})
-    overall_result_df[['latency']].write_csv(overall_result_path, include_header=False)
+  overall_result_filename = f"{test}_all_{percentile}_result"
+  overall_result_path = os.path.join(rate_folder_path, overall_result_filename)
+  overall_result_df = pd.DataFrame({'latency': [overall_percentile]})
+  overall_result_df[['latency']].write_csv(overall_result_path, include_header=False)
 
-    # Save slowdown
-    overall_slowdown = calculate_overall_slowdown(df, percentile)
+  # Save slowdown
+  overall_slowdown = calculate_overall_slowdown(df, percentile)
 
-    overall_result_filename = f"{test}_all_{percentile}_result_slowdown"
-    overall_result_path = os.path.join(rate_folder_path, overall_result_filename)
-    overall_result_df = pd.DataFrame({'slowdown': [overall_slowdown]})
-    overall_result_df[['slowdown']].write_csv(overall_result_path, include_header=False)
+  overall_result_filename = f"{test}_all_{percentile}_result_slowdown"
+  overall_result_path = os.path.join(rate_folder_path, overall_result_filename)
+  overall_result_df = pd.DataFrame({'slowdown': [overall_slowdown]})
+  overall_result_df[['slowdown']].write_csv(overall_result_path, include_header=False)
 
-    per_type_latency = calculate_per_type_latency(df, percentile)
-    per_type_slowdown = calculate_per_type_slowdown(df, percentile)
+  per_type_latency = calculate_per_type_latency(df, percentile)
+  per_type_slowdown = calculate_per_type_slowdown(df, percentile)
 
-    TYPES = {1: 'type1', 2: 'type2', 3: 'type3', 4: 'type4'}
-    # Save latency by request type
-    for Type in per_type_latency['type'].to_list():
-        # Get the 99th percentile value for the current group
-        group_df = per_type_latency.filter(pd.col('type') == Type)
-        group_df_slowdown = per_type_slowdown.filter(pd.col('type') == Type)
+  TYPES = {1: 'type1', 2: 'type2', 3: 'type3', 4: 'type4'}
+  # Save latency by request type
+  for Type in per_type_latency['type'].to_list():
+    # Get the 99th percentile value for the current group
+    group_df = per_type_latency.filter(pd.col('type') == Type)
+    group_df_slowdown = per_type_slowdown.filter(pd.col('type') == Type)
 
-        result_filename = f"{test}_{TYPES[Type]}_{percentile}_result"
-        result_path = os.path.join(rate_folder_path, result_filename)
-        group_df.select('latency').write_csv(result_path, include_header=False)
+    result_filename = f"{test}_{TYPES[Type]}_{percentile}_result"
+    result_path = os.path.join(rate_folder_path, result_filename)
+    group_df.select('latency').write_csv(result_path, include_header=False)
 
-        result_filename = f"{test}_{TYPES[Type]}_{percentile}_result_slowdown"
-        result_path = os.path.join(rate_folder_path, result_filename)
-        group_df_slowdown.select('slowdown').write_csv(result_path, include_header=False)
+    result_filename = f"{test}_{TYPES[Type]}_{percentile}_result_slowdown"
+    result_path = os.path.join(rate_folder_path, result_filename)
+    group_df_slowdown.select('slowdown').write_csv(result_path, include_header=False)
+
+
+
 
 def process_policy(base_folder: str, force: bool = False) -> None:
   rate_folders = [f for f in os.listdir(base_folder) if os.path.isdir(os.path.join(base_folder, f))]
