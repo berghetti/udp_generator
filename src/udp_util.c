@@ -1,6 +1,8 @@
 #include "udp_util.h"
 #include "util.h"
 
+#include <rte_random.h>
+
 // Create and initialize the Control Blocks for all flows
 void
 init_blocks ()
@@ -22,8 +24,10 @@ init_blocks ()
   for (uint32_t i = 0; i < nr_flows; i++)
     {
       // each flow change only src port
+      //src_udp_port = rte_rand_max(0xFFFF) + 1 & 0xffff;
       src_udp_port = ports[i];
 
+      //control_blocks[i].src_addr = RTE_IPV4(rte_rand_max(254) + i, rte_rand_max(254) + i, rte_rand_max(254) + i, rte_rand_max(254) + i);
       control_blocks[i].src_addr = src_ipv4_addr;
       control_blocks[i].dst_addr = dst_ipv4_addr;
 

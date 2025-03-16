@@ -95,7 +95,7 @@ void create_request_types_array(void) {
     set_type(request_types[j], t + 1);
 
 #ifdef DB
-    unsigned r = rte_rand() % 5000; // 5000 keys in server DB
+    unsigned r = rte_rand() % 1000; // keys in server DB
     char buff[member_size(request_type_t, key)] = {0};
     snprintf(buff, sizeof buff, "k%u", r);
     memcpy(&request_types[j].key, buff, sizeof(buff));
