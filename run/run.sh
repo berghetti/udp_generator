@@ -8,6 +8,7 @@ rate=$3
 wk=$4
 rand=$5
 test_i=$6
+flows=$7
 dist='exponential'
 
 set_classification_time 0
@@ -19,7 +20,7 @@ _run()
   load_name=$1
 
   test_dir="${dist}/${load_name}/${policy}/${rate}"
-  run_one $test_dir $dist $rate $rand $test_i
+  run_one $test_dir $dist $rate $rand $test_i $flows
 }
 
 if [ "$wk" = "extreme" ]; then

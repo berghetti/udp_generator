@@ -42,6 +42,7 @@ run_one()
   RATE=$3
   RAND=$4
   TEST_N=$5
+  FLOWS=$6
 
   mkdir -p $DIR
   SHORT_RATIO=$(awk -v ratio=$SHORT_RATIO 'BEGIN {print ratio / 1000}') \
@@ -62,7 +63,7 @@ run_one()
   -l ${CPUS} -- \
   -d ${DIST} \
   -r ${RATE} \
-  -f 512 -s 128 -t 60 \
+  -f ${FLOWS} -s 128 -t 60 \
   -c ${CONF_FILE} \
   -o ${DIR}/test$TEST_N \
   -x ${RAND} > ${DIR}/stats$TEST_N

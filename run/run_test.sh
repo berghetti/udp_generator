@@ -49,8 +49,8 @@ generate_rates()
       ;;
     "extreme")
       create_rps_array 10 30 10
-      create_rps_array 35 80 5
-      create_rps_array 82 90 2
+      create_rps_array 35 85 5
+      create_rps_array 75 85 2
       ;;
     "leveldb_extreme")
       #create_rps_array 10 30 5
@@ -99,11 +99,12 @@ start_server() {
 
   local command=""
   case $server in
-    "rss"*) command="afp-all/scripts/afp_run.sh $workload $rate $server" ;;
-    "afp"*) command="afp-all/scripts/afp_run.sh $server $DB_SIZE" ;;
+    "rss"*) command="afp-all/scripts/afp_run.sh $server $DB_SIZE" ;;
+    #"afp"*) command="afp-all/scripts/afp_run.sh $server $DB_SIZE" ;;
+    "afp"*) command="afp-all/scripts/afp_run.sh $server $workload $rate" ;;
     "psp") command="afp-all/scripts/psp_run.sh $DB_SIZE";;
     "tq") command="afp-all/scripts/tq_run.sh" ;;
-    "shinjuku"*) command="afp-all/scripts/shinjuku_run.sh $server $DB_SIZE" ;;
+    "shinjuku"*) command="afp-all/scripts/shinjuku_run.sh $server $workload" ;;
     "concord") command="afp-all/scripts/concord_run.sh $DB_SIZE" ;;
     *) echo "Unknown server type: $server"; exit 1 ;;
   esac
@@ -111,12 +112,15 @@ start_server() {
   $SSH "$command" &
 }
 
+#NFLOWS=(8 16 32 64 512)
+NFLOWS=(16 32)
 RANDOMS=(7 365877 374979 853172 908081 227836 64991 493663 174817 73997)
+TAG=0
 
 process_test()
 {
   pushd ../process
-  ./process_experiments.sh $1 $2 && sudo ./process_experiments.sh $1 $2 clean
+  ./process_experiments.sh $1 $2 $TAG && sudo ./process_experiments.sh $1 $2 clean
   popd
 }
 
@@ -125,26 +129,38 @@ run_test() {
   local workload=$1
   local policy=$2
 
-  for rate in "${RPS[@]}"; do
-    echo "Rate: $rate"
-    local per_client_rate=$((rate / N_CLIENTS))
+  for nflow in "${NFLOWS[@]}"; do
 
-    for i in $(seq 0 $((N_TESTS-1))); do
-      start_server $policy $workload $rate
-      sleep 20
+    for rate in "${RPS[@]}"; do
+      echo "Rate: $rate"
+      local per_client_rate=$((rate / N_CLIENTS))
 
-      echo "Starting client with rate: $per_client_rate"
-      $(dirname "$0")/run.sh "$BASE_DIR" "$policy" "$per_client_rate" "$workload" "${RANDOMS[$i]}" "$i"
+      for i in $(seq 0 $((N_TESTS-1))); do
+        start_server "${policy}-flows${nflow}" $workload $rate
+        sleep 10
 
-      stop_server $policy
-      process_test $wk $pol
+        echo "Starting client with rate: $per_client_rate"
+        #$(dirname "$0")/run.sh "$BASE_DIR" "${policy}-flows${nflow}" "$per_client_rate" "$workload" "${RANDOMS[$i]}" "$i" $nflow
+        $(dirname "$0")/run.sh "$BASE_DIR" "${policy}" "$per_client_rate" "$workload" "${RANDOMS[$i]}" "$i" $nflow
+
+        stop_server $policy
+        #process_test $wk "${policy}-flows${nflow}"
+        process_test $wk $policy
+      done
+
     done
-
   done
 }
 
+TAG="flows_cpu"
 POLICYS=(
   "afp"
+#  "rss-ci-ws-wq-cp-qa"
+#  "rss-ci-ws-wq-cp"
+#  "rss-ci-ws-wq"
+#  "rss-ci-ws"
+#  "rss-ci"
+#  "rss-ws"
 #  "afp-f4"
 #  "tq"
 #  "psp"
@@ -153,8 +169,7 @@ POLICYS=(
 #  "concord"
 )
 
-#for wk in {high,extreme}; do
-for wk in leveldb_extreme; do
+for wk in high; do
   generate_rates $wk
 
   for pol in ${POLICYS[@]}; do
