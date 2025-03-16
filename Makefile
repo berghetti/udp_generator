@@ -37,6 +37,7 @@ endif
 endif
 
 CFLAGS += -Wall -Wextra -O3 -march=native
+#CFLAGS +=-DDB
 
 build/$(APP)-shared: $(SRCS-y) Makefile $(PC_FILE) | build
 	$(CC) $(CFLAGS) $(filter %.c,$^) -o $@ $(LDFLAGS) $(LDFLAGS_SHARED) -lm
