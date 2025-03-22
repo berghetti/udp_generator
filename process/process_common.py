@@ -83,13 +83,16 @@ class latencys:
     self.cpu_min = []
 
   def process_cpu_usage(self, rate_folder: str):
-     with open(f'{rate_folder}/afp.txt') as f:
-       for line in f:
-         if line.startswith('CPU:'):
-           self.cpu_avg.append(line.split()[1])
-           self.cpu_min.append(line.split()[2])
-           self.cpu_max.append(line.split()[3])
-           break
+    try:
+       with open(f'{rate_folder}/afp.txt') as f:
+         for line in f:
+           if line.startswith('CPU:'):
+             self.cpu_avg.append(line.split()[1])
+             self.cpu_min.append(line.split()[2])
+             self.cpu_max.append(line.split()[3])
+             break
+    except:
+      pass
 
 
   def process_interupts_saving(self, rate_folder: str):
@@ -97,18 +100,20 @@ class latencys:
     interrupts_fired = 0
     interrupts_saved = 0
 
-    with open(f'{rate_folder}/afp.txt') as f:
-      for line in f:
-        if 'Interrupts targed:' in line:
-          interrupts_targed = int(line.split()[2])
-        elif 'Interrupts fired:' in line:
-          interrupts_fired = int(line.split()[2])
+    try:
+      with open(f'{rate_folder}/afp.txt') as f:
+        for line in f:
+          if 'Interrupts targed:' in line:
+            interrupts_targed = int(line.split()[2])
+          elif 'Interrupts fired:' in line:
+            interrupts_fired = int(line.split()[2])
 
+      if interrupts_targed != 0:
+        interrupts_saved = round(1 - (interrupts_fired / interrupts_targed), 4)
 
-    if interrupts_targed != 0:
-      interrupts_saved = round(1 - (interrupts_fired / interrupts_targed), 4)
-
-    self.interrupts_saved.append(interrupts_saved)
+      self.interrupts_saved.append(interrupts_saved)
+    except:
+      pass
 
   def update(self, rate_folder, rps, drop, slowdown):
     self.x.append(rps)

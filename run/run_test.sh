@@ -7,7 +7,7 @@
 source $(dirname "$0")/common.sh
 
 N_CLIENTS=1
-N_TESTS=1
+N_TESTS=5
 BASE_DIR="/proj/demeter-PG0/users/fabricio/afp_tests/"
 TOT_WORKER=14
 
@@ -113,8 +113,8 @@ start_server() {
 }
 
 #NFLOWS=(8 16 32 64 512)
-NFLOWS=(16 32)
-RANDOMS=(7 365877 374979 853172 908081 227836 64991 493663 174817 73997)
+NFLOWS=(512)
+RANDOMS=(7 365877 3779 9283 908081 227836 64991 493663 174817 73997)
 TAG=0
 
 process_test()
@@ -123,6 +123,8 @@ process_test()
   ./process_experiments.sh $1 $2 $TAG && sudo ./process_experiments.sh $1 $2 clean
   popd
 }
+
+RPS=(750079)
 
 # Function to run tests
 run_test() {
@@ -135,9 +137,11 @@ run_test() {
       echo "Rate: $rate"
       local per_client_rate=$((rate / N_CLIENTS))
 
-      for i in $(seq 0 $((N_TESTS-1))); do
-        start_server "${policy}-flows${nflow}" $workload $rate
-        sleep 10
+      #for i in $(seq 0 $((N_TESTS-1))); do
+      for i in 0; do
+        #start_server "${policy}-flows${nflow}" $workload $rate
+        start_server $policy $workload $rate
+        sleep 20
 
         echo "Starting client with rate: $per_client_rate"
         #$(dirname "$0")/run.sh "$BASE_DIR" "${policy}-flows${nflow}" "$per_client_rate" "$workload" "${RANDOMS[$i]}" "$i" $nflow
@@ -152,16 +156,28 @@ run_test() {
   done
 }
 
-TAG="flows_cpu"
+TAG="int_save"
+#POLICYS=(
+##  "afp"
+##  "tq"
+#  "psp"
+#  "shinjuku-ci"
+#  "shinjuku"
+#  "concord"
+#)
+#
+##for wk in {high,zippydb2,extreme}; do
+#for wk in zippydb2; do
+#  generate_rates $wk
+#
+#  for pol in ${POLICYS[@]}; do
+#    echo $wk $pol
+#    run_test $wk $pol
+#  done
+#done
+
 POLICYS=(
   "afp"
-#  "rss-ci-ws-wq-cp-qa"
-#  "rss-ci-ws-wq-cp"
-#  "rss-ci-ws-wq"
-#  "rss-ci-ws"
-#  "rss-ci"
-#  "rss-ws"
-#  "afp-f4"
 #  "tq"
 #  "psp"
 #  "shinjuku-ci"
@@ -169,7 +185,7 @@ POLICYS=(
 #  "concord"
 )
 
-for wk in high; do
+for wk in zippydb2; do
   generate_rates $wk
 
   for pol in ${POLICYS[@]}; do
