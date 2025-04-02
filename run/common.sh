@@ -131,7 +131,7 @@ set_leveldb_high()
 {
   ZERO=0
 
-  SHORT=850
+  SHORT=950
   LONG=95000
   sed -i '/\[requests_service_time\]/{n;s/\(type1\s*=\s*\)[0-9]\+/\1'${SHORT}'/;}' $CONF_FILE
   sed -i '/\[requests_service_time\]/{n;n;s/\(type2\s*=\s*\)[0-9]\+/\1'${LONG}'/;}' $CONF_FILE

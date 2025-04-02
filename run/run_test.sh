@@ -7,7 +7,7 @@
 source $(dirname "$0")/common.sh
 
 N_CLIENTS=1
-N_TESTS=5
+N_TESTS=10
 BASE_DIR="/proj/demeter-PG0/users/fabricio/afp_tests/"
 TOT_WORKER=14
 
@@ -27,7 +27,7 @@ generate_rates()
     "very_shorts") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*1.0}')  ;;
     "extreme") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.995 + 500*0.005}') ;;
     "leveldb_extreme") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.85*0.97 + 95*0.03}') ;;
-    "leveldb_high") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.85*0.5 + 95*0.5}') ;;
+    "leveldb_high") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.95*0.5 + 95*0.5}') ;;
     "high") AVG_SERVICE_TIME=$(awk 'BEGIN {print 1*0.5 + 100*0.5}') ;;
     "zippydb") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.78 + 2.5*0.19 + 100*0.03}') ;;
     "zippydb2") AVG_SERVICE_TIME=$(awk 'BEGIN {print 0.5*0.78 + 2.5*0.19 + 500*0.03}') ;;
@@ -100,11 +100,11 @@ start_server() {
   local command=""
   case $server in
     "rss"*) command="afp-all/scripts/afp_run.sh $server $DB_SIZE" ;;
-    #"afp"*) command="afp-all/scripts/afp_run.sh $server $DB_SIZE" ;;
-    "afp"*) command="afp-all/scripts/afp_run.sh $server $workload $rate" ;;
+    "afp"*) command="afp-all/scripts/afp_run.sh $server $DB_SIZE" ;;
+    #"afp"*) command="afp-all/scripts/afp_run.sh $server $workload $rate" ;;
     "psp") command="afp-all/scripts/psp_run.sh $DB_SIZE";;
     "tq") command="afp-all/scripts/tq_run.sh" ;;
-    "shinjuku"*) command="afp-all/scripts/shinjuku_run.sh $server $workload" ;;
+    "shinjuku"*) command="afp-all/scripts/shinjuku_run.sh $server $DB_SIZE $workload" ;;
     "concord") command="afp-all/scripts/concord_run.sh $DB_SIZE" ;;
     *) echo "Unknown server type: $server"; exit 1 ;;
   esac
@@ -156,7 +156,7 @@ run_test() {
   done
 }
 
-TAG="int_save"
+#TAG="int_save"
 #POLICYS=(
 ##  "afp"
 ##  "tq"
@@ -176,16 +176,17 @@ TAG="int_save"
 #  done
 #done
 
+TAG="leveldb"
 POLICYS=(
   "afp"
 #  "tq"
 #  "psp"
-#  "shinjuku-ci"
+  "shinjuku-ci"
 #  "shinjuku"
-#  "concord"
+  "concord"
 )
 
-for wk in zippydb2; do
+for wk in leveldb_high; do
   generate_rates $wk
 
   for pol in ${POLICYS[@]}; do
